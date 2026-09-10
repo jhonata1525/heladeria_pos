@@ -1,0 +1,142 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model User {
+  id            Int       @id @default(autoincrement())
+  name          String
+  email         String    @unique
+  passwordHash  String
+  role          String    @default("CASHIER")
+  isActive      Boolean   @default(true)
+  failedLoginAttempts Int   @default(0)
+  lockedUntil   DateTime?
+  lastLoginAt   DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  auditLogs     AuditLog[]
+}
+
+model Category {
+  id          Int       @id @default(autoincrement())
+  name        String    @unique
+  description String?
+  products    Product[]
+}
+
+model Product {
+  id            Int          @id @default(autoincrement())
+  name          String
+  price         Float
+  categoryId    Int
+  category      Category     @relation(fields: [categoryId], references: [id])
+  inStock       Boolean      @default(true)
+  stockQuantity Float        @default(0)
+  image         String?
+  unit          String       @default("unidad")
+  kind          String       @default("BASE") // BASE = producto/envase suelto | COMBO = combinación con receta
+  orderItems    OrderItem[]
+  recipeItems   RecipeItem[]
+
+  @@index([categoryId])
+}
+
+model Ingredient {
+  id           Int          @id @default(autoincrement())
+  name         String       @unique
+  unit         String       @default("gramos") // gramos | unidades | ml
+  currentStock Float        @default(0)
+  minStock     Float        @default(0)
+  costPerUnit  Float        @default(0)
+  recipeItems  RecipeItem[]
+}
+
+model RecipeItem {
+  id           Int        @id @default(autoincrement())
+  productId    Int
+  product      Product    @relation(fields: [productId], references: [id], onDelete: Cascade)
+  ingredientId Int
+  ingredient   Ingredient @relation(fields: [ingredientId], references: [id], onDelete: Cascade)
+  quantity     Float
+
+  @@unique([productId, ingredientId])
+  @@index([productId])
+  @@index([ingredientId])
+}
+
+model Order {
+  id            Int         @id @default(autoincrement())
+  orderNumber   Int         @unique
+  customerName  String?
+  tableNumber   Int?
+  total         Float
+  cogs          Float       @default(0)
+  status        String      @default("PENDING")
+  paymentMethod String?
+  cashReceived  Float?
+  changeGiven   Float?
+  createdAt     DateTime    @default(now())
+  items         OrderItem[]
+}
+
+model OrderItem {
+  id        Int     @id @default(autoincrement())
+  orderId   Int
+  order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId Int
+  product   Product @relation(fields: [productId], references: [id])
+  quantity  Float
+  price     Float
+  notes     String?
+
+  @@index([orderId])
+  @@index([productId])
+}
+
+model CashRegister {
+  id             Int       @id @default(autoincrement())
+  openedAt       DateTime  @default(now())
+  closedAt       DateTime?
+  initialAmount  Float     @default(0)
+  expectedAmount Float?
+  actualAmount   Float?
+  difference     Float?
+  status         String    @default("OPEN")
+  notes          String?
+  expenses       Expense[]
+}
+
+model Expense {
+  id             Int          @id @default(autoincrement())
+  description    String
+  amount         Float
+  category       String
+  createdAt      DateTime     @default(now())
+  cashRegisterId Int
+  cashRegister   CashRegister @relation(fields: [cashRegisterId], references: [id])
+
+  @@index([cashRegisterId])
+}
+
+model AuditLog {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+  action    String
+  entity    String
+  entityId  Int?
+  details   String?
+  ipAddress String?
+  userAgent String?
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([action])
+  @@index([entity])
+  @@index([createdAt])
+}
