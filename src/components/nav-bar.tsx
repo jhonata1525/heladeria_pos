@@ -8,6 +8,7 @@ const links = [
   { href: "/pos", label: "Punto de Venta", icon: "🛒", roles: ["ADMIN", "CASHIER"] },
   { href: "/caja", label: "Caja", icon: "💵", roles: ["ADMIN", "CASHIER"] },
   { href: "/productos", label: "Productos", icon: "🍦", roles: ["ADMIN"] },
+  { href: "/admin/pedidos", label: "Pedidos", icon: "📋", roles: ["ADMIN"] },
   { href: "/admin/reportes", label: "Reportes", icon: "📊", roles: ["ADMIN"] },
   { href: "/admin/usuarios", label: "Usuarios", icon: "👥", roles: ["ADMIN"] },
   { href: "/pedido", label: "Pedido Cliente", icon: "📱", roles: ["ADMIN"] },
