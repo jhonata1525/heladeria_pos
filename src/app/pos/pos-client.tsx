@@ -596,6 +596,21 @@ export function PosClient({
           </div>
 
           <div className="space-y-3 border-t border-pink-50 px-5 py-4">
+            <div className="flex items-center gap-2 mb-3">
+              <label className="text-sm font-semibold text-slate-600">
+                Nombre del cliente
+                <span className="text-rose-500">*</span>
+              </label>
+              <input
+                type="text"
+                value={customerName}
+                onChange={(e) => setCustomerName(e.target.value)}
+                placeholder="Ej: Juan Pérez"
+                required
+                className="rounded-lg border border-pink-100 bg-white px-3 py-2 text-sm outline-none focus:border-pink-300 focus:ring-2 focus:ring-pink-200"
+                minLength={1}
+              />
+            </div>
             <div className="flex justify-between text-sm text-slate-500">
               <span>Subtotal ({itemCount} art.)</span>
               <span className="font-semibold">{formatMoney(subtotal)}</span>

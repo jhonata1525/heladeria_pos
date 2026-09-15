@@ -1,18 +1,25 @@
 import type { NextRequest } from "next/server";
 import { cookies } from "next/headers";
 import { prisma } from "@/lib/prisma";
+import { verifySessionToken } from "@/lib/auth";
 import { hashPassword, validatePasswordStrength, logAudit } from "@/lib/auth";
 
 async function getAuth(): Promise<{ userId: number; role: string } | null> {
   const store = await cookies();
-  const raw = store.get("heladeria_session")?.value;
-  if (!raw) return null;
-  const userId = Number(raw);
+  const token = store.get("heladeria_session")?.value;
+  if (!token) return null;
+
+  const payload = await verifySessionToken(token);
+  if (!payload) return null;
+
+  const userId = payload.id;
   if (!Number.isInteger(userId) || userId <= 0) return null;
+
   const user = await prisma.user.findUnique({
     where: { id: userId },
     select: { role: true, isActive: true },
   });
+
   return user?.isActive ? { userId, role: user.role } : null;
 }
 

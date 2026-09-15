@@ -1,23 +1,31 @@
 import type { NextRequest } from "next/server";
 import { cookies } from "next/headers";
+import { verifySessionToken } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { round2 } from "@/lib/format";
 import { restoreIngredientsForOrder } from "@/lib/actions/orders";
 import { eventEmitter, SSE_EVENTS } from "@/lib/events";
+import { updateOrderSchema } from "@/lib/validations/zod";
 
 const PAYMENT_METHODS = ["CASH", "TRANSFER", "CARD"] as const;
 type PaymentMethod = (typeof PAYMENT_METHODS)[number];
 
 async function getUserRole(): Promise<{ role: string; userId: number } | null> {
   const store = await cookies();
-  const raw = store.get("heladeria_session")?.value;
-  if (!raw) return null;
-  const userId = Number(raw);
+  const token = store.get("heladeria_session")?.value;
+  if (!token) return null;
+
+  const payload = await verifySessionToken(token);
+  if (!payload) return null;
+
+  const userId = payload.id;
   if (!Number.isInteger(userId) || userId <= 0) return null;
+
   const user = await prisma.user.findUnique({
     where: { id: userId },
     select: { role: true, isActive: true },
   });
+
   return user?.isActive ? { role: user.role, userId } : null;
 }
 
@@ -33,11 +41,14 @@ export async function PATCH(
     }
 
     const body = await request.json();
-    const action = body?.action;
 
-    if (action !== "pay" && action !== "cancel") {
-      return Response.json({ error: "Acción inválida" }, { status: 400 });
+    const schemaResult = updateOrderSchema.safeParse(body);
+    if (!schemaResult.success) {
+      const firstError = schemaResult.error.issues[0];
+      return Response.json({ error: firstError ? firstError.message : "Datos inválidos" }, { status: 400 });
     }
+
+    const { action, paymentMethod, cashReceived } = schemaResult.data;
 
     const auth = await getUserRole();
     if (!auth) {

@@ -1,18 +1,58 @@
+"use client";
+
+import { useState, useEffect } from "react";
 import { formatMoney, formatDate } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
 
-export const metadata = { title: "Gestión de Pedidos · Heladería POS" };
+type AdminOrder = {
+  id: number;
+  orderNumber: number;
+  customerName: string | null;
+  tableNumber: number | null;
+  total: number;
+  cogs: number;
+  status: string;
+  paymentMethod: string | null;
+  cashReceived: number | null;
+  changeGiven: number | null;
+  createdAt: Date;
+  items: { product: { name: string } }[];
+};
 
-export default async function PedidosPage() {
-  const orders = await prisma.order.findMany({
-    orderBy: { createdAt: "desc" },
-    take: 100,
-    include: {
-      items: {
-        include: { product: { select: { name: true } } },
-      },
-    },
-  });
+export default function PedidosPage() {
+  const [orders, setOrders] = useState<AdminOrder[]>([]);
+
+  useEffect(() => {
+    async function fetchOrders() {
+      const data = await prisma.order.findMany({
+        orderBy: { createdAt: "desc" },
+        take: 100,
+        include: {
+          items: {
+            include: { product: { select: { name: true } } },
+          },
+        },
+      });
+      setOrders(
+        data.map((order) => ({
+          id: order.id,
+          orderNumber: order.orderNumber,
+          customerName: order.customerName,
+          tableNumber: order.tableNumber,
+          total: order.total,
+          cogs: order.cogs,
+          status: order.status,
+          paymentMethod: order.paymentMethod,
+          cashReceived: order.cashReceived,
+          changeGiven: order.changeGiven,
+          createdAt: order.createdAt,
+          items: order.items,
+        }))
+      );
+    }
+
+    fetchOrders();
+  }, []);
 
   return (
     <div className="mx-auto max-w-5xl space-y-6">

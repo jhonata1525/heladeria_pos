@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { round2 } from "@/lib/format";
 import { consumeIngredientsForOrder } from "@/lib/actions/orders";
 import { eventEmitter, SSE_EVENTS } from "@/lib/events";
+import { orderParseSchema } from "@/lib/validations/zod";
 
 const PAYMENT_METHODS = ["CASH", "TRANSFER", "CARD"] as const;
 type PaymentMethod = (typeof PAYMENT_METHODS)[number];
@@ -23,43 +24,27 @@ interface ParsedItem {
 }
 
 function parseItems(raw: unknown): ParsedItem[] {
-  if (!Array.isArray(raw) || raw.length === 0) {
-    throw new ApiError(400, "El pedido no tiene productos");
+  const result = orderParseSchema.safeParse(raw);
+
+  if (!result.success) {
+    const firstError = result.error.issues[0];
+    throw new ApiError(
+      400,
+      firstError ? firstError.message : "Datos de pedido inválidos",
+    );
   }
 
-  const merged = new Map<number, ParsedItem>();
-
-  for (const entry of raw) {
-    const productId = Number(entry?.productId);
-    const quantity = Number(entry?.quantity);
-    if (!Number.isInteger(productId) || productId <= 0) {
-      throw new ApiError(400, "Producto inválido en el pedido");
-    }
-    if (!Number.isFinite(quantity) || quantity <= 0) {
-      throw new ApiError(400, "Cantidad inválida en el pedido");
-    }
-
-    const existing = merged.get(productId);
-    const notes =
-      typeof entry?.notes === "string" && entry.notes.trim().length > 0
-        ? entry.notes.trim()
-        : null;
-
-    if (existing) {
-      existing.quantity += quantity;
-      existing.notes = notes ?? existing.notes;
-    } else {
-      merged.set(productId, { productId, quantity, notes });
-    }
-  }
-
-  return [...merged.values()];
+  return result.data.items.map((item) => ({
+    productId: item.productId,
+    quantity: item.quantity,
+    notes: item.notes ?? null,
+  }));
 }
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const items = parseItems(body?.items);
+    const items = parseItems(body);
 
     const isPaid = body?.status === "PAID";
     const paymentMethod: PaymentMethod | null = PAYMENT_METHODS.includes(
