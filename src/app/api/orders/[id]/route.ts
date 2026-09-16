@@ -136,6 +136,8 @@ export async function PATCH(
         };
       }
 
+      const referenceNumber = body?.referenceNumber?.trim() || null;
+
       if (paymentMethod === "CASH") {
         const cashReceived = Number(body?.cashReceived);
         if (!Number.isFinite(cashReceived) || cashReceived < order.total) {
@@ -191,7 +193,7 @@ export async function PATCH(
 
       const updated = await tx.order.update({
         where: { id: order.id },
-        data: { status: "PAID", paymentMethod },
+        data: { status: "PAID", paymentMethod, referenceNumber },
         select: { id: true, orderNumber: true, changeGiven: true },
       });
 

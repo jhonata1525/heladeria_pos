@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { requireAdmin } from "@/lib/auth";
+import { requireAdmin } from "@/lib/auth-server";
 import { UsuariosClient } from "./UsuariosClient";
 
 export const metadata = { title: "Usuarios · Heladería POS" };

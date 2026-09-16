@@ -67,9 +67,11 @@ function StatCard({
 export function CajaClient({
   summary,
   closedRegisters,
+  userRole,
 }: {
   summary: OpenRegisterSummaryDTO | null;
   closedRegisters: ClosedRegisterDTO[];
+  userRole: string;
 }) {
   const [openState, openAction, openPending] = useActionState(openRegister, null);
   const [expenseState, expenseAction, expensePending] = useActionState(
@@ -312,7 +314,7 @@ export function CajaClient({
         </>
       )}
 
-      {closedRegisters.length > 0 && (
+      {userRole === "ADMIN" && closedRegisters.length > 0 && (
         <section className="overflow-hidden rounded-3xl border border-pink-100 bg-white shadow-sm">
           <h2 className="border-b border-pink-50 px-5 py-4 text-base font-extrabold text-slate-800">
             🗂️ Historial de cierres

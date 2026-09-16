@@ -4,13 +4,19 @@ export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
 export async function GET() {
+  let closed = false;
   const stream = new ReadableStream({
     start(controller) {
       const encoder = new TextEncoder();
       
       const sendEvent = (event: string, data: unknown) => {
-        const message = `event: ${event}\ndata: ${JSON.stringify(data)}\n\n`;
-        controller.enqueue(encoder.encode(message));
+        if (closed) return;
+        try {
+          const message = `event: ${event}\ndata: ${JSON.stringify(data)}\n\n`;
+          controller.enqueue(encoder.encode(message));
+        } catch {
+          // Controller is closed, ignore
+        }
       };
 
       sendEvent("connected", { timestamp: Date.now() });
@@ -25,10 +31,12 @@ export async function GET() {
       ];
 
       const interval = setInterval(() => {
+        if (closed) return;
         sendEvent("heartbeat", { timestamp: Date.now() });
       }, 30000);
 
       return () => {
+        closed = true;
         clearInterval(interval);
         for (const sub of subscriptions) {
           sub.unsubscribe();

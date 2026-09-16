@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import type { CategoryDTO, PendingOrderDTO } from "@/lib/types";
-import { requireUser } from "@/lib/auth";
+import { requireUser } from "@/lib/auth-server";
 import { PosClient } from "./pos-client";
 
 export const metadata = { title: "Punto de Venta · Heladería POS" };

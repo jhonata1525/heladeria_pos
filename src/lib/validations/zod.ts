@@ -43,7 +43,7 @@ export const recipeSaveSchema = z.object({
 export const orderLineSchema = z.object({
   productId: z.number().int().positive("Producto inválido"),
   quantity: z.number().finite().positive("Cantidad inválida"),
-  notes: z.string().trim().optional(),
+  notes: z.string().trim().nullable().optional(),
 });
 
 export const orderParseSchema = z.object({
@@ -56,12 +56,14 @@ export const orderParseSchema = z.object({
   ),
   paymentMethod: z.enum(["CASH", "TRANSFER", "CARD"]).optional(),
   cashReceived: z.number().finite().optional(),
+  referenceNumber: z.string().trim().nullable().optional(),
 });
 
 export const updateOrderSchema = z.object({
   action: z.enum(["pay", "cancel"]),
   paymentMethod: z.enum(["CASH", "TRANSFER", "CARD"]).optional(),
   cashReceived: z.number().finite().optional(),
+  referenceNumber: z.string().trim().nullable().optional(),
 });
 
 export type ProductFormValues = z.infer<typeof productSchema>;

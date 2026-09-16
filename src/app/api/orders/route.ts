@@ -65,6 +65,8 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    const referenceNumber = body?.referenceNumber?.trim() || null;
+
     const customerName = body?.customerName?.trim() || null;
     const tableNumber = body?.tableNumber ? Number(body.tableNumber) : null;
     if (tableNumber !== null && (!Number.isInteger(tableNumber) || tableNumber <= 0)) {
@@ -151,6 +153,7 @@ export async function POST(request: NextRequest) {
           paymentMethod,
           cashReceived,
           changeGiven,
+          referenceNumber,
           items: { create: lines },
         },
         select: {
@@ -162,6 +165,7 @@ export async function POST(request: NextRequest) {
           status: true,
           changeGiven: true,
           paymentMethod: true,
+          referenceNumber: true,
         },
       });
     });

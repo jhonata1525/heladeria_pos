@@ -2,7 +2,8 @@ import type { NextRequest } from "next/server";
 import { cookies } from "next/headers";
 import { prisma } from "@/lib/prisma";
 import { verifySessionToken } from "@/lib/auth";
-import { hashPassword, validatePasswordStrength, logAudit } from "@/lib/auth";
+import { hashPassword, validatePasswordStrength } from "@/lib/auth";
+import { logAudit } from "@/lib/auth-server";
 
 async function getAuth(): Promise<{ userId: number; role: string } | null> {
   const store = await cookies();

@@ -67,6 +67,7 @@ export function PosClient({
   const [checkoutOpen, setCheckoutOpen] = useState(false);
   const [payMethod, setPayMethod] = useState<PaymentMethod>("CASH");
   const [cashInput, setCashInput] = useState("");
+  const [referenceNumber, setReferenceNumber] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<CheckoutResult | null>(null);
@@ -257,6 +258,7 @@ export function PosClient({
             action: "pay",
             paymentMethod: payMethod,
             ...(payMethod === "CASH" ? { cashReceived: received } : {}),
+            referenceNumber: payMethod !== "CASH" ? referenceNumber : undefined,
           }),
         });
       } else {
@@ -268,7 +270,7 @@ export function PosClient({
             customerName: customerName.trim() || null,
             tableNumber: tableNumber.trim() ? Number(tableNumber) : null,
             ...(status === "PAID"
-              ? { paymentMethod: payMethod, cashReceived: received }
+              ? { paymentMethod: payMethod, cashReceived: received, referenceNumber: payMethod !== "CASH" ? referenceNumber : undefined }
               : {}),
             items: lines.map((line) => ({
               productId: line.product.id,
@@ -664,6 +666,27 @@ export function PosClient({
               </span>
             </p>
 
+            {lines.length > 0 && (
+              <div className="mb-4 rounded-lg bg-amber-50 p-3 mb-4">
+                <h4 className="text-sm font-bold text-amber-800 mb-3">Productos de la comanda</h4>
+                <div className="space-y-2 text-sm">
+                  {lines.map((line) => (
+                    <div key={line.product.id} className="flex justify-between items-center py-1">
+                      <span>
+                        {line.product.name}{" "}{line.quantity > 1 && (
+                          <span className="text-pink-500">×{line.quantity}</span>
+                        )}
+                      </span>
+                      {line.notes && (
+                        <span className="text-pink-400 text-xs italic">({line.notes})</span>
+                      )}
+                      <span className="font-medium">{formatMoney(line.product.price * line.quantity)}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
             <div className="mb-4 space-y-3">
               <div>
                 <label className="block text-sm font-semibold text-slate-600 mb-1">
@@ -709,6 +732,21 @@ export function PosClient({
                 </button>
               ))}
             </div>
+
+            {payMethod !== "CASH" && (
+              <div className="mb-4 space-y-2">
+                <label className="block text-sm font-semibold text-slate-600">
+                  Número de comprobante / Referencia
+                  <input
+                    type="text"
+                    value={referenceNumber}
+                    onChange={(e) => setReferenceNumber(e.target.value)}
+                    placeholder="Ej: TRX123456 o últimos 4 dígitos"
+                    className="w-full rounded-xl border border-pink-100 bg-white px-4 py-3 text-base outline-none focus:border-pink-300 focus:ring-2 focus:ring-pink-200"
+                  />
+                </label>
+              </div>
+            )}
 
             {payMethod === "CASH" && (
               <div className="mb-4 space-y-2">

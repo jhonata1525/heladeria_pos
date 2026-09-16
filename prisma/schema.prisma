@@ -80,6 +80,7 @@ model Order {
   paymentMethod String?
   cashReceived  Float?
   changeGiven   Float?
+  referenceNumber String?
   createdAt     DateTime    @default(now())
   items         OrderItem[]
 }

@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { getCurrentUser } from "@/lib/auth";
+import { getCurrentUser } from "@/lib/auth-server";
 import { formatMoney } from "@/lib/format";
 import { buildReport, parseRange, REPORT_RANGES } from "../report-data";
 

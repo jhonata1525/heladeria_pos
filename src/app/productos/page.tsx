@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { formatMoney, round2 } from "@/lib/format";
-import { requireAdmin } from "@/lib/auth";
+import { requireAdmin } from "@/lib/auth-server";
 import type { IngredientDTO, RecipeEntryDTO } from "@/lib/types";
 import { IngredientsPanel } from "./ingredients-panel";
 import { RecipeDialog } from "./recipe-dialog";
