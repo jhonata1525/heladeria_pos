@@ -8,18 +8,19 @@ datasource db {
 }
 
 model User {
-  id            Int       @id @default(autoincrement())
-  name          String
-  email         String    @unique
-  passwordHash  String
-  role          String    @default("CASHIER")
-  isActive      Boolean   @default(true)
-  failedLoginAttempts Int   @default(0)
-  lockedUntil   DateTime?
-  lastLoginAt   DateTime?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  auditLogs     AuditLog[]
+  id                 Int       @id @default(autoincrement())
+  name               String
+  email              String    @unique
+  passwordHash       String
+  role               String    @default("CASHIER")
+  isActive           Boolean   @default(true)
+  failedLoginAttempts Int      @default(0)
+  lockedUntil        DateTime?
+  lastLoginAt        DateTime?
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+  auditLogs          AuditLog[]
+  wasteLogs          WasteLog[]
 }
 
 model Category {
@@ -42,6 +43,7 @@ model Product {
   kind          String       @default("BASE") // BASE = producto/envase suelto | COMBO = combinación con receta
   orderItems    OrderItem[]
   recipeItems   RecipeItem[]
+  wasteLogs     WasteLog[]
 
   @@index([categoryId])
 }
@@ -51,9 +53,10 @@ model Ingredient {
   name         String       @unique
   unit         String       @default("gramos") // gramos | unidades | ml
   currentStock Float        @default(0)
-  minStock     Float        @default(0)
+  minStock     Float        @default(10)
   costPerUnit  Float        @default(0)
   recipeItems  RecipeItem[]
+  wasteLogs    WasteLog[]
 }
 
 model RecipeItem {
@@ -122,6 +125,32 @@ model Expense {
   cashRegister   CashRegister @relation(fields: [cashRegisterId], references: [id])
 
   @@index([cashRegisterId])
+}
+
+enum WasteReason {
+  EXPIRED
+  DAMAGED
+  QUALITY
+  OTHER
+}
+
+model WasteLog {
+  id             Int          @id @default(autoincrement())
+  ingredientId   Int?
+  ingredient     Ingredient?  @relation(fields: [ingredientId], references: [id], onDelete: SetNull)
+  productId      Int?
+  product        Product?     @relation(fields: [productId], references: [id], onDelete: SetNull)
+  quantity       Float
+  reason         WasteReason
+  note           String?
+  registeredById Int
+  registeredBy   User         @relation(fields: [registeredById], references: [id])
+  createdAt      DateTime     @default(now())
+
+  @@index([ingredientId])
+  @@index([productId])
+  @@index([registeredById])
+  @@index([createdAt])
 }
 
 model AuditLog {

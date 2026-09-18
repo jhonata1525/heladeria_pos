@@ -7,6 +7,7 @@ export interface ProductDTO {
   stockQuantity: number;
   image: string | null;
   unit: string;
+  kind: string;
 }
 
 export interface CategoryDTO {

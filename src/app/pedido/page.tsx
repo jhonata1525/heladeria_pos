@@ -33,6 +33,7 @@ export default async function PedidoPage() {
       stockQuantity: product.stockQuantity,
       image: product.image,
       unit: product.unit,
+      kind: product.kind,
     })),
   }));
 

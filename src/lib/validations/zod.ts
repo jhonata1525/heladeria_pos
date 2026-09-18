@@ -2,6 +2,7 @@ import { z } from "zod";
 
 export const INGREDIENT_UNITS = ["gramos", "unidades", "ml"] as const;
 export const PRODUCT_KINDS = ["BASE", "COMBO"] as const;
+export const WASTE_REASONS = ["EXPIRED", "DAMAGED", "QUALITY", "OTHER"] as const;
 
 export const productSchema = z.object({
   name: z.string().trim().min(1, "El nombre es obligatorio"),
@@ -66,6 +67,17 @@ export const updateOrderSchema = z.object({
   referenceNumber: z.string().trim().nullable().optional(),
 });
 
+export const wasteSchema = z.object({
+  ingredientId: z.number().int().positive().optional(),
+  productId: z.number().int().positive().optional(),
+  quantity: z.number().finite().positive("La cantidad debe ser mayor a 0"),
+  reason: z.enum(WASTE_REASONS, { message: "Motivo inválido" }),
+  note: z.string().trim().nullable().optional(),
+}).refine(
+  (data) => data.ingredientId || data.productId,
+  { message: "Debe seleccionar un insumo o un producto", path: ["ingredientId"] }
+);
+
 export type ProductFormValues = z.infer<typeof productSchema>;
 export type CategoryFormValues = z.infer<typeof categorySchema>;
 export type IngredientFormValues = z.infer<typeof ingredientSchema>;
@@ -74,3 +86,4 @@ export type RecipeSavePayload = z.infer<typeof recipeSaveSchema>;
 export type OrderFormValues = z.infer<typeof orderParseSchema>;
 export type UpdateOrderInput = z.infer<typeof updateOrderSchema>;
 export type IngredientUpsertInput = z.infer<typeof ingredientSchema>;
+export type WasteFormValues = z.infer<typeof wasteSchema>;

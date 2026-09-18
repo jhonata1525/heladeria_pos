@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { formatMoney, round2 } from "@/lib/format";
 import { requireAdmin } from "@/lib/auth-server";
-import type { IngredientDTO, RecipeEntryDTO } from "@/lib/types";
+import type { IngredientDTO, RecipeEntryDTO, ProductDTO } from "@/lib/types";
 import { IngredientsPanel } from "./ingredients-panel";
 import { RecipeDialog } from "./recipe-dialog";
 import { ProductCreateForm } from "./product-create-form";
@@ -16,18 +16,40 @@ const CATEGORY_EMOJI: Record<string, string> = {
   Bebidas: "🥤",
 };
 
+function calculateComboStock(product: { kind: string; stockQuantity: number; recipeItems: { ingredient: { currentStock: number }; quantity: number }[] }) {
+  if (product.kind !== "COMBO") {
+    return product.stockQuantity;
+  }
+  if (product.recipeItems.length === 0) {
+    return 0;
+  }
+  let maxUnits = Infinity;
+  for (const item of product.recipeItems) {
+    const ingredientStock = item.ingredient.currentStock;
+    const unitsPossible = Math.floor(ingredientStock / item.quantity);
+    if (unitsPossible < maxUnits) {
+      maxUnits = unitsPossible;
+    }
+  }
+  return maxUnits === Infinity ? 0 : maxUnits;
+}
+
 export default async function ProductosPage() {
   await requireAdmin();
 
-  const [categories, ingredientsRaw, recipeItems] = await Promise.all([
+  const [categories, ingredientsRaw, recipeItems, productsRaw] = await Promise.all([
     prisma.category.findMany({
       orderBy: { id: "asc" },
-      include: { products: { orderBy: { name: "asc" } } },
+      include: { products: { orderBy: { name: "asc" }, include: { recipeItems: { include: { ingredient: true } } } } },
     }),
     prisma.ingredient.findMany({ orderBy: { name: "asc" } }),
     prisma.recipeItem.findMany({
       orderBy: { id: "asc" },
       include: { ingredient: true },
+    }),
+    prisma.product.findMany({
+      orderBy: { name: "asc" },
+      where: { kind: "COMBO" },
     }),
   ]);
 
@@ -51,6 +73,18 @@ export default async function ProductosPage() {
       round2((costByProduct.get(item.productId) ?? 0) + item.quantity * item.ingredient.costPerUnit),
     );
   }
+
+  const products: ProductDTO[] = productsRaw.map((product) => ({
+    id: product.id,
+    name: product.name,
+    price: product.price,
+    categoryId: product.categoryId,
+    inStock: product.inStock,
+    stockQuantity: product.stockQuantity,
+    image: product.image,
+    unit: product.unit,
+    kind: product.kind,
+  }));
 
   const lowStockCount = ingredients.filter(
     (ingredient) => ingredient.currentStock <= ingredient.minStock,
@@ -76,7 +110,7 @@ export default async function ProductosPage() {
         )}
       </header>
 
-      <IngredientsPanel ingredients={ingredients} />
+      <IngredientsPanel ingredients={ingredients} products={products} />
 
       <ProductCreateForm
         categories={categories.map((category) => ({
@@ -108,8 +142,9 @@ export default async function ProductosPage() {
             ) : (
               <ul className="divide-y divide-pink-50">
                 {category.products.map((product) => {
-                  const soldOut = !product.inStock || product.stockQuantity <= 0;
-                  const low = !soldOut && product.stockQuantity <= 5;
+                  const effectiveStock = calculateComboStock(product as { kind: string; stockQuantity: number; recipeItems: { ingredient: { currentStock: number }; quantity: number }[] });
+                  const soldOut = !product.inStock || effectiveStock <= 0;
+                  const low = !soldOut && effectiveStock <= 5;
                   const recipe = recipesByProduct.get(product.id) ?? [];
                   const cost = costByProduct.get(product.id);
                   return (
@@ -152,13 +187,13 @@ export default async function ProductosPage() {
                             soldOut
                               ? "bg-rose-50 text-rose-500"
                               : low
-                                ? "bg-amber-50 text-amber-600"
-                                : "bg-emerald-50 text-emerald-600"
+                              ? "bg-amber-50 text-amber-600"
+                              : "bg-emerald-50 text-emerald-600"
                           }`}
                         >
                           {soldOut
                             ? "Agotado"
-                            : `${product.stockQuantity} ${product.unit}`}
+                            : `${effectiveStock} ${product.unit}`}
                         </span>
                         <span className="w-24 text-right font-extrabold text-pink-600">
                           {formatMoney(product.price)}

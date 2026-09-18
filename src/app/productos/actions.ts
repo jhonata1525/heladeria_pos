@@ -247,3 +247,20 @@ export async function createProduct(
   refreshCatalog();
   return { ok: true, message: `Producto creado: ${product.name}` };
 }
+
+export async function setAllIngredientsStock(
+  _prev: ProductoActionState | null,
+  formData: FormData,
+): Promise<ProductoActionState> {
+  const targetStock = Number(formData.get("targetStock") ?? 999);
+  if (!Number.isFinite(targetStock) || targetStock < 0) {
+    return { ok: false, error: "Stock objetivo inválido." };
+  }
+
+  const count = await prisma.ingredient.updateMany({
+    data: { currentStock: targetStock },
+  });
+
+  refreshCatalog();
+  return { ok: true, message: `Stock actualizado a ${targetStock} para ${count.count} insumo(s).` };
+}
