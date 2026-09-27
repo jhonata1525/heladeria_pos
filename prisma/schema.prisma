@@ -1,12 +1,11 @@
 generator client {
-  provider = "prisma-client"
+  provider = "prisma-client-js"
   output   = "../src/generated/prisma"
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "mysql"
 }
-
 model User {
   id                 Int       @id @default(autoincrement())
   name               String
@@ -41,6 +40,7 @@ model Product {
   image         String?
   unit          String       @default("unidad")
   kind          String       @default("BASE") // BASE = producto/envase suelto | COMBO = combinación con receta
+  barcode       String?      @default(null)
   orderItems    OrderItem[]
   recipeItems   RecipeItem[]
   wasteLogs     WasteLog[]

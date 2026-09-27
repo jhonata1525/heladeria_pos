@@ -3,6 +3,8 @@ import { prisma } from "./prisma";
 const RECETAS_COMPLETAS = [
   {
     nombreProducto: "OSITO",
+    categoria: "Infantiles",
+    precio: 9000,
     ingredientes: [
       { ingrediente: "CANASTA DE GALLETA", unidadMedida: "unidad", cantidad: 1 },
       { ingrediente: "HELADO", unidadMedida: "gramos", cantidad: 140 },
@@ -16,6 +18,8 @@ const RECETAS_COMPLETAS = [
   },
   {
     nombreProducto: "MALTEADA",
+    categoria: "Bebidas",
+    precio: 13000,
     ingredientes: [
       { ingrediente: "CHOCUBIERTA", unidadMedida: "gramos", cantidad: 5 },
       { ingrediente: "HELADO", unidadMedida: "gramos", cantidad: 170 },
@@ -24,6 +28,8 @@ const RECETAS_COMPLETAS = [
   },
   {
     nombreProducto: "RATONCITO",
+    categoria: "Infantiles",
+    precio: 6500,
     ingredientes: [
       { ingrediente: "CANASTA DE GALLETA", unidadMedida: "unidad", cantidad: 1 },
       { ingrediente: "CHANTILLY", unidadMedida: "gramos", cantidad: 20 },
@@ -37,6 +43,8 @@ const RECETAS_COMPLETAS = [
   },
   {
     nombreProducto: "AÑARITA",
+    categoria: "Infantiles",
+    precio: 9000,
     ingredientes: [
       { ingrediente: "LECHE CONDENSADA", unidadMedida: "gramos", cantidad: 10 },
       { ingrediente: "HELADO", unidadMedida: "gramos", cantidad: 140 },
@@ -44,6 +52,8 @@ const RECETAS_COMPLETAS = [
   },
   {
     nombreProducto: "CONO TRIPLE",
+    categoria: "Conos y Canastas",
+    precio: 11000,
     ingredientes: [
       { ingrediente: "CONO DE GALLETA", unidadMedida: "unidad", cantidad: 1 },
       { ingrediente: "SALSA DE AREQUIPE", unidadMedida: "gramos", cantidad: 5 },
@@ -60,6 +70,8 @@ const RECETAS_COMPLETAS = [
   },
   {
     nombreProducto: "DANI ESPECIAL",
+    categoria: "Emplatados",
+    precio: 13000,
     ingredientes: [
       { ingrediente: "CANASTA BANANA", unidadMedida: "unidad", cantidad: 1 },
       { ingrediente: "HELADO", unidadMedida: "gramos", cantidad: 140 },
@@ -75,6 +87,8 @@ const RECETAS_COMPLETAS = [
   },
   {
     nombreProducto: "COPA CHOCOLATE",
+    categoria: "Copas",
+    precio: 14000,
     ingredientes: [
       { ingrediente: "CHOCUBIERTA", unidadMedida: "gramos", cantidad: 10 },
       { ingrediente: "GALLETA OREO", unidadMedida: "unidad", cantidad: 2 },
@@ -86,6 +100,8 @@ const RECETAS_COMPLETAS = [
   },
   {
     nombreProducto: "WAFFLE DULCE DANI",
+    categoria: "Emplatados",
+    precio: 14000,
     ingredientes: [
       { ingrediente: "WAFFLE", unidadMedida: "unidad", cantidad: 1 },
       { ingrediente: "CHOCUBIERTA", unidadMedida: "gramos", cantidad: 35 },
@@ -100,6 +116,8 @@ const RECETAS_COMPLETAS = [
   },
   {
     nombreProducto: "FRESAS CON CREMA",
+    categoria: "Copas",
+    precio: 12000,
     ingredientes: [
       { ingrediente: "CHOCUBIERTA", unidadMedida: "gramos", cantidad: 15 },
       { ingrediente: "FRESA", unidadMedida: "gramos", cantidad: 90 },
@@ -111,6 +129,8 @@ const RECETAS_COMPLETAS = [
   },
   {
     nombreProducto: "WAFFLE FRUTI DANI",
+    categoria: "Emplatados",
+    precio: 14000,
     ingredientes: [
       { ingrediente: "WAFFLE", unidadMedida: "unidad", cantidad: 1 },
       { ingrediente: "SALSA DE AREQUIPE", unidadMedida: "gramos", cantidad: 40 },
@@ -128,6 +148,8 @@ const RECETAS_COMPLETAS = [
   },
   {
     nombreProducto: "BANANA SPLIT",
+    categoria: "Emplatados",
+    precio: 13000,
     ingredientes: [
       { ingrediente: "BANANO", unidadMedida: "unidad", cantidad: 1 },
       { ingrediente: "CHOCUBIERTA", unidadMedida: "gramos", cantidad: 6 },
@@ -143,6 +165,8 @@ const RECETAS_COMPLETAS = [
   },
   {
     nombreProducto: "ENSALADA DE FRUTAS",
+    categoria: "Emplatados",
+    precio: 15000,
     ingredientes: [
       { ingrediente: "CREMA DE LECHE", unidadMedida: "gramos", cantidad: 30 },
       { ingrediente: "LECHE CONDENSADA", unidadMedida: "gramos", cantidad: 30 },
@@ -164,6 +188,8 @@ const RECETAS_COMPLETAS = [
   },
   {
     nombreProducto: "MEZCLA DE WAFFLE",
+    categoria: "Emplatados",
+    precio: 11000,
     ingredientes: [
       { ingrediente: "PREMEZCLA WAFFLE", unidadMedida: "gramos", cantidad: 150 },
       { ingrediente: "LECHE LIQUIDA", unidadMedida: "gramos", cantidad: 100 },
@@ -175,6 +201,8 @@ const RECETAS_COMPLETAS = [
   },
   {
     nombreProducto: "SALPICON CON HELADO",
+    categoria: "Bebidas",
+    precio: 12000,
     ingredientes: [
       { ingrediente: "PAPAYA", unidadMedida: "gramos", cantidad: 40 },
       { ingrediente: "SANDIA", unidadMedida: "gramos", cantidad: 40 },
@@ -191,6 +219,8 @@ const RECETAS_COMPLETAS = [
   },
   {
     nombreProducto: "CANASTA DOBLE",
+    categoria: "Conos y Canastas",
+    precio: 8500,
     ingredientes: [
       { ingrediente: "CANASTA DE GALLETA", unidadMedida: "unidad", cantidad: 1 },
       { ingrediente: "HELADO", unidadMedida: "gramos", cantidad: 140 },
@@ -204,6 +234,8 @@ const RECETAS_COMPLETAS = [
   },
   {
     nombreProducto: "CANASTA TRIPLE",
+    categoria: "Conos y Canastas",
+    precio: 11000,
     ingredientes: [
       { ingrediente: "CANASTA DE GALLETA", unidadMedida: "unidad", cantidad: 1 },
       { ingrediente: "HELADO", unidadMedida: "gramos", cantidad: 210 },
@@ -216,6 +248,8 @@ const RECETAS_COMPLETAS = [
   },
   {
     nombreProducto: "MARACUMANGO",
+    categoria: "Bebidas",
+    precio: 12000,
     ingredientes: [
       { ingrediente: "MARACUYA", unidadMedida: "gramos", cantidad: 85 },
       { ingrediente: "LIMÓN", unidadMedida: "gramos", cantidad: 15 },
@@ -232,6 +266,8 @@ const RECETAS_COMPLETAS = [
   },
   {
     nombreProducto: "SODA",
+    categoria: "Bebidas",
+    precio: 10000,
     ingredientes: [
       { ingrediente: "SALSA CASERA", unidadMedida: "gramos", cantidad: 40 },
       { ingrediente: "HIELO", unidadMedida: "gramos", cantidad: 200 },
@@ -250,6 +286,8 @@ const RECETAS_COMPLETAS = [
   },
   {
     nombreProducto: "MALTEADA DANI ESPECIAL",
+    categoria: "Bebidas",
+    precio: 16000,
     ingredientes: [
       { ingrediente: "SALSA CASERA", unidadMedida: "gramos", cantidad: 20 },
       { ingrediente: "HELADO", unidadMedida: "gramos", cantidad: 230 },
@@ -264,22 +302,64 @@ const RECETAS_COMPLETAS = [
       { ingrediente: "PITILLO", unidadMedida: "unidad", cantidad: 1 },
     ],
   },
+  {
+    nombreProducto: "CONO SENCILLO",
+    categoria: "Conos y Canastas",
+    precio: 3500,
+    ingredientes: [
+      { ingrediente: "CONO DE GALLETA", unidadMedida: "unidad", cantidad: 1 },
+      { ingrediente: "HELADO", unidadMedida: "gramos", cantidad: 80 },
+      { ingrediente: "CHOCUBIERTA", unidadMedida: "gramos", cantidad: 5 },
+      { ingrediente: "CUCHARA", unidadMedida: "unidad", cantidad: 1 },
+      { ingrediente: "SERVILLETA", unidadMedida: "unidad", cantidad: 1 },
+    ],
+  },
+  {
+    nombreProducto: "CONO DOBLE",
+    categoria: "Conos y Canastas",
+    precio: 6500,
+    ingredientes: [
+      { ingrediente: "CONO DE GALLETA", unidadMedida: "unidad", cantidad: 1 },
+      { ingrediente: "HELADO", unidadMedida: "gramos", cantidad: 160 },
+      { ingrediente: "CHOCUBIERTA", unidadMedida: "gramos", cantidad: 10 },
+      { ingrediente: "CUCHARA", unidadMedida: "unidad", cantidad: 1 },
+      { ingrediente: "SERVILLETA", unidadMedida: "unidad", cantidad: 1 },
+    ],
+  },
+  {
+    nombreProducto: "BOLA DE HELADO EXTRA",
+    categoria: "Extras",
+    precio: 3000,
+    ingredientes: [
+      { ingrediente: "HELADO", unidadMedida: "gramos", cantidad: 50 },
+    ],
+  },
+  {
+    nombreProducto: "TOPPING / ADICIONAL DE CREMA",
+    categoria: "Extras",
+    precio: 2500,
+    ingredientes: [
+      { ingrediente: "CHANTILLY", unidadMedida: "gramos", cantidad: 30 },
+    ],
+  },
 ];
-
-const DEFAULT_CATEGORY_NAME = "Helados y Postres";
-const DEFAULT_PRICE = 10000;
-const DEFAULT_STOCK = 100;
 
 async function seedRecetas() {
   console.log("🌱 Iniciando seed de recetas...");
 
-  const category = await prisma.category.upsert({
-    where: { name: DEFAULT_CATEGORY_NAME },
-    update: {},
-    create: { name: DEFAULT_CATEGORY_NAME, description: "Productos de heladería y postres" },
-  });
+  const categoriesMap: Record<string, string> = {};
 
-  console.log(`📦 Categoría: ${category.name} (ID: ${category.id})`);
+  for (const catName of ["Bebidas", "Copas", "Emplatados", "Infantiles", "Conos y Canastas", "Extras"]) {
+    const category = await prisma.category.upsert({
+      where: { name: catName },
+      update: {},
+      create: { name: catName, description: `Productos de ${catName.toLowerCase()}` },
+    });
+    categoriesMap[catName] = category.id;
+    console.log(`📦 Categoría creada: ${catName} (ID: ${category.id})`);
+  }
+
+  console.log("🥕 Encontrando/creando ingredientes únicos...");
 
   const allIngredients = new Map<string, { unit: string }>();
 
@@ -291,8 +371,6 @@ async function seedRecetas() {
     }
   }
 
-  console.log(`🥕 Encontrados ${allIngredients.size} ingredientes únicos`);
-
   for (const [name, { unit }] of allIngredients) {
     await prisma.ingredient.upsert({
       where: { name },
@@ -300,16 +378,18 @@ async function seedRecetas() {
       create: {
         name,
         unit,
-        currentStock: DEFAULT_STOCK,
+        currentStock: 100,
         minStock: 10,
         costPerUnit: 0,
       },
     });
   }
 
-  console.log("✅ Ingredientes creados/actualizados");
+  console.log(`✅ ${allIngredients.size} ingredientes listos`);
 
   for (const receta of RECETAS_COMPLETAS) {
+    const categoryId = categoriesMap[receta.categoria];
+
     let product = await prisma.product.findFirst({
       where: { name: receta.nombreProducto },
     });
@@ -318,26 +398,26 @@ async function seedRecetas() {
       product = await prisma.product.update({
         where: { id: product.id },
         data: {
-          categoryId: category.id,
-          kind: "COMBO",
+          categoryId,
+          price: receta.precio,
           inStock: true,
+          stockQuantity: 100,
         },
       });
     } else {
       product = await prisma.product.create({
         data: {
           name: receta.nombreProducto,
-          price: DEFAULT_PRICE,
-          categoryId: category.id,
-          kind: "COMBO",
+          price: receta.precio,
+          categoryId,
           inStock: true,
-          stockQuantity: 0,
+          stockQuantity: 100,
           unit: "unidad",
         },
       });
     }
 
-    console.log(`🍦 Producto: ${product.name} (ID: ${product.id})`);
+    console.log(`🍦 Producto: ${product.name} (ID: ${product.id}) - $${receta.precio.toLocaleString()} - ${receta.categoria}`);
 
     await prisma.recipeItem.deleteMany({
       where: { productId: product.id },
