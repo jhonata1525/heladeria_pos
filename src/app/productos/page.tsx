@@ -104,7 +104,7 @@ export default async function ProductosPage() {
           </p>
         </div>
         {lowStockCount > 0 && (
-          <span className="rounded-full bg-rose-50 px-3 py-1.5 text-xs font-bold text-rose-500">
+          <span className="rounded-full bg-bg-[#F3E6EB] px-3 py-1.5 text-xs font-bold text-text-[#D64575]">
             ⚠ {lowStockCount} insumo(s) con stock bajo
           </span>
         )}
@@ -120,18 +120,18 @@ export default async function ProductosPage() {
       />
 
       {categories.length === 0 ? (
-        <p className="rounded-3xl border border-dashed border-pink-200 bg-white/70 p-10 text-center text-slate-500">
+        <p className="rounded-3xl border border-dashed border-border-[#E4C7D2] bg-[#FAF7F5]/70 p-10 text-center text-slate-500">
           Aún no hay categorías ni productos registrados.
         </p>
       ) : (
         categories.map((category) => (
           <section
             key={category.id}
-            className="overflow-hidden rounded-3xl border border-pink-100 bg-white shadow-sm"
+            className="overflow-hidden rounded-3xl border border-bg-[#DFF2EE] text-[#1F7A68] bg-[#FAF7F5] shadow-sm"
           >
-            <h2 className="border-b border-pink-50 px-5 py-4 text-base font-extrabold text-slate-800">
+            <h2 className="border-b border-bg-[#F3E6EB] px-5 py-4 text-base font-extrabold text-slate-800">
               {CATEGORY_EMOJI[category.name] ?? "🍽️"} {category.name}
-              <span className="ml-2 rounded-full bg-pink-50 px-2 py-0.5 text-xs font-bold text-pink-500">
+              <span className="ml-2 rounded-full bg-bg-[#F3E6EB] px-2 py-0.5 text-xs font-bold text-bg-[#D64575]">
                 {category.products.length} productos
               </span>
             </h2>
@@ -140,7 +140,7 @@ export default async function ProductosPage() {
                 Sin productos en esta categoría.
               </p>
             ) : (
-              <ul className="divide-y divide-pink-50">
+              <ul className="divide-y divide-bg-[#F3E6EB]">
                 {category.products.map((product) => {
                   const effectiveStock = calculateComboStock(product as { kind: string; stockQuantity: number; recipeItems: { ingredient: { currentStock: number }; quantity: number }[] });
                   const soldOut = !product.inStock || effectiveStock <= 0;
@@ -158,7 +158,7 @@ export default async function ProductosPage() {
                           <span
                             className={`rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide ${
                               product.kind === "COMBO"
-                                ? "bg-violet-50 text-violet-600"
+                                ? "bg-rose-50 text-rose-600"
                                 : "bg-sky-50 text-sky-600"
                             }`}
                           >
@@ -185,17 +185,17 @@ export default async function ProductosPage() {
                         <span
                           className={`rounded-full px-2.5 py-1 text-xs font-bold ${
                             soldOut
-                              ? "bg-rose-50 text-rose-500"
+                              ? "bg-bg-[#F3E6EB] text-text-[#D64575]"
                               : low
                               ? "bg-amber-50 text-amber-600"
-                              : "bg-emerald-50 text-emerald-600"
+                              : "bg-bg-[#F3E6EB] text-text-[#D64575]"
                           }`}
                         >
                           {soldOut
                             ? "Agotado"
                             : `${effectiveStock} ${product.unit}`}
                         </span>
-                        <span className="w-24 text-right font-extrabold text-pink-600">
+                        <span className="w-24 text-right font-extrabold text-text-[#D64575]">
                           {formatMoney(product.price)}
                         </span>
                       </div>

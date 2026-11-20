@@ -124,8 +124,8 @@ export function RecipeDialog({
         title="Editar receta / escandallo"
         className={`rounded-full px-3 py-1.5 text-xs font-bold transition ${
           recipe.length > 0
-            ? "bg-pink-50 text-pink-600 hover:bg-pink-100"
-            : "bg-slate-100 text-slate-500 hover:bg-pink-50 hover:text-pink-600"
+            ? "bg-bg-[#F3E6EB] text-text-[#D64575] hover:bg-bg-[#DFF2EE] text-[#1F7A68]"
+            : "bg-[#FDF8FC] text-slate-500 hover:bg-bg-[#F3E6EB] hover:text-text-[#D64575]"
         }`}
       >
         🧾 Receta{recipe.length > 0 ? ` (${recipe.length})` : ""}
@@ -137,7 +137,7 @@ export function RecipeDialog({
           onClick={() => !pending && setOpen(false)}
         >
           <div
-            className="flex max-h-[90vh] w-full max-w-lg flex-col rounded-3xl bg-white p-6 shadow-2xl"
+            className="flex max-h-[90vh] w-full max-w-lg flex-col rounded-3xl bg-[#FAF7F5] p-6 shadow-2xl"
             onClick={(event) => event.stopPropagation()}
           >
             <h3 className="text-lg font-extrabold text-slate-800">
@@ -157,7 +157,7 @@ export function RecipeDialog({
                 lines.map((line) => (
                   <div
                     key={line.key}
-                    className="flex items-center gap-2 rounded-2xl bg-rose-50/60 p-2"
+                    className="flex items-center gap-2 rounded-2xl bg-bg-[#F3E6EB]/60 p-2"
                   >
                     <select
                       value={line.ingredientId}
@@ -166,7 +166,7 @@ export function RecipeDialog({
                           ingredientId: Number(event.target.value),
                         })
                       }
-                      className="min-w-0 flex-1 rounded-lg border border-pink-100 bg-white px-2.5 py-2 text-sm font-semibold text-slate-700 outline-none focus:border-pink-300"
+                      className="min-w-0 flex-1 rounded-lg border border-bg-[#DFF2EE] text-[#1F7A68] bg-[#FAF7F5] px-2.5 py-2 text-sm font-semibold text-slate-700 outline-none focus:border-[#D5CECA]"
                     >
                       {ingredients.map((ingredient) => (
                         <option key={ingredient.id} value={ingredient.id}>
@@ -184,13 +184,13 @@ export function RecipeDialog({
                         updateLine(line.key, { quantity: event.target.value })
                       }
                       placeholder="Cant."
-                      className="w-20 rounded-lg border border-pink-100 bg-white px-2.5 py-2 text-right text-sm font-bold text-slate-700 outline-none focus:border-pink-300"
+                      className="w-20 rounded-lg border border-bg-[#DFF2EE] text-[#1F7A68] bg-[#FAF7F5] px-2.5 py-2 text-right text-sm font-bold text-slate-700 outline-none focus:border-[#D5CECA]"
                     />
                     <button
                       type="button"
                       aria-label="Quitar línea"
                       onClick={() => removeLine(line.key)}
-                      className="px-2 py-1 text-slate-400 transition hover:text-rose-500"
+                      className="px-2 py-1 text-slate-400 transition hover:text-text-[#D64575]"
                     >
                       ✕
                     </button>
@@ -203,7 +203,7 @@ export function RecipeDialog({
               type="button"
               onClick={addLine}
               disabled={ingredients.length === 0}
-              className="mt-2 w-full rounded-xl border-2 border-dashed border-pink-200 py-2 text-xs font-bold text-pink-500 transition enabled:hover:border-pink-300 enabled:hover:bg-pink-50 disabled:opacity-40"
+              className="mt-2 w-full rounded-xl border-2 border-dashed border-border-[#E4C7D2] py-2 text-xs font-bold text-bg-[#D64575] transition enabled:hover:border-[#D5CECA] enabled:hover:bg-bg-[#F3E6EB] disabled:opacity-40"
             >
               + Agregar insumo
             </button>
@@ -219,7 +219,7 @@ export function RecipeDialog({
                     onChange={(event) =>
                       setPackagingId(Number(event.target.value))
                     }
-                    className="min-w-0 flex-1 rounded-lg border border-sky-100 bg-white px-2.5 py-2 text-sm font-semibold text-slate-700 outline-none focus:border-sky-300"
+                    className="min-w-0 flex-1 rounded-lg border border-sky-100 bg-[#FAF7F5] px-2.5 py-2 text-sm font-semibold text-slate-700 outline-none focus:border-sky-300"
                   >
                     {packagingIngredients.map((ingredient) => (
                       <option key={ingredient.id} value={ingredient.id}>
@@ -235,7 +235,7 @@ export function RecipeDialog({
                     value={packagingQty}
                     onChange={(event) => setPackagingQty(event.target.value)}
                     aria-label="Cantidad de envases"
-                    className="w-16 rounded-lg border border-sky-100 bg-white px-2.5 py-2 text-right text-sm font-bold text-slate-700 outline-none focus:border-sky-300"
+                    className="w-16 rounded-lg border border-sky-100 bg-[#FAF7F5] px-2.5 py-2 text-right text-sm font-bold text-slate-700 outline-none focus:border-sky-300"
                   />
                   <button
                     type="button"
@@ -252,7 +252,7 @@ export function RecipeDialog({
               </div>
             )}
 
-            <div className="mt-3 flex items-center justify-between rounded-xl bg-slate-50 px-4 py-2.5 text-sm">
+            <div className="mt-3 flex items-center justify-between rounded-xl bg-[#FDF8FC] px-4 py-2.5 text-sm">
               <span className="font-semibold text-slate-500">
                 Costo por unidad vendida
               </span>
@@ -260,18 +260,18 @@ export function RecipeDialog({
                 {formatMoney(estimatedCost)}
               </span>
             </div>
-            <p className="mt-1 text-right text-xs font-semibold text-emerald-600">
+            <p className="mt-1 text-right text-xs font-semibold text-text-[#D64575]">
               Utilidad estimada:{" "}
               {formatMoney(product.price - estimatedCost)} / venta
             </p>
 
             {error && (
-              <p className="mt-2 rounded-xl bg-rose-50 px-4 py-2.5 text-xs font-semibold text-rose-600">
+              <p className="mt-2 rounded-xl bg-bg-[#F3E6EB] px-4 py-2.5 text-xs font-semibold text-text-[#BE3663]">
                 {error}
               </p>
             )}
             {savedMessage && (
-              <p className="mt-2 rounded-xl bg-emerald-50 px-4 py-2.5 text-xs font-semibold text-emerald-600">
+              <p className="mt-2 rounded-xl bg-bg-[#F3E6EB] px-4 py-2.5 text-xs font-semibold text-text-[#D64575]">
                 ✅ {savedMessage}
               </p>
             )}
@@ -281,7 +281,7 @@ export function RecipeDialog({
                 type="button"
                 disabled={pending}
                 onClick={() => setOpen(false)}
-                className="flex-1 rounded-2xl bg-slate-100 py-3 font-bold text-slate-500 transition hover:bg-slate-200 disabled:opacity-40"
+                className="flex-1 rounded-2xl bg-[#FDF8FC] py-3 font-bold text-slate-500 transition hover:bg-slate-200 disabled:opacity-40"
               >
                 Cerrar
               </button>
@@ -289,7 +289,7 @@ export function RecipeDialog({
                 type="button"
                 disabled={pending || ingredients.length === 0}
                 onClick={handleSave}
-                className="flex-[2] rounded-2xl bg-pink-500 py-3 font-extrabold text-white shadow-lg shadow-pink-100 transition enabled:hover:bg-pink-600 disabled:opacity-40"
+                className="flex-[2] rounded-2xl bg-bg-[#D64575] py-3 font-extrabold text-white shadow-lg shadow-bg-[#DFF2EE] text-[#1F7A68] transition enabled:hover:bg-text-[#D64575] disabled:opacity-40"
               >
                 {pending ? "Guardando…" : "Guardar receta"}
               </button>

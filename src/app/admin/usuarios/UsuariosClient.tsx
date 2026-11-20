@@ -121,8 +121,8 @@ export function UsuariosClient({ users, auditLogs }: { users: User[]; auditLogs:
 
   function getRoleBadge(role: string) {
     return role === "ADMIN" 
-      ? "bg-pink-100 text-pink-700" 
-      : "bg-emerald-100 text-emerald-700";
+      ? "bg-bg-[#DFF2EE] text-[#1F7A68] text-text-[#BE3663]" 
+      : "bg-bg-[#DFF2EE] text-[#1F7A68] text-text-[#BE3663]";
   }
 
   return (
@@ -142,7 +142,7 @@ export function UsuariosClient({ users, auditLogs }: { users: User[]; auditLogs:
           <button
             type="button"
             onClick={openCreateModal}
-            className="rounded-full bg-pink-500 px-4 py-2 text-sm font-bold text-white shadow transition hover:bg-pink-600"
+            className="rounded-full bg-bg-[#D64575] px-4 py-2 text-sm font-bold text-white shadow transition hover:bg-text-[#D64575]"
           >
             + Nuevo empleado
           </button>
@@ -153,7 +153,7 @@ export function UsuariosClient({ users, auditLogs }: { users: User[]; auditLogs:
         <button
           onClick={() => setActiveTab("users")}
           className={`rounded-full px-4 py-2 text-sm font-semibold transition ${
-            activeTab === "users" ? "bg-pink-500 text-white shadow" : "bg-white text-slate-600 shadow-sm hover:bg-pink-50"
+            activeTab === "users" ? "bg-bg-[#D64575] text-white shadow" : "bg-[#FAF7F5] text-slate-600 shadow-sm hover:bg-bg-[#F3E6EB]"
           }`}
         >
           Usuarios
@@ -161,7 +161,7 @@ export function UsuariosClient({ users, auditLogs }: { users: User[]; auditLogs:
         <button
           onClick={() => setActiveTab("audit")}
           className={`rounded-full px-4 py-2 text-sm font-semibold transition ${
-            activeTab === "audit" ? "bg-pink-500 text-white shadow" : "bg-white text-slate-600 shadow-sm hover:bg-pink-50"
+            activeTab === "audit" ? "bg-bg-[#D64575] text-white shadow" : "bg-[#FAF7F5] text-slate-600 shadow-sm hover:bg-bg-[#F3E6EB]"
           }`}
         >
           Auditoría
@@ -169,13 +169,13 @@ export function UsuariosClient({ users, auditLogs }: { users: User[]; auditLogs:
       </div>
 
       {activeTab === "users" && (
-        <section className="overflow-hidden rounded-3xl border border-pink-100 bg-white shadow-sm">
+        <section className="overflow-hidden rounded-3xl border border-bg-[#DFF2EE] text-[#1F7A68] bg-[#FAF7F5] shadow-sm">
           {users.length === 0 ? (
             <p className="px-5 py-12 text-center text-sm text-slate-400">No hay usuarios registrados</p>
           ) : (
             <table className="w-full text-sm">
               <thead>
-                <tr className="bg-pink-50/60 text-left text-xs uppercase tracking-wide text-slate-400">
+                <tr className="bg-bg-[#F3E6EB]/60 text-left text-xs uppercase tracking-wide text-slate-400">
                   <th className="px-5 py-2.5 font-bold">Usuario</th>
                   <th className="px-5 py-2.5 font-bold">Rol</th>
                   <th className="px-5 py-2.5 font-bold">Estado</th>
@@ -185,9 +185,9 @@ export function UsuariosClient({ users, auditLogs }: { users: User[]; auditLogs:
                   <th className="px-5 py-2.5 text-right font-bold">Acciones</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-pink-50">
+              <tbody className="divide-y divide-bg-[#F3E6EB]">
                 {users.map((user) => (
-                  <tr key={user.id} className={!user.isActive ? "opacity-50 bg-slate-50" : ""}>
+                  <tr key={user.id} className={!user.isActive ? "opacity-50 bg-[#FDF8FC]" : ""}>
                     <td className="px-5 py-3">
                       <p className="font-bold text-slate-700">{user.name}</p>
                       <p className="text-xs text-slate-400">{user.email}</p>
@@ -199,18 +199,18 @@ export function UsuariosClient({ users, auditLogs }: { users: User[]; auditLogs:
                     </td>
                     <td className="px-5 py-3">
                       <span className={`rounded-full px-2.5 py-0.5 text-xs font-bold ${
-                        user.isActive ? "bg-emerald-100 text-emerald-700" : "bg-rose-100 text-rose-700"
+                        user.isActive ? "bg-bg-[#DFF2EE] text-[#1F7A68] text-text-[#BE3663]" : "bg-bg-[#DFF2EE] text-[#1F7A68] text-rose-700"
                       }`}>
                         {user.isActive ? "Activo" : "Inactivo"}
                       </span>
                     </td>
                     <td className="px-5 py-3 text-slate-500">{formatDate(user.lastLoginAt)}</td>
                     <td className="px-5 py-3">
-                      <span className={user.failedLoginAttempts > 0 ? "text-rose-600 font-bold" : "text-slate-500"}>
+                      <span className={user.failedLoginAttempts > 0 ? "text-text-[#BE3663] font-bold" : "text-slate-500"}>
                         {user.failedLoginAttempts} / 5
                       </span>
                       {user.lockedUntil && new Date(user.lockedUntil) > new Date() && (
-                        <span className="ml-1 text-xs text-rose-600 font-bold">🔒 Bloqueado</span>
+                        <span className="ml-1 text-xs text-text-[#BE3663] font-bold">🔒 Bloqueado</span>
                       )}
                     </td>
                     <td className="px-5 py-3 text-slate-500">{formatDate(user.createdAt)}</td>
@@ -220,15 +220,15 @@ export function UsuariosClient({ users, auditLogs }: { users: User[]; auditLogs:
                           onClick={() => toggleActive(user)}
                           className={`rounded-full px-2.5 py-1 text-xs font-bold transition ${
                             user.isActive 
-                              ? "bg-rose-100 text-rose-600 hover:bg-rose-200" 
-                              : "bg-emerald-100 text-emerald-600 hover:bg-emerald-200"
+                              ? "bg-bg-[#DFF2EE] text-[#1F7A68] text-text-[#BE3663] hover:bg-border-[#E4C7D2]" 
+                              : "bg-bg-[#DFF2EE] text-[#1F7A68] text-text-[#D64575] hover:bg-border-[#E4C7D2]"
                           }`}
                         >
                           {user.isActive ? "Desactivar" : "Activar"}
                         </button>
                         <button
                           onClick={() => openEditModal(user)}
-                          className="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-bold text-slate-600 hover:bg-slate-200"
+                          className="rounded-full bg-[#FDF8FC] px-2.5 py-1 text-xs font-bold text-slate-600 hover:bg-slate-200"
                         >
                           Editar
                         </button>
@@ -243,13 +243,13 @@ export function UsuariosClient({ users, auditLogs }: { users: User[]; auditLogs:
       )}
 
       {activeTab === "audit" && (
-        <section className="overflow-hidden rounded-3xl border border-pink-100 bg-white shadow-sm">
+        <section className="overflow-hidden rounded-3xl border border-bg-[#DFF2EE] text-[#1F7A68] bg-[#FAF7F5] shadow-sm">
           {auditLogs.length === 0 ? (
             <p className="px-5 py-12 text-center text-sm text-slate-400">No hay registros de auditoría</p>
           ) : (
             <table className="w-full text-sm">
               <thead>
-                <tr className="bg-pink-50/60 text-left text-xs uppercase tracking-wide text-slate-400">
+                <tr className="bg-bg-[#F3E6EB]/60 text-left text-xs uppercase tracking-wide text-slate-400">
                   <th className="px-5 py-2.5 font-bold">Fecha</th>
                   <th className="px-5 py-2.5 font-bold">Usuario</th>
                   <th className="px-5 py-2.5 font-bold">Acción</th>
@@ -258,7 +258,7 @@ export function UsuariosClient({ users, auditLogs }: { users: User[]; auditLogs:
                   <th className="px-5 py-2.5 font-bold">IP</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-pink-50">
+              <tbody className="divide-y divide-bg-[#F3E6EB]">
                 {auditLogs.map((log) => (
                   <tr key={log.id}>
                     <td className="px-5 py-2.5 text-slate-500 whitespace-nowrap">{formatDate(log.createdAt)}</td>
@@ -285,12 +285,12 @@ export function UsuariosClient({ users, auditLogs }: { users: User[]; auditLogs:
 
       {showCreateModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 p-4 backdrop-blur-sm" onClick={() => setShowCreateModal(false)}>
-          <div className="w-full max-w-md rounded-3xl bg-white p-6 shadow-2xl" onClick={(e) => e.stopPropagation()}>
+          <div className="w-full max-w-md rounded-3xl bg-[#FAF7F5] p-6 shadow-2xl" onClick={(e) => e.stopPropagation()}>
             <h3 className="mb-4 text-xl font-extrabold text-slate-800">
               {editingUser ? "Editar empleado" : "Nuevo empleado"}
             </h3>
             <form onSubmit={handleSubmit} className="space-y-4">
-              {error && <p className="rounded-xl bg-rose-50 px-4 py-2.5 text-sm font-semibold text-rose-600">{error}</p>}
+              {error && <p className="rounded-xl bg-bg-[#F3E6EB] px-4 py-2.5 text-sm font-semibold text-text-[#BE3663]">{error}</p>}
               
               <div>
                 <label className="block text-sm font-semibold text-slate-600 mb-1">Nombre</label>
@@ -299,7 +299,7 @@ export function UsuariosClient({ users, auditLogs }: { users: User[]; auditLogs:
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   required
-                  className="w-full rounded-xl border border-pink-100 bg-white px-4 py-3 text-base outline-none focus:border-pink-300 focus:ring-2 focus:ring-pink-200"
+                  className="w-full rounded-xl border border-bg-[#DFF2EE] text-[#1F7A68] bg-[#FAF7F5] px-4 py-3 text-base outline-none focus:border-[#D5CECA] focus:ring-2 focus:ring-border-[#E4C7D2]"
                 />
               </div>
               
@@ -310,7 +310,7 @@ export function UsuariosClient({ users, auditLogs }: { users: User[]; auditLogs:
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   required
-                  className="w-full rounded-xl border border-pink-100 bg-white px-4 py-3 text-base outline-none focus:border-pink-300 focus:ring-2 focus:ring-pink-200"
+                  className="w-full rounded-xl border border-bg-[#DFF2EE] text-[#1F7A68] bg-[#FAF7F5] px-4 py-3 text-base outline-none focus:border-[#D5CECA] focus:ring-2 focus:ring-border-[#E4C7D2]"
                 />
               </div>
               
@@ -323,7 +323,7 @@ export function UsuariosClient({ users, auditLogs }: { users: User[]; auditLogs:
                   value={formData.password}
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                   required={!editingUser}
-                  className="w-full rounded-xl border border-pink-100 bg-white px-4 py-3 text-base outline-none focus:border-pink-300 focus:ring-2 focus:ring-pink-200"
+                  className="w-full rounded-xl border border-bg-[#DFF2EE] text-[#1F7A68] bg-[#FAF7F5] px-4 py-3 text-base outline-none focus:border-[#D5CECA] focus:ring-2 focus:ring-border-[#E4C7D2]"
                 />
               </div>
               
@@ -332,7 +332,7 @@ export function UsuariosClient({ users, auditLogs }: { users: User[]; auditLogs:
                 <select
                   value={formData.role}
                   onChange={(e) => setFormData({ ...formData, role: e.target.value })}
-                  className="w-full rounded-xl border border-pink-100 bg-white px-4 py-3 text-base outline-none focus:border-pink-300 focus:ring-2 focus:ring-pink-200"
+                  className="w-full rounded-xl border border-bg-[#DFF2EE] text-[#1F7A68] bg-[#FAF7F5] px-4 py-3 text-base outline-none focus:border-[#D5CECA] focus:ring-2 focus:ring-border-[#E4C7D2]"
                 >
                   <option value="CASHIER">Cajero/a</option>
                   <option value="ADMIN">Administrador</option>
@@ -345,7 +345,7 @@ export function UsuariosClient({ users, auditLogs }: { users: User[]; auditLogs:
                   id="isActive"
                   checked={formData.isActive}
                   onChange={(e) => setFormData({ ...formData, isActive: e.target.checked })}
-                  className="h-4 w-4 rounded border-pink-300 text-pink-600 focus:ring-pink-500"
+                  className="h-4 w-4 rounded border-[#D5CECA] text-text-[#D64575] focus:ring-bg-[#D64575]"
                 />
                 <label htmlFor="isActive" className="text-sm font-semibold text-slate-600">Usuario activo</label>
               </div>
@@ -354,14 +354,14 @@ export function UsuariosClient({ users, auditLogs }: { users: User[]; auditLogs:
                 <button
                   type="button"
                   onClick={() => setShowCreateModal(false)}
-                  className="flex-1 rounded-2xl bg-slate-100 py-3 font-bold text-slate-500 transition hover:bg-slate-200 disabled:opacity-40"
+                  className="flex-1 rounded-2xl bg-[#FDF8FC] py-3 font-bold text-slate-500 transition hover:bg-slate-200 disabled:opacity-40"
                   disabled={submitting}
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
-                  className="flex-[2] rounded-2xl bg-pink-500 py-3 font-extrabold text-white shadow-lg shadow-pink-200 transition hover:bg-pink-600 disabled:opacity-40"
+                  className="flex-[2] rounded-2xl bg-bg-[#D64575] py-3 font-extrabold text-white shadow-lg shadow-border-[#E4C7D2] transition hover:bg-text-[#D64575] disabled:opacity-40"
                   disabled={submitting}
                 >
                   {submitting ? "Guardando…" : editingUser ? "Actualizar" : "Crear"}

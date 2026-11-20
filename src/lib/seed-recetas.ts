@@ -347,7 +347,7 @@ const RECETAS_COMPLETAS = [
 async function seedRecetas() {
   console.log("🌱 Iniciando seed de recetas...");
 
-  const categoriesMap: Record<string, string> = {};
+  const categoriesMap: Record<string, number> = {};
 
   for (const catName of ["Bebidas", "Copas", "Emplatados", "Infantiles", "Conos y Canastas", "Extras"]) {
     const category = await prisma.category.upsert({

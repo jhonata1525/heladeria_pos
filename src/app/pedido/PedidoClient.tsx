@@ -229,25 +229,25 @@ export function PedidoClient({
   function getStatusBadge(status: string) {
     const styles: Record<string, string> = {
       PENDING: "bg-amber-100 text-amber-700",
-      PAID: "bg-emerald-100 text-emerald-700",
-      CANCELLED: "bg-rose-100 text-rose-700",
+      PAID: "bg-bg-[#DFF2EE] text-[#1F7A68] text-text-[#BE3663]",
+      CANCELLED: "bg-bg-[#DFF2EE] text-[#1F7A68] text-rose-700",
     };
-    return styles[status] || "bg-slate-100 text-slate-700";
+    return styles[status] || "bg-[#FDF8FC] text-slate-700";
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-pink-50 via-rose-50 to-amber-50">
-      <header className="sticky top-0 z-40 border-b border-pink-100 bg-white/95 shadow-sm backdrop-blur">
+    <div className="min-h-screen bg-gradient-to-b from-bg-[#F3E6EB] via-bg-[#F3E6EB] to-[#F4F8F6]">
+      <header className="sticky top-0 z-40 border-b border-bg-[#DFF2EE] text-[#1F7A68] bg-[#FAF7F5]/95 shadow-sm backdrop-blur">
         <div className="mx-auto flex max-w-md items-center justify-between gap-3 px-4 py-3">
           <div className="flex items-center gap-2 text-lg font-bold tracking-tight text-slate-800">
             <span className="text-2xl">🍦</span>
-            <span>Mesero: <span className="text-pink-500">{userName}</span></span>
+            <span>Mesero: <span className="text-bg-[#D64575]">{userName}</span></span>
           </div>
           <div className="flex items-center gap-2">
             {lines.length > 0 && (
               <button
                 onClick={openCheckout}
-                className="flex items-center gap-1.5 rounded-full bg-pink-500 px-3 py-2 text-sm font-bold text-white shadow transition hover:bg-pink-600"
+                className="flex items-center gap-1.5 rounded-full bg-bg-[#D64575] px-3 py-2 text-sm font-bold text-white shadow transition hover:bg-text-[#D64575]"
               >
                 <span>🛒</span>
                 <span>{itemCount}</span>
@@ -257,7 +257,7 @@ export function PedidoClient({
           </div>
         </div>
 
-        <div className="flex gap-1 px-4 pb-3 border-b border-pink-100">
+        <div className="flex gap-1 px-4 pb-3 border-b border-bg-[#DFF2EE] text-[#1F7A68]">
           {[
             { key: "nuevo", label: "🆕 Nuevo", count: itemCount },
             { key: "mis-pedidos", label: "📋 Mis pedidos", count: myPendingOrders.length },
@@ -267,13 +267,13 @@ export function PedidoClient({
               onClick={() => setActiveTab(tab.key as any)}
               className={`flex-1 flex items-center justify-center gap-1.5 rounded-t-xl px-3 py-2 text-sm font-semibold transition ${
                 activeTab === tab.key
-                  ? "bg-white text-pink-600 shadow"
-                  : "text-slate-500 hover:bg-pink-50"
+                  ? "bg-[#FAF7F5] text-text-[#D64575] shadow"
+                  : "text-slate-500 hover:bg-bg-[#F3E6EB]"
               }`}
             >
               {tab.label}
               {tab.count > 0 && (
-                <span className="flex h-5 w-5 items-center justify-center rounded-full bg-pink-500 text-xs font-bold text-white">
+                <span className="flex h-5 w-5 items-center justify-center rounded-full bg-bg-[#D64575] text-xs font-bold text-white">
                   {tab.count}
                 </span>
               )}
@@ -291,15 +291,15 @@ export function PedidoClient({
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Buscar producto… 🍦"
-                className="w-full rounded-full border border-pink-100 bg-white px-5 py-3 text-base shadow-sm outline-none placeholder:text-slate-400 focus:border-pink-300 focus:ring-2 focus:ring-pink-200"
+                className="w-full rounded-full border border-bg-[#DFF2EE] text-[#1F7A68] bg-[#FAF7F5] px-5 py-3 text-base shadow-sm outline-none placeholder:text-slate-400 focus:border-[#D5CECA] focus:ring-2 focus:ring-border-[#E4C7D2]"
               />
               <div className="flex overflow-x-auto gap-2 pb-2 -mx-4 px-4">
                 <button
                   onClick={() => setSelectedCategory(null)}
                   className={`whitespace-nowrap rounded-full px-4 py-2 text-sm font-semibold transition ${
                     selectedCategory === null
-                      ? "bg-pink-500 text-white shadow"
-                      : "bg-white text-slate-600 shadow-sm hover:bg-pink-50"
+                      ? "bg-bg-[#D64575] text-white shadow"
+                      : "bg-[#FAF7F5] text-slate-600 shadow-sm hover:bg-bg-[#F3E6EB]"
                   }`}
                 >
                   Todos
@@ -310,8 +310,8 @@ export function PedidoClient({
                     onClick={() => setSelectedCategory(category.id)}
                     className={`whitespace-nowrap rounded-full px-4 py-2 text-sm font-semibold transition ${
                       selectedCategory === category.id
-                        ? "bg-pink-500 text-white shadow"
-                        : "bg-white text-slate-600 shadow-sm hover:bg-pink-50"
+                        ? "bg-bg-[#D64575] text-white shadow"
+                        : "bg-[#FAF7F5] text-slate-600 shadow-sm hover:bg-bg-[#F3E6EB]"
                     }`}
                   >
                     {category.name}
@@ -321,7 +321,7 @@ export function PedidoClient({
             </div>
 
             {visibleProducts.length === 0 ? (
-              <div className="rounded-3xl border border-dashed border-pink-200 bg-white/70 p-12 text-center">
+              <div className="rounded-3xl border border-dashed border-border-[#E4C7D2] bg-[#FAF7F5]/70 p-12 text-center">
                 <p className="text-4xl">🍦</p>
                 <p className="mt-2 font-semibold text-slate-500">No hay productos disponibles</p>
               </div>
@@ -338,12 +338,12 @@ export function PedidoClient({
                       onClick={() => addProduct(product)}
                       className={`relative flex min-h-[120px] flex-col justify-between rounded-2xl border p-3 text-left shadow-sm transition ${
                         soldOut
-                          ? "cursor-not-allowed border-slate-100 bg-slate-50 opacity-60"
-                          : "border-pink-100 bg-white hover:-translate-y-0.5 hover:border-pink-300 hover:shadow-md active:scale-95"
-                      } ${inCart > 0 ? "ring-2 ring-pink-300" : ""}`}
+                          ? "cursor-not-allowed border-slate-100 bg-[#FDF8FC] opacity-60"
+                          : "border-bg-[#DFF2EE] text-[#1F7A68] bg-[#FAF7F5] hover:-translate-y-0.5 hover:border-[#D5CECA] hover:shadow-md active:scale-95"
+                      } ${inCart > 0 ? "ring-2 ring-[#D64575]/40" : ""}`}
                     >
                       {inCart > 0 && (
-                        <span className="absolute right-2 top-2 flex h-6 w-6 items-center justify-center rounded-full bg-pink-500 text-xs font-bold text-white">
+                        <span className="absolute right-2 top-2 flex h-6 w-6 items-center justify-center rounded-full bg-bg-[#D64575] text-xs font-bold text-white">
                           {inCart}
                         </span>
                       )}
@@ -358,12 +358,12 @@ export function PedidoClient({
                         {product.name}
                       </span>
                       <span className="mt-2 flex items-end justify-between gap-1">
-                        <span className="text-base font-extrabold text-pink-600">
+                        <span className="text-base font-extrabold text-text-[#D64575]">
                           {formatMoney(product.price)}
                         </span>
                         <span
                           className={`text-[11px] font-semibold ${
-                            soldOut ? "text-rose-400" : "text-emerald-600"
+                            soldOut ? "text-rose-400" : "text-text-[#D64575]"
                           }`}
                         >
                           {soldOut ? "Agotado" : `${product.stockQuantity} ${product.unit}`}
@@ -380,7 +380,7 @@ export function PedidoClient({
         {activeTab === "mis-pedidos" && (
           <div className="space-y-3">
             {myPendingOrders.length === 0 ? (
-              <div className="rounded-3xl border border-dashed border-pink-200 bg-white/70 p-12 text-center">
+              <div className="rounded-3xl border border-dashed border-border-[#E4C7D2] bg-[#FAF7F5]/70 p-12 text-center">
                 <p className="text-4xl">📋</p>
                 <p className="mt-2 font-semibold text-slate-500">No tienes pedidos pendientes</p>
                 <p className="text-sm text-slate-400">Los pedidos que tomes aparecerán aquí</p>
@@ -389,7 +389,7 @@ export function PedidoClient({
               myPendingOrders.map((order) => (
                 <div
                   key={order.id}
-                  className="rounded-2xl border border-pink-100 bg-white p-4 shadow-sm"
+                  className="rounded-2xl border border-bg-[#DFF2EE] text-[#1F7A68] bg-[#FAF7F5] p-4 shadow-sm"
                 >
                   <div className="flex items-start justify-between gap-2 mb-2">
                     <div>
@@ -411,7 +411,7 @@ export function PedidoClient({
                   </ul>
                   <div className="mt-2 flex justify-between text-slate-500">
                     <span>Total</span>
-                    <span className="font-extrabold text-pink-600">{formatMoney(order.total)}</span>
+                    <span className="font-extrabold text-text-[#D64575]">{formatMoney(order.total)}</span>
                   </div>
                   {!hasOpenRegister && order.status === "PENDING" && (
                     <p className="mt-2 text-xs text-amber-600">⚠️ Caja cerrada: no se puede cobrar aún</p>
@@ -438,7 +438,7 @@ export function PedidoClient({
                           }
                         }}
                         disabled={submitting}
-                        className="flex-1 rounded-xl bg-emerald-500 py-2 text-sm font-bold text-white transition hover:bg-emerald-600 disabled:opacity-40"
+                        className="flex-1 rounded-xl bg-bg-[#D64575] py-2 text-sm font-bold text-white transition hover:bg-text-[#D64575] disabled:opacity-40"
                       >
                         💵 Efectivo
                       </button>
@@ -451,13 +451,13 @@ export function PedidoClient({
         )}
 
         {error && !checkoutOpen && (
-          <div className="fixed bottom-24 left-4 right-4 max-w-md mx-auto z-50 rounded-xl bg-rose-50 px-4 py-3 text-sm font-semibold text-rose-600 shadow-lg animate-slide-up">
+          <div className="fixed bottom-24 left-4 right-4 max-w-md mx-auto z-50 rounded-xl bg-bg-[#F3E6EB] px-4 py-3 text-sm font-semibold text-text-[#BE3663] shadow-lg animate-slide-up">
             {error}
           </div>
         )}
 
         {success && (
-          <div className="fixed bottom-24 left-4 right-4 max-w-md mx-auto z-50 rounded-xl bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-600 shadow-lg animate-slide-up">
+          <div className="fixed bottom-24 left-4 right-4 max-w-md mx-auto z-50 rounded-xl bg-bg-[#F3E6EB] px-4 py-3 text-sm font-semibold text-text-[#D64575] shadow-lg animate-slide-up">
             ✅ Pedido #{itemCount} enviado a cocina - Mesa {tableNumber}
           </div>
         )}
@@ -469,7 +469,7 @@ export function PedidoClient({
           onClick={() => !submitting && setCheckoutOpen(false)}
         >
           <div
-            className="w-full max-w-md rounded-t-3xl bg-white p-6 shadow-2xl animate-slide-up"
+            className="w-full max-w-md rounded-t-3xl bg-[#FAF7F5] p-6 shadow-2xl animate-slide-up"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between mb-4">
@@ -483,7 +483,7 @@ export function PedidoClient({
             </div>
 
             <p className="mb-4 text-sm text-slate-500">
-              Total: <span className="font-extrabold text-pink-600">{formatMoney(subtotal)}</span>
+              Total: <span className="font-extrabold text-text-[#D64575]">{formatMoney(subtotal)}</span>
             </p>
 
             <div className="mb-4 space-y-3">
@@ -495,7 +495,7 @@ export function PedidoClient({
                   onChange={(e) => setCustomerName(e.target.value)}
                   placeholder="Nombre del cliente"
                   required
-                  className="w-full rounded-xl border border-pink-100 bg-white px-4 py-3 text-base outline-none focus:border-pink-300 focus:ring-2 focus:ring-pink-200"
+                  className="w-full rounded-xl border border-bg-[#DFF2EE] text-[#1F7A68] bg-[#FAF7F5] px-4 py-3 text-base outline-none focus:border-[#D5CECA] focus:ring-2 focus:ring-border-[#E4C7D2]"
                 />
               </div>
               <div>
@@ -507,7 +507,7 @@ export function PedidoClient({
                   placeholder="Ej: 5"
                   min="1"
                   required
-                  className="w-full rounded-xl border border-pink-100 bg-white px-4 py-3 text-base outline-none focus:border-pink-300 focus:ring-2 focus:ring-pink-200"
+                  className="w-full rounded-xl border border-bg-[#DFF2EE] text-[#1F7A68] bg-[#FAF7F5] px-4 py-3 text-base outline-none focus:border-[#D5CECA] focus:ring-2 focus:ring-border-[#E4C7D2]"
                 />
               </div>
               <div>
@@ -517,14 +517,14 @@ export function PedidoClient({
                   onChange={(e) => setNotes(e.target.value)}
                   placeholder="Ej: Sin azúcar, alergia a nueces..."
                   rows={2}
-                  className="w-full rounded-xl border border-pink-100 bg-white px-4 py-3 text-base outline-none focus:border-pink-300 focus:ring-2 focus:ring-pink-200"
+                  className="w-full rounded-xl border border-bg-[#DFF2EE] text-[#1F7A68] bg-[#FAF7F5] px-4 py-3 text-base outline-none focus:border-[#D5CECA] focus:ring-2 focus:ring-border-[#E4C7D2]"
                 />
               </div>
             </div>
 
             <div className="mb-4 space-y-2 max-h-40 overflow-y-auto">
               {lines.map((line) => (
-                <div key={line.product.id} className="flex items-center justify-between gap-2 py-2 border-b border-pink-50">
+                <div key={line.product.id} className="flex items-center justify-between gap-2 py-2 border-b border-bg-[#F3E6EB]">
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-bold text-slate-700 truncate">{line.product.name}</p>
                     <p className="text-xs text-slate-500">
@@ -535,14 +535,14 @@ export function PedidoClient({
                   <div className="flex items-center gap-2">
                     <button
                       onClick={() => setQuantity(line.product.id, round2(line.quantity - 1))}
-                      className="h-8 w-8 rounded-full bg-slate-100 text-lg font-bold text-pink-500 transition hover:bg-slate-200"
+                      className="h-8 w-8 rounded-full bg-[#FDF8FC] text-lg font-bold text-bg-[#D64575] transition hover:bg-slate-200"
                     >
                       −
                     </button>
                     <span className="w-8 text-center text-sm font-extrabold">{line.quantity}</span>
                     <button
                       onClick={() => addProduct(line.product)}
-                      className="h-8 w-8 rounded-full bg-slate-100 text-lg font-bold text-pink-500 transition hover:bg-slate-200"
+                      className="h-8 w-8 rounded-full bg-[#FDF8FC] text-lg font-bold text-bg-[#D64575] transition hover:bg-slate-200"
                     >
                       +
                     </button>
@@ -551,13 +551,13 @@ export function PedidoClient({
               ))}
             </div>
 
-            <div className="flex justify-between text-xl font-extrabold text-slate-800 border-t border-pink-50 pt-3 mb-4">
+            <div className="flex justify-between text-xl font-extrabold text-slate-800 border-t border-bg-[#F3E6EB] pt-3 mb-4">
               <span>Total</span>
-              <span className="text-pink-600">{formatMoney(subtotal)}</span>
+              <span className="text-text-[#D64575]">{formatMoney(subtotal)}</span>
             </div>
 
             {error && (
-              <p className="mb-3 rounded-xl bg-rose-50 px-4 py-2.5 text-sm font-semibold text-rose-600">
+              <p className="mb-3 rounded-xl bg-bg-[#F3E6EB] px-4 py-2.5 text-sm font-semibold text-text-[#BE3663]">
                 {error}
               </p>
             )}
@@ -566,7 +566,7 @@ export function PedidoClient({
               <button
                 onClick={() => setCheckoutOpen(false)}
                 disabled={submitting}
-                className="flex-1 rounded-2xl bg-slate-100 py-3 font-bold text-slate-500 transition hover:bg-slate-200 disabled:opacity-40"
+                className="flex-1 rounded-2xl bg-[#FDF8FC] py-3 font-bold text-slate-500 transition hover:bg-slate-200 disabled:opacity-40"
               >
                 Seguir agregando
               </button>
@@ -581,7 +581,7 @@ export function PedidoClient({
                 <button
                   onClick={() => submitOrder("PAID")}
                   disabled={submitting || !customerName.trim() || !tableNumber.trim()}
-                  className="flex-[2] rounded-2xl bg-emerald-500 py-3 font-extrabold text-white shadow-lg shadow-emerald-200 transition enabled:hover:bg-emerald-600 disabled:opacity-40"
+                  className="flex-[2] rounded-2xl bg-bg-[#D64575] py-3 font-extrabold text-white shadow-lg shadow-border-[#E4C7D2] transition enabled:hover:bg-text-[#D64575] disabled:opacity-40"
                 >
                   💳 Cobrar ya
                 </button>

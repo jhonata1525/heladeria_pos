@@ -31,13 +31,13 @@ export function PedidosClient({ orders }: PedidosClientProps) {
         </p>
       </header>
 
-      <section className="overflow-hidden rounded-3xl border border-pink-100 bg-white shadow-sm">
+      <section className="overflow-hidden rounded-3xl border border-bg-[#DFF2EE] text-[#1F7A68] bg-[#FAF7F5] shadow-sm">
         {orders.length === 0 ? (
           <p className="px-5 py-10 text-center text-slate-400">No hay pedidos registrados</p>
         ) : (
           <table className="w-full text-sm">
             <thead>
-              <tr className="bg-pink-50/60 text-left text-xs uppercase tracking-wide text-slate-400">
+              <tr className="bg-bg-[#F3E6EB]/60 text-left text-xs uppercase tracking-wide text-slate-400">
                 <th className="px-5 py-2.5 font-bold">#</th>
                 <th className="px-5 py-2.5 font-bold">Fecha</th>
                 <th className="px-5 py-2.5 font-bold">Cliente</th>
@@ -48,7 +48,7 @@ export function PedidosClient({ orders }: PedidosClientProps) {
                 <th className="px-5 py-2.5 font-bold">Acciones</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-pink-50">
+            <tbody className="divide-y divide-bg-[#F3E6EB]">
               {orders.map((order) => (
                 <tr key={order.id}>
                   <td className="px-5 py-3 font-mono text-slate-500">{order.orderNumber}</td>
@@ -62,7 +62,7 @@ export function PedidosClient({ orders }: PedidosClientProps) {
                   <td className="px-5 py-3 text-slate-600">
                     {order.items.map((i) => i.product.name).join(", ")}
                   </td>
-                  <td className="px-5 py-3 text-right font-extrabold text-pink-600">
+                  <td className="px-5 py-3 text-right font-extrabold text-text-[#D64575]">
                     {formatMoney(order.total)}
                   </td>
                   <td className="px-5 py-3">
@@ -88,10 +88,10 @@ export function PedidosClient({ orders }: PedidosClientProps) {
 function OrderStatusBadge({ status }: { status: string }) {
   const config: Record<string, { label: string; class: string }> = {
     PENDING: { label: "⏳ Pendiente", class: "bg-amber-50 text-amber-600" },
-    PAID: { label: "✅ Pagado", class: "bg-emerald-50 text-emerald-600" },
-    CANCELLED: { label: "❌ Cancelado", class: "bg-rose-50 text-rose-600" },
+    PAID: { label: "✅ Pagado", class: "bg-bg-[#F3E6EB] text-text-[#D64575]" },
+    CANCELLED: { label: "❌ Cancelado", class: "bg-bg-[#F3E6EB] text-text-[#BE3663]" },
   };
-  const c = config[status] ?? { label: status, class: "bg-slate-50 text-slate-600" };
+  const c = config[status] ?? { label: status, class: "bg-[#FDF8FC] text-slate-600" };
   return (
     <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-bold ${c.class}`}>
       {c.label}
@@ -118,7 +118,7 @@ function DeleteOrderButton({
     <form action={`/api/admin/orders/${orderId}/delete`} method="POST">
       <button
         type="submit"
-        className="rounded-full bg-rose-50 px-3 py-1 text-xs font-bold text-rose-600 hover:bg-rose-100 transition"
+        className="rounded-full bg-bg-[#F3E6EB] px-3 py-1 text-xs font-bold text-text-[#BE3663] hover:bg-bg-[#DFF2EE] text-[#1F7A68] transition"
         onClick={(e) => {
           if (!confirm(`¿Eliminar pedido #${orderNumber}? Esta acción no se puede deshacer.`)) {
             e.preventDefault();

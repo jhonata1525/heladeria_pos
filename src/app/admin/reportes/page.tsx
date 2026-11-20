@@ -35,7 +35,7 @@ export default async function ReportesPage({
         </div>
         <a
           href={`/admin/reportes/export?rango=${report.range}`}
-          className="rounded-full bg-emerald-600 px-4 py-2 text-sm font-bold text-white shadow transition hover:bg-emerald-700"
+          className="rounded-full bg-text-[#D64575] px-4 py-2 text-sm font-bold text-white shadow transition hover:bg-text-[#BE3663]"
         >
           ⬇ Exportar a Excel / CSV
         </a>
@@ -48,8 +48,8 @@ export default async function ReportesPage({
             href={`?rango=${range.key}`}
             className={`rounded-full px-4 py-2 text-sm font-semibold transition ${
               range.key === report.range
-                ? "bg-pink-500 text-white shadow"
-                : "bg-white text-slate-600 shadow-sm hover:bg-pink-50"
+                ? "bg-bg-[#D64575] text-white shadow"
+                : "bg-[#FAF7F5] text-slate-600 shadow-sm hover:bg-bg-[#F3E6EB]"
             }`}
           >
             {range.label}
@@ -73,7 +73,7 @@ export default async function ReportesPage({
         <StatCard
           label="Utilidad neta real"
           value={formatMoney(report.netProfit)}
-          accent="border-emerald-200 bg-emerald-50"
+          accent="border-border-[#E4C7D2] bg-bg-[#F3E6EB]"
         />
       </section>
 
@@ -82,8 +82,8 @@ export default async function ReportesPage({
         de insumos − Gastos de caja chica.
       </p>
 
-      <section className="overflow-hidden rounded-3xl border border-pink-100 bg-white shadow-sm">
-        <h2 className="border-b border-pink-50 px-5 py-4 text-base font-extrabold text-slate-800">
+      <section className="overflow-hidden rounded-3xl border border-bg-[#DFF2EE] text-[#1F7A68] bg-[#FAF7F5] shadow-sm">
+        <h2 className="border-b border-bg-[#F3E6EB] px-5 py-4 text-base font-extrabold text-slate-800">
           🏆 Productos más vendidos
         </h2>
         {report.topProducts.length === 0 ? (
@@ -93,14 +93,14 @@ export default async function ReportesPage({
         ) : (
           <table className="w-full text-sm">
             <thead>
-              <tr className="bg-pink-50/60 text-left text-xs uppercase tracking-wide text-slate-400">
+              <tr className="bg-bg-[#F3E6EB]/60 text-left text-xs uppercase tracking-wide text-slate-400">
                 <th className="px-5 py-2.5 font-bold">#</th>
                 <th className="px-5 py-2.5 font-bold">Producto</th>
                 <th className="px-5 py-2.5 text-right font-bold">Vendidos</th>
                 <th className="px-5 py-2.5 text-right font-bold">Ingresos</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-pink-50">
+            <tbody className="divide-y divide-bg-[#F3E6EB]">
               {report.topProducts.slice(0, 10).map((product, index) => (
                 <tr key={product.productId}>
                   <td className="px-5 py-2.5 font-extrabold text-slate-300">
@@ -113,7 +113,7 @@ export default async function ReportesPage({
                   <td className="px-5 py-2.5 text-right font-semibold text-slate-600">
                     {product.quantity}
                   </td>
-                  <td className="px-5 py-2.5 text-right font-extrabold text-pink-600">
+                  <td className="px-5 py-2.5 text-right font-extrabold text-text-[#D64575]">
                     {formatMoney(product.revenue)}
                   </td>
                 </tr>
@@ -123,8 +123,8 @@ export default async function ReportesPage({
         )}
       </section>
 
-      <section className="overflow-hidden rounded-3xl border border-pink-100 bg-white shadow-sm">
-        <h2 className="border-b border-pink-50 px-5 py-4 text-base font-extrabold text-slate-800">
+      <section className="overflow-hidden rounded-3xl border border-bg-[#DFF2EE] text-[#1F7A68] bg-[#FAF7F5] shadow-sm">
+        <h2 className="border-b border-bg-[#F3E6EB] px-5 py-4 text-base font-extrabold text-slate-800">
           🔍 Descuadres de caja
         </h2>
         {report.cashDiscrepancies.length === 0 ? (
@@ -132,7 +132,7 @@ export default async function ReportesPage({
             Sin descuadres en este periodo. ¡Cajas cuadradas! ✅
           </p>
         ) : (
-          <ul className="divide-y divide-pink-50">
+          <ul className="divide-y divide-bg-[#F3E6EB]">
             {report.cashDiscrepancies.map((register) => (
               <li
                 key={register.id}
@@ -150,7 +150,7 @@ export default async function ReportesPage({
                   className={`rounded-full px-3 py-1 text-xs font-bold ${
                     register.difference > 0
                       ? "bg-sky-50 text-sky-600"
-                      : "bg-rose-50 text-rose-500"
+                      : "bg-bg-[#F3E6EB] text-text-[#D64575]"
                   }`}
                 >
                   {register.difference > 0 ? "Sobrante" : "Faltante"} de{" "}
@@ -177,7 +177,7 @@ function StatCard({
 }) {
   return (
     <div
-      className={`rounded-2xl border p-4 shadow-sm ${accent ?? "border-pink-100 bg-white"}`}
+      className={`rounded-2xl border p-4 shadow-sm ${accent ?? "border-bg-[#DFF2EE] text-[#1F7A68] bg-[#FAF7F5]"}`}
     >
       <p className="text-xs font-bold uppercase tracking-wide text-slate-400">
         {label}

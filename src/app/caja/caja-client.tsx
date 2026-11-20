@@ -26,14 +26,14 @@ function Feedback({ state }: { state: CajaActionState | null }) {
   if (!state) return null;
   if (state.error) {
     return (
-      <p className="rounded-xl bg-rose-50 px-4 py-2.5 text-sm font-semibold text-rose-600">
+      <p className="rounded-xl bg-bg-[#F3E6EB] px-4 py-2.5 text-sm font-semibold text-text-[#BE3663]">
         {state.error}
       </p>
     );
   }
   if (state.message) {
     return (
-      <p className="rounded-xl bg-emerald-50 px-4 py-2.5 text-sm font-semibold text-emerald-600">
+      <p className="rounded-xl bg-bg-[#F3E6EB] px-4 py-2.5 text-sm font-semibold text-text-[#D64575]">
         {state.message}
       </p>
     );
@@ -53,7 +53,7 @@ function StatCard({
   return (
     <div
       className={`rounded-2xl border p-4 shadow-sm ${
-        accent ?? "border-pink-100 bg-white"
+        accent ?? "border-bg-[#DFF2EE] text-[#1F7A68] bg-[#FAF7F5]"
       }`}
     >
       <p className="text-xs font-bold uppercase tracking-wide text-slate-400">
@@ -93,7 +93,7 @@ export function CajaClient({
     liveDifference === null
       ? null
       : liveDifference === 0
-        ? { text: "✅ Caja cuadrada", cls: "bg-emerald-50 text-emerald-600" }
+        ? { text: "✅ Caja cuadrada", cls: "bg-bg-[#F3E6EB] text-text-[#D64575]" }
         : liveDifference > 0
           ? {
               text: `🔺 Sobrante de ${formatMoney(liveDifference)}`,
@@ -101,7 +101,7 @@ export function CajaClient({
             }
           : {
               text: `🔻 Faltante de ${formatMoney(-liveDifference)}`,
-              cls: "bg-rose-50 text-rose-600",
+              cls: "bg-bg-[#F3E6EB] text-text-[#BE3663]",
             };
 
   return (
@@ -119,7 +119,7 @@ export function CajaClient({
       <Feedback state={closeState} />
 
       {!summary ? (
-        <section className="rounded-3xl border border-pink-100 bg-white p-8 shadow-lg">
+        <section className="rounded-3xl border border-bg-[#DFF2EE] text-[#1F7A68] bg-[#FAF7F5] p-8 shadow-lg">
           <h2 className="text-xl font-extrabold text-slate-800">🔓 Abrir turno</h2>
           <p className="mt-1 mb-5 text-sm text-slate-500">
             Registra el efectivo con el que inicias el día en caja.
@@ -135,14 +135,14 @@ export function CajaClient({
                 step="any"
                 required
                 placeholder="Ej: 100000"
-                className="mt-1 w-full rounded-xl border border-pink-100 bg-rose-50/50 px-4 py-3 text-2xl font-extrabold outline-none focus:border-pink-300 focus:ring-2 focus:ring-pink-200"
+                className="mt-1 w-full rounded-xl border border-bg-[#DFF2EE] text-[#1F7A68] bg-bg-[#F3E6EB]/50 px-4 py-3 text-2xl font-extrabold outline-none focus:border-[#D5CECA] focus:ring-2 focus:ring-border-[#E4C7D2]"
               />
             </label>
             <Feedback state={openState} />
             <button
               type="submit"
               disabled={openPending}
-              className="w-full rounded-2xl bg-emerald-500 py-3.5 text-base font-extrabold text-white shadow-lg shadow-emerald-100 transition enabled:hover:bg-emerald-600 disabled:opacity-40"
+              className="w-full rounded-2xl bg-bg-[#D64575] py-3.5 text-base font-extrabold text-white shadow-lg shadow-bg-[#DFF2EE] text-[#1F7A68] transition enabled:hover:bg-text-[#D64575] disabled:opacity-40"
             >
               {openPending ? "Abriendo…" : "Abrir turno"}
             </button>
@@ -153,7 +153,7 @@ export function CajaClient({
           <section>
             <h2 className="mb-3 flex items-center justify-between text-lg font-extrabold text-slate-800">
               📊 Turno actual
-              <span className="rounded-full bg-emerald-100 px-3 py-1 text-xs font-bold uppercase tracking-wide text-emerald-600">
+              <span className="rounded-full bg-bg-[#DFF2EE] text-[#1F7A68] px-3 py-1 text-xs font-bold uppercase tracking-wide text-text-[#D64575]">
                 Abierto
               </span>
             </h2>
@@ -164,18 +164,18 @@ export function CajaClient({
               <StatCard
                 label="Gastos caja chica"
                 value={`−${formatMoney(summary.expensesTotal)}`}
-                accent="border-rose-100 bg-rose-50"
+                accent="border-bg-[#DFF2EE] text-[#1F7A68] bg-bg-[#F3E6EB]"
               />
               <StatCard
                 label="Efectivo esperado"
                 value={formatMoney(summary.expectedCash)}
-                accent="border-emerald-200 bg-emerald-50"
+                accent="border-border-[#E4C7D2] bg-bg-[#F3E6EB]"
               />
             </div>
           </section>
 
           <section className="grid gap-6 md:grid-cols-2">
-            <div className="rounded-3xl border border-pink-100 bg-white p-5 shadow-sm">
+            <div className="rounded-3xl border border-bg-[#DFF2EE] text-[#1F7A68] bg-[#FAF7F5] p-5 shadow-sm">
               <h3 className="mb-3 text-base font-extrabold text-slate-800">
                 🛒 Gasto rápido de caja chica
               </h3>
@@ -186,13 +186,13 @@ export function CajaClient({
                   required
                   maxLength={120}
                   placeholder="Descripción (ej: pago de hielo)"
-                  className="w-full rounded-xl border border-pink-100 bg-white px-3 py-2.5 text-sm outline-none focus:border-pink-300 focus:ring-2 focus:ring-pink-200"
+                  className="w-full rounded-xl border border-bg-[#DFF2EE] text-[#1F7A68] bg-[#FAF7F5] px-3 py-2.5 text-sm outline-none focus:border-[#D5CECA] focus:ring-2 focus:ring-border-[#E4C7D2]"
                 />
                 <div className="flex gap-2">
                   <select
                     name="category"
                     defaultValue="Hielo"
-                    className="w-40 rounded-xl border border-pink-100 bg-white px-3 py-2.5 text-sm outline-none focus:border-pink-300"
+                    className="w-40 rounded-xl border border-bg-[#DFF2EE] text-[#1F7A68] bg-[#FAF7F5] px-3 py-2.5 text-sm outline-none focus:border-[#D5CECA]"
                   >
                     {EXPENSE_CATEGORIES.map((category) => (
                       <option key={category} value={category}>
@@ -208,14 +208,14 @@ export function CajaClient({
                     step="any"
                     required
                     placeholder="$ Monto"
-                    className="flex-1 rounded-xl border border-pink-100 bg-white px-3 py-2.5 text-sm outline-none focus:border-pink-300 focus:ring-2 focus:ring-pink-200"
+                    className="flex-1 rounded-xl border border-bg-[#DFF2EE] text-[#1F7A68] bg-[#FAF7F5] px-3 py-2.5 text-sm outline-none focus:border-[#D5CECA] focus:ring-2 focus:ring-border-[#E4C7D2]"
                   />
                 </div>
                 <Feedback state={expenseState} />
                 <button
                   type="submit"
                   disabled={expensePending}
-                  className="w-full rounded-xl bg-pink-500 py-2.5 text-sm font-extrabold text-white transition enabled:hover:bg-pink-600 disabled:opacity-40"
+                  className="w-full rounded-xl bg-bg-[#D64575] py-2.5 text-sm font-extrabold text-white transition enabled:hover:bg-text-[#D64575] disabled:opacity-40"
                 >
                   {expensePending ? "Guardando…" : "Registrar gasto"}
                 </button>
@@ -231,7 +231,7 @@ export function CajaClient({
                     {summary.expenses.map((expense) => (
                       <li
                         key={expense.id}
-                        className="flex items-center justify-between rounded-xl bg-rose-50/60 px-3 py-2 text-sm"
+                        className="flex items-center justify-between rounded-xl bg-bg-[#F3E6EB]/60 px-3 py-2 text-sm"
                       >
                         <div>
                           <p className="font-semibold text-slate-700">
@@ -245,7 +245,7 @@ export function CajaClient({
                             })}
                           </p>
                         </div>
-                        <span className="font-extrabold text-rose-500">
+                        <span className="font-extrabold text-text-[#D64575]">
                           −{formatMoney(expense.amount)}
                         </span>
                       </li>
@@ -276,7 +276,7 @@ export function CajaClient({
                     value={countedCash}
                     onChange={(event) => setCountedCash(event.target.value)}
                     placeholder="0"
-                    className="mt-1 w-full rounded-xl border border-sky-200 bg-white px-4 py-3 text-2xl font-extrabold outline-none focus:border-sky-300 focus:ring-2 focus:ring-sky-200"
+                    className="mt-1 w-full rounded-xl border border-sky-200 bg-[#FAF7F5] px-4 py-3 text-2xl font-extrabold outline-none focus:border-sky-300 focus:ring-2 focus:ring-sky-200"
                   />
                 </label>
 
@@ -298,7 +298,7 @@ export function CajaClient({
                   name="notes"
                   rows={2}
                   placeholder="Notas del turno (opcional)"
-                  className="w-full resize-none rounded-xl border border-pink-100 bg-white px-3 py-2 text-sm outline-none focus:border-pink-300 focus:ring-2 focus:ring-pink-200"
+                  className="w-full resize-none rounded-xl border border-bg-[#DFF2EE] text-[#1F7A68] bg-[#FAF7F5] px-3 py-2 text-sm outline-none focus:border-[#D5CECA] focus:ring-2 focus:ring-border-[#E4C7D2]"
                 />
 
                 <button
@@ -315,8 +315,8 @@ export function CajaClient({
       )}
 
       {userRole === "ADMIN" && closedRegisters.length > 0 && (
-        <section className="overflow-hidden rounded-3xl border border-pink-100 bg-white shadow-sm">
-          <h2 className="border-b border-pink-50 px-5 py-4 text-base font-extrabold text-slate-800">
+        <section className="overflow-hidden rounded-3xl border border-bg-[#DFF2EE] text-[#1F7A68] bg-[#FAF7F5] shadow-sm">
+          <h2 className="border-b border-bg-[#F3E6EB] px-5 py-4 text-base font-extrabold text-slate-800">
             🗂️ Historial de cierres
           </h2>
           <div className="overflow-x-auto">
@@ -334,7 +334,7 @@ export function CajaClient({
                 {closedRegisters.map((register) => {
                   const difference = register.difference ?? 0;
                   return (
-                    <tr key={register.id} className="border-t border-pink-50">
+                    <tr key={register.id} className="border-t border-bg-[#F3E6EB]">
                       <td className="px-5 py-3 font-semibold text-slate-600">
                         {new Date(register.closedAt).toLocaleDateString("es-CO")}{" "}
                         <span className="block text-[11px] font-normal text-slate-400">
@@ -355,10 +355,10 @@ export function CajaClient({
                       <td
                         className={`px-5 py-3 font-extrabold ${
                           difference === 0
-                            ? "text-emerald-600"
+                            ? "text-text-[#D64575]"
                             : difference > 0
                               ? "text-sky-600"
-                              : "text-rose-500"
+                              : "text-text-[#D64575]"
                         }`}
                       >
                         {difference === 0

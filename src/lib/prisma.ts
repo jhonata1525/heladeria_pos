@@ -1,8 +1,10 @@
 import "dotenv/config";
 import { PrismaClient } from '../generated/prisma'
-import { PrismaMariaDb } from '@prisma/adapter-mariadb'
+import { PrismaBetterSqlite3 } from '@prisma/adapter-better-sqlite3'
 
-const adapter = new PrismaMariaDb(process.env.DATABASE_URL!)
+const adapter = new PrismaBetterSqlite3({
+  url: process.env.DATABASE_URL ?? "file:./dev.db",
+})
 
 const CATEGORIES = [
   { name: "Bebidas", products: ["MARACUMANGO", "SODA", "MALTEADA", "MALTEADA DANI ESPECIAL", "SALPICON CON HELADO"] },

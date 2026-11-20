@@ -3,8 +3,20 @@
 @theme inline {
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  
+  --color-primary: #FF9CEE;
+  --color-primary-hover: #F282DF;
+  --color-accent-bg: #FDF8FC;
+  --color-accent-text: #C43E96;
+  --color-app-bg: #85E3FF;
+  --color-surface: #FDF8FC;
+  --color-border-soft: #FF9CEE;
+  --color-blue-bg: #E3F6FD;
+  --color-blue-text: #186A85;
 }
 
 body {
   font-family: var(--font-sans), system-ui, sans-serif;
+  background-color: #85E3FF;
+  color: #1F1B24;
 }

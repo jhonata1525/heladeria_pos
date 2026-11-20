@@ -358,7 +358,7 @@ export function PosClient({
             value={search}
             onChange={(event) => setSearch(event.target.value)}
             placeholder="Buscar producto… 🍦"
-            className="w-full rounded-full border border-pink-100 bg-white px-5 py-3 text-base shadow-sm outline-none placeholder:text-slate-400 focus:border-pink-300 focus:ring-2 focus:ring-pink-200"
+            className="w-full rounded-full border-[1.5px] border-[#FF9CEE] bg-[#FDF8FC] px-5 py-3 text-base shadow-sm outline-none placeholder:text-slate-400 focus:border-[#FF9CEE] focus:ring-2 focus:ring-[#E052B5]"
           />
           <div className="flex flex-wrap gap-2">
             <button
@@ -366,8 +366,8 @@ export function PosClient({
               onClick={() => setSelectedCategory(null)}
               className={`rounded-full px-4 py-2 text-sm font-semibold transition ${
                 selectedCategory === null
-                  ? "bg-pink-500 text-white shadow"
-                  : "bg-white text-slate-600 shadow-sm hover:bg-pink-50"
+                  ? "bg-[#FF9CEE] text-[#2B1424] shadow font-bold"
+                  : "bg-[#FDF8FC] text-slate-700 shadow-sm border border-[#FF9CEE] hover:bg-[#FF9CEE]/30"
               }`}
             >
               Todos
@@ -379,8 +379,8 @@ export function PosClient({
                 onClick={() => setSelectedCategory(category.id)}
                 className={`rounded-full px-4 py-2 text-sm font-semibold transition ${
                   selectedCategory === category.id
-                    ? "bg-pink-500 text-white shadow"
-                    : "bg-white text-slate-600 shadow-sm hover:bg-pink-50"
+                    ? "bg-[#FF9CEE] text-[#2B1424] shadow font-bold"
+                    : "bg-[#FDF8FC] text-slate-700 shadow-sm border border-[#FF9CEE] hover:bg-[#FF9CEE]/30"
                 }`}
               >
                 {category.name}
@@ -398,7 +398,7 @@ export function PosClient({
               {livePendingOrders.map((order) => (
                 <li
                   key={order.id}
-                  className="flex flex-wrap items-center justify-between gap-2 rounded-xl bg-white px-3 py-2 shadow-sm"
+                  className="flex flex-wrap items-center justify-between gap-2 rounded-xl bg-[#FAF7F5] px-3 py-2 shadow-sm"
                 >
                   <div className="text-sm">
                     <span className="font-bold text-slate-700">
@@ -418,7 +418,7 @@ export function PosClient({
                     <button
                       type="button"
                       onClick={() => loadPendingOrder(order)}
-                      className="rounded-full bg-emerald-500 px-3 py-1.5 text-xs font-bold text-white transition hover:bg-emerald-600"
+                      className="rounded-full bg-bg-[#D64575] px-3 py-1.5 text-xs font-bold text-white transition hover:bg-text-[#D64575]"
                     >
                       Cobrar
                     </button>
@@ -426,7 +426,7 @@ export function PosClient({
                       <button
                         type="button"
                         onClick={() => cancelPendingOrder(order)}
-                        className="rounded-full bg-rose-100 px-3 py-1.5 text-xs font-bold text-rose-600 transition hover:bg-rose-200"
+                        className="rounded-full bg-bg-[#DFF2EE] text-[#1F7A68] px-3 py-1.5 text-xs font-bold text-text-[#BE3663] transition hover:bg-border-[#E4C7D2]"
                       >
                         Cancelar
                       </button>
@@ -454,18 +454,18 @@ export function PosClient({
         )}
 
         {error && !checkoutOpen && (
-          <p className="mb-4 rounded-xl bg-rose-50 px-4 py-3 text-sm font-semibold text-rose-600">
+          <p className="mb-4 rounded-xl bg-bg-[#F3E6EB] px-4 py-3 text-sm font-semibold text-text-[#BE3663]">
             {error}
           </p>
         )}
 
         {visibleProducts.length === 0 ? (
-          <div className="rounded-3xl border border-dashed border-pink-200 bg-white/70 p-12 text-center">
+          <div className="rounded-3xl border border-dashed border-border-[#E4C7D2] bg-[#FAF7F5]/70 p-12 text-center">
             <p className="text-4xl">🍦</p>
             <p className="mt-2 font-semibold text-slate-500">
               No hay productos que coincidan.
             </p>
-            <Link href="/productos" className="mt-1 inline-block text-sm font-semibold text-pink-500 underline">
+            <Link href="/productos" className="mt-1 inline-block text-sm font-semibold text-bg-[#D64575] underline">
               Revisa el catálogo en Productos
             </Link>
           </div>
@@ -480,18 +480,18 @@ export function PosClient({
                   type="button"
                   disabled={soldOut}
                   onClick={() => addProduct(product)}
-                  className={`relative flex min-h-[110px] flex-col justify-between rounded-2xl border p-3 text-left shadow-sm transition ${
+                  className={`relative flex min-h-[110px] flex-col justify-between rounded-2xl border-[1.5px] border-[#FF9CEE] p-3 text-left shadow-sm transition ${
                     soldOut
-                      ? "cursor-not-allowed border-slate-100 bg-slate-50 opacity-60"
-                      : "border-pink-100 bg-white hover:-translate-y-0.5 hover:border-pink-300 hover:shadow-md active:scale-95"
-                  } ${inCart > 0 ? "ring-2 ring-pink-300" : ""}`}
+                      ? "cursor-not-allowed bg-[#FDF8FC] opacity-60"
+                      : "bg-[#FDF8FC] hover:-translate-y-0.5 hover:shadow-md active:scale-95"
+                  } ${inCart > 0 ? "ring-2 ring-[#FF9CEE]" : ""}`}
                 >
                   {inCart > 0 && (
-                    <span className="absolute right-2 top-2 flex h-6 w-6 items-center justify-center rounded-full bg-pink-500 text-xs font-bold text-white">
+                    <span className="absolute right-2 top-2 flex h-6 w-6 items-center justify-center rounded-full bg-[#FF9CEE] text-xs font-bold text-[#2B1424]">
                       {inCart}
                     </span>
                   )}
-                  <span className="pr-6 text-sm font-bold leading-snug text-slate-700">
+                  <span className="pr-6 text-sm font-bold leading-snug text-[#1F1B24]">
                     {product.image ? (
                       <img
                         src={product.image}
@@ -502,12 +502,12 @@ export function PosClient({
                     {product.name}
                   </span>
                   <span className="mt-2 flex items-end justify-between gap-1">
-                    <span className="text-base font-extrabold text-pink-600">
+                    <span className="text-base font-extrabold text-[#C43E96]">
                       {formatMoney(product.price)}
                     </span>
                     <span
-                      className={`text-[11px] font-semibold ${
-                        soldOut ? "text-rose-400" : "text-emerald-600"
+                      className={`text-[12px] font-bold text-[#C43E96] ${
+                        soldOut ? "text-rose-400" : ""
                       }`}
                     >
                       {soldOut
@@ -523,8 +523,8 @@ export function PosClient({
       </section>
 
       <aside className="lg:sticky lg:top-[84px] lg:self-start">
-        <div className="flex max-h-[calc(100vh-108px)] flex-col rounded-3xl border border-pink-100 bg-white shadow-lg">
-          <div className="border-b border-pink-50 px-5 py-4">
+        <div className="flex max-h-[calc(100vh-108px)] flex-col rounded-3xl border-[1.5px] border-[#FF9CEE] bg-[#FDF8FC] shadow-lg">
+          <div className="border-b border-[#FF9CEE] px-5 py-4">
             <h2 className="flex items-center justify-between text-lg font-extrabold text-slate-800">
               🧾 Comanda activa
               {editingOrderId !== null && (
@@ -544,7 +544,7 @@ export function PosClient({
               lines.map((line) => (
                 <div
                   key={line.product.id}
-                  className="rounded-2xl bg-rose-50/60 p-3"
+                  className="rounded-2xl border border-[#FF9CEE]/40 bg-[#FDF8FC] p-3 shadow-sm"
                 >
                   <div className="flex items-start justify-between gap-2">
                     <p className="text-sm font-bold text-slate-700">
@@ -554,7 +554,7 @@ export function PosClient({
                       type="button"
                       aria-label={`Quitar ${line.product.name}`}
                       onClick={() => setQuantity(line.product.id, 0)}
-                      className="text-slate-400 transition hover:text-rose-500"
+                      className="text-slate-400 transition hover:text-[#C43E96]"
                     >
                       ✕
                     </button>
@@ -565,23 +565,23 @@ export function PosClient({
                         type="button"
                         aria-label="Disminuir cantidad"
                         onClick={() => setQuantity(line.product.id, round2(line.quantity - 1))}
-                        className="h-9 w-9 rounded-full bg-white text-lg font-bold text-pink-500 shadow-sm transition hover:bg-pink-100"
+                        className="h-9 w-9 rounded-full bg-[#FDF8FC] border border-[#FF9CEE] text-lg font-bold text-[#C43E96] shadow-sm transition hover:bg-[#FF9CEE]/20"
                       >
                         −
                       </button>
-                      <span className="w-10 text-center text-sm font-extrabold">
+                      <span className="w-10 text-center text-sm font-extrabold text-slate-800">
                         {line.quantity}
                       </span>
                       <button
                         type="button"
                         aria-label="Aumentar cantidad"
                         onClick={() => addProduct(line.product)}
-                        className="h-9 w-9 rounded-full bg-white text-lg font-bold text-pink-500 shadow-sm transition hover:bg-pink-100"
+                        className="h-9 w-9 rounded-full bg-[#FDF8FC] border border-[#FF9CEE] text-lg font-bold text-[#C43E96] shadow-sm transition hover:bg-[#FF9CEE]/20"
                       >
                         +
                       </button>
                     </div>
-                    <p className="text-sm font-extrabold text-slate-700">
+                    <p className="text-sm font-extrabold text-[#C43E96]">
                       {formatMoney(line.product.price * line.quantity)}
                     </p>
                   </div>
@@ -590,18 +590,18 @@ export function PosClient({
                     value={line.notes}
                     onChange={(event) => setNotes(line.product.id, event.target.value)}
                     placeholder="Nota (ej: sin salsa, doble topping)"
-                    className="mt-2 w-full rounded-lg border border-pink-100 bg-white px-2.5 py-1.5 text-xs outline-none placeholder:text-slate-400 focus:border-pink-300"
+                    className="mt-2 w-full rounded-lg border border-[#FF9CEE] bg-[#FDF8FC] px-2.5 py-1.5 text-xs outline-none placeholder:text-slate-400 focus:border-[#FF9CEE] focus:ring-2 focus:ring-[#E052B5]"
                   />
                 </div>
               ))
             )}
           </div>
 
-          <div className="space-y-3 border-t border-pink-50 px-5 py-4">
+          <div className="space-y-3 border-t border-[#FF9CEE] px-5 py-4">
             <div className="flex items-center gap-2 mb-3">
-              <label className="text-sm font-semibold text-slate-600">
+              <label className="text-sm font-semibold text-slate-700">
                 Nombre del cliente
-                <span className="text-rose-500">*</span>
+                <span className="text-[#C43E96]">*</span>
               </label>
               <input
                 type="text"
@@ -609,7 +609,7 @@ export function PosClient({
                 onChange={(e) => setCustomerName(e.target.value)}
                 placeholder="Ej: Juan Pérez"
                 required
-                className="rounded-lg border border-pink-100 bg-white px-3 py-2 text-sm outline-none focus:border-pink-300 focus:ring-2 focus:ring-pink-200"
+                className="rounded-lg border border-[#FF9CEE] bg-[#FDF8FC] px-3 py-2 text-sm outline-none focus:border-[#FF9CEE] focus:ring-2 focus:ring-[#E052B5]"
                 minLength={1}
               />
             </div>
@@ -619,7 +619,7 @@ export function PosClient({
             </div>
             <div className="flex justify-between text-xl font-extrabold text-slate-800">
               <span>Total</span>
-              <span className="text-pink-600">{formatMoney(subtotal)}</span>
+              <span className="text-text-[#D64575]">{formatMoney(subtotal)}</span>
             </div>
 
             <button
@@ -639,7 +639,11 @@ export function PosClient({
                   ? undefined
                   : "Abre un turno de caja para poder cobrar"
               }
-              className="w-full rounded-2xl bg-pink-500 py-4 text-lg font-extrabold text-white shadow-lg shadow-pink-200 transition enabled:hover:bg-pink-600 disabled:opacity-40"
+              className={`w-full rounded-2xl py-4 text-lg font-extrabold shadow-md transition ${
+                lines.length === 0 || submitting || !liveHasOpenRegister
+                  ? "bg-[#E8DCE5] text-[#756270] cursor-not-allowed opacity-70"
+                  : "bg-[#FF9CEE] text-[#2B1424] hover:bg-[#F282DF]"
+              }`}
             >
               💳 Cobrar {subtotal > 0 ? formatMoney(subtotal) : ""}
             </button>
@@ -653,7 +657,7 @@ export function PosClient({
           onClick={() => !submitting && setCheckoutOpen(false)}
         >
           <div
-            className="w-full max-w-md rounded-3xl bg-white p-6 shadow-2xl"
+            className="w-full max-w-md rounded-3xl bg-[#FAF7F5] p-6 shadow-2xl"
             onClick={(event) => event.stopPropagation()}
           >
             <h3 className="mb-1 text-xl font-extrabold text-slate-800">
@@ -661,7 +665,7 @@ export function PosClient({
             </h3>
             <p className="mb-4 text-sm text-slate-500">
               Total a cobrar:{" "}
-              <span className="font-extrabold text-pink-600">
+              <span className="font-extrabold text-text-[#D64575]">
                 {formatMoney(subtotal)}
               </span>
             </p>
@@ -674,11 +678,11 @@ export function PosClient({
                     <div key={line.product.id} className="flex justify-between items-center py-1">
                       <span>
                         {line.product.name}{" "}{line.quantity > 1 && (
-                          <span className="text-pink-500">×{line.quantity}</span>
+                          <span className="text-bg-[#D64575]">×{line.quantity}</span>
                         )}
                       </span>
                       {line.notes && (
-                        <span className="text-pink-400 text-xs italic">({line.notes})</span>
+                        <span className="text-emerald-400 text-xs italic">({line.notes})</span>
                       )}
                       <span className="font-medium">{formatMoney(line.product.price * line.quantity)}</span>
                     </div>
@@ -697,7 +701,7 @@ export function PosClient({
                   value={customerName}
                   onChange={(e) => setCustomerName(e.target.value)}
                   placeholder="Ej: Juan Pérez"
-                  className="w-full rounded-xl border border-pink-100 bg-white px-4 py-3 text-base outline-none focus:border-pink-300 focus:ring-2 focus:ring-pink-200"
+                  className="w-full rounded-xl border border-bg-[#DFF2EE] text-[#1F7A68] bg-[#FAF7F5] px-4 py-3 text-base outline-none focus:border-[#D5CECA] focus:ring-2 focus:ring-border-[#E4C7D2]"
                 />
               </div>
               <div>
@@ -710,7 +714,7 @@ export function PosClient({
                   onChange={(e) => setTableNumber(e.target.value)}
                   placeholder="Ej: 5"
                   min="1"
-                  className="w-full rounded-xl border border-pink-100 bg-white px-4 py-3 text-base outline-none focus:border-pink-300 focus:ring-2 focus:ring-pink-200"
+                  className="w-full rounded-xl border border-bg-[#DFF2EE] text-[#1F7A68] bg-[#FAF7F5] px-4 py-3 text-base outline-none focus:border-[#D5CECA] focus:ring-2 focus:ring-border-[#E4C7D2]"
                 />
               </div>
             </div>
@@ -723,8 +727,8 @@ export function PosClient({
                   onClick={() => setPayMethod(option.value)}
                   className={`flex flex-col items-center gap-1 rounded-2xl border-2 px-2 py-3 text-xs font-bold transition ${
                     payMethod === option.value
-                      ? "border-pink-400 bg-pink-50 text-pink-600"
-                      : "border-slate-100 text-slate-500 hover:border-pink-200"
+                      ? "border-emerald-400 bg-bg-[#F3E6EB] text-text-[#D64575]"
+                      : "border-slate-100 text-slate-500 hover:border-border-[#E4C7D2]"
                   }`}
                 >
                   <span className="text-xl">{option.icon}</span>
@@ -742,7 +746,7 @@ export function PosClient({
                     value={referenceNumber}
                     onChange={(e) => setReferenceNumber(e.target.value)}
                     placeholder="Ej: TRX123456 o últimos 4 dígitos"
-                    className="w-full rounded-xl border border-pink-100 bg-white px-4 py-3 text-base outline-none focus:border-pink-300 focus:ring-2 focus:ring-pink-200"
+                    className="w-full rounded-xl border border-bg-[#DFF2EE] text-[#1F7A68] bg-[#FAF7F5] px-4 py-3 text-base outline-none focus:border-[#D5CECA] focus:ring-2 focus:ring-border-[#E4C7D2]"
                   />
                 </label>
               </div>
@@ -760,14 +764,14 @@ export function PosClient({
                     value={cashInput}
                     onChange={(event) => setCashInput(event.target.value)}
                     placeholder="0"
-                    className="mt-1 w-full rounded-xl border border-pink-100 bg-rose-50/50 px-4 py-3 text-2xl font-extrabold text-slate-800 outline-none focus:border-pink-300 focus:ring-2 focus:ring-pink-200"
+                    className="mt-1 w-full rounded-xl border border-bg-[#DFF2EE] text-[#1F7A68] bg-bg-[#F3E6EB]/50 px-4 py-3 text-2xl font-extrabold text-slate-800 outline-none focus:border-[#D5CECA] focus:ring-2 focus:ring-border-[#E4C7D2]"
                   />
                 </label>
                 <div className="flex flex-wrap gap-2">
                   <button
                     type="button"
                     onClick={() => setCashInput(String(subtotal))}
-                    className="rounded-full bg-pink-100 px-3 py-1.5 text-xs font-bold text-pink-600 hover:bg-pink-200"
+                    className="rounded-full bg-bg-[#DFF2EE] text-[#1F7A68] px-3 py-1.5 text-xs font-bold text-text-[#D64575] hover:bg-border-[#E4C7D2]"
                   >
                     Exacto
                   </button>
@@ -776,7 +780,7 @@ export function PosClient({
                       key={amount}
                       type="button"
                       onClick={() => setCashInput(String(amount))}
-                      className="rounded-full bg-slate-100 px-3 py-1.5 text-xs font-bold text-slate-600 hover:bg-slate-200"
+                      className="rounded-full bg-[#FDF8FC] px-3 py-1.5 text-xs font-bold text-slate-600 hover:bg-slate-200"
                     >
                       {formatMoney(amount)}
                     </button>
@@ -785,10 +789,10 @@ export function PosClient({
                 <div
                   className={`rounded-xl px-4 py-3 text-center text-lg font-extrabold ${
                     change === null
-                      ? "bg-slate-50 text-slate-400"
+                      ? "bg-[#FDF8FC] text-slate-400"
                       : change < 0
-                        ? "bg-rose-50 text-rose-500"
-                        : "bg-emerald-50 text-emerald-600"
+                        ? "bg-bg-[#F3E6EB] text-text-[#D64575]"
+                        : "bg-bg-[#F3E6EB] text-text-[#D64575]"
                   }`}
                 >
                   {change === null
@@ -801,7 +805,7 @@ export function PosClient({
             )}
 
             {error && (
-              <p className="mb-3 rounded-xl bg-rose-50 px-4 py-2.5 text-sm font-semibold text-rose-600">
+              <p className="mb-3 rounded-xl bg-bg-[#F3E6EB] px-4 py-2.5 text-sm font-semibold text-text-[#BE3663]">
                 {error}
               </p>
             )}
@@ -811,7 +815,7 @@ export function PosClient({
                 type="button"
                 disabled={submitting}
                 onClick={() => setCheckoutOpen(false)}
-                className="flex-1 rounded-2xl bg-slate-100 py-3 font-bold text-slate-500 transition hover:bg-slate-200 disabled:opacity-40"
+                className="flex-1 rounded-2xl bg-[#FDF8FC] py-3 font-bold text-slate-500 transition hover:bg-slate-200 disabled:opacity-40"
               >
                 Volver
               </button>
@@ -823,7 +827,7 @@ export function PosClient({
                     (!Number.isFinite(received) || received < subtotal))
                 }
                 onClick={() => submitOrder("PAID")}
-                className="flex-[2] rounded-2xl bg-emerald-500 py-3 font-extrabold text-white shadow-lg shadow-emerald-100 transition enabled:hover:bg-emerald-600 disabled:opacity-40"
+                className="flex-[2] rounded-2xl bg-bg-[#D64575] py-3 font-extrabold text-white shadow-lg shadow-bg-[#DFF2EE] text-[#1F7A68] transition enabled:hover:bg-text-[#D64575] disabled:opacity-40"
               >
                 {submitting ? "Procesando…" : "Confirmar pago"}
               </button>
@@ -834,7 +838,7 @@ export function PosClient({
 
       {result && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 p-4 backdrop-blur-sm">
-          <div className="w-full max-w-sm rounded-3xl bg-white p-8 text-center shadow-2xl">
+          <div className="w-full max-w-sm rounded-3xl bg-[#FAF7F5] p-8 text-center shadow-2xl">
             <p className="text-5xl">🎉</p>
             <h3 className="mt-2 text-xl font-extrabold text-slate-800">
               ¡Pedido registrado!
@@ -844,7 +848,7 @@ export function PosClient({
               {formatMoney(result.total)}
             </p>
             {result.changeGiven !== null && result.changeGiven >= 0 && (
-              <div className="mt-4 rounded-2xl bg-emerald-50 px-4 py-4 text-emerald-600">
+              <div className="mt-4 rounded-2xl bg-bg-[#F3E6EB] px-4 py-4 text-text-[#D64575]">
                 <p className="text-xs font-bold uppercase tracking-wide">
                   Cambio a entregar
                 </p>
@@ -856,7 +860,7 @@ export function PosClient({
             <button
               type="button"
               onClick={() => setResult(null)}
-              className="mt-6 w-full rounded-2xl bg-pink-500 py-3 font-extrabold text-white transition hover:bg-pink-600"
+              className="mt-6 w-full rounded-2xl bg-bg-[#D64575] py-3 font-extrabold text-white transition hover:bg-text-[#D64575]"
             >
               Nueva venta
             </button>

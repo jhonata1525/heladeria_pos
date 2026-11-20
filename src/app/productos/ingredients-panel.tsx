@@ -23,14 +23,14 @@ function Feedback({ state }: { state: ProductoActionState | null }) {
   if (!state) return null;
   if (state.error) {
     return (
-      <p className="rounded-xl bg-rose-50 px-3 py-2 text-xs font-semibold text-rose-600">
+      <p className="rounded-xl bg-bg-[#F3E6EB] px-3 py-2 text-xs font-semibold text-text-[#BE3663]">
         {state.error}
       </p>
     );
   }
   if (state.message && state.ok) {
     return (
-      <p className="rounded-xl bg-emerald-50 px-3 py-2 text-xs font-semibold text-emerald-600">
+      <p className="rounded-xl bg-bg-[#F3E6EB] px-3 py-2 text-xs font-semibold text-text-[#D64575]">
         {state.message}
       </p>
     );
@@ -94,7 +94,7 @@ function WasteModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 p-4 backdrop-blur-sm" onClick={onClose}>
-      <div className="w-full max-w-md rounded-3xl bg-white p-6 shadow-2xl" onClick={(e) => e.stopPropagation()}>
+      <div className="w-full max-w-md rounded-3xl bg-[#FAF7F5] p-6 shadow-2xl" onClick={(e) => e.stopPropagation()}>
         <h3 className="mb-4 text-lg font-extrabold text-slate-800">
           {isIngredientMode ? `🗑️ Registrar merma: ${ingredient?.name}` : "🗑️ Registrar merma de producto"}
         </h3>
@@ -112,7 +112,7 @@ function WasteModal({
                   value="ingredient"
                   checked={isIngredientMode}
                   onChange={() => setType("ingredient")}
-                  className="text-pink-500"
+                  className="text-bg-[#D64575]"
                 />
                 <span>Insumo directo</span>
               </label>
@@ -123,7 +123,7 @@ function WasteModal({
                   value="product"
                   checked={!isIngredientMode}
                   onChange={() => setType("product")}
-                  className="text-pink-500"
+                  className="text-bg-[#D64575]"
                 />
                 <span>Producto (descuenta receta)</span>
               </label>
@@ -143,12 +143,12 @@ function WasteModal({
           {!isIngredientMode && (
             <div>
               <label className="block text-sm font-semibold text-slate-600 mb-1">
-                Producto <span className="text-rose-500">*</span>
+                Producto <span className="text-text-[#D64575]">*</span>
               </label>
               <select
                 value={selectedProductId}
                 onChange={(e) => setSelectedProductId(Number(e.target.value))}
-                className="w-full rounded-xl border border-pink-100 bg-white px-4 py-3 text-base outline-none focus:border-pink-300 focus:ring-2 focus:ring-pink-200"
+                className="w-full rounded-xl border border-bg-[#DFF2EE] text-[#1F7A68] bg-[#FAF7F5] px-4 py-3 text-base outline-none focus:border-[#D5CECA] focus:ring-2 focus:ring-border-[#E4C7D2]"
                 required
               >
                 <option value="">Selecciona un producto...</option>
@@ -163,7 +163,7 @@ function WasteModal({
 
           <div>
             <label className="block text-sm font-semibold text-slate-600 mb-1">
-              Cantidad <span className="text-rose-500">*</span>
+              Cantidad <span className="text-text-[#D64575]">*</span>
             </label>
             <input
               type="number"
@@ -173,19 +173,19 @@ function WasteModal({
               value={quantity}
               onChange={(e) => setQuantity(e.target.value)}
               placeholder="Ej: 100"
-              className="w-full rounded-xl border border-pink-100 bg-white px-4 py-3 text-base outline-none focus:border-pink-300 focus:ring-2 focus:ring-pink-200"
+              className="w-full rounded-xl border border-bg-[#DFF2EE] text-[#1F7A68] bg-[#FAF7F5] px-4 py-3 text-base outline-none focus:border-[#D5CECA] focus:ring-2 focus:ring-border-[#E4C7D2]"
               required
             />
           </div>
 
           <div>
             <label className="block text-sm font-semibold text-slate-600 mb-1">
-              Motivo <span className="text-rose-500">*</span>
+              Motivo <span className="text-text-[#D64575]">*</span>
             </label>
             <select
               value={reason}
               onChange={(e) => setReason(e.target.value)}
-              className="w-full rounded-xl border border-pink-100 bg-white px-4 py-3 text-base outline-none focus:border-pink-300 focus:ring-2 focus:ring-pink-200"
+              className="w-full rounded-xl border border-bg-[#DFF2EE] text-[#1F7A68] bg-[#FAF7F5] px-4 py-3 text-base outline-none focus:border-[#D5CECA] focus:ring-2 focus:ring-border-[#E4C7D2]"
               required
             >
               {WASTE_REASONS.map((r) => (
@@ -208,12 +208,12 @@ function WasteModal({
               onChange={(e) => setNote(e.target.value)}
               placeholder="Observaciones adicionales..."
               rows={3}
-              className="w-full rounded-xl border border-pink-100 bg-white px-4 py-3 text-base outline-none focus:border-pink-300 focus:ring-2 focus:ring-pink-200"
+              className="w-full rounded-xl border border-bg-[#DFF2EE] text-[#1F7A68] bg-[#FAF7F5] px-4 py-3 text-base outline-none focus:border-[#D5CECA] focus:ring-2 focus:ring-border-[#E4C7D2]"
             />
           </div>
 
           {error && (
-            <p className="rounded-xl bg-rose-50 px-4 py-2.5 text-sm font-semibold text-rose-600">
+            <p className="rounded-xl bg-bg-[#F3E6EB] px-4 py-2.5 text-sm font-semibold text-text-[#BE3663]">
               {error}
             </p>
           )}
@@ -223,14 +223,14 @@ function WasteModal({
               type="button"
               onClick={onClose}
               disabled={submitting}
-              className="flex-1 rounded-2xl bg-slate-100 py-3 font-bold text-slate-500 transition hover:bg-slate-200 disabled:opacity-40"
+              className="flex-1 rounded-2xl bg-[#FDF8FC] py-3 font-bold text-slate-500 transition hover:bg-slate-200 disabled:opacity-40"
             >
               Cancelar
             </button>
             <button
               type="submit"
               disabled={submitting || (!isIngredientMode && !selectedProductId) || !quantity}
-              className="flex-1 rounded-2xl bg-rose-500 py-3 font-extrabold text-white shadow-lg shadow-rose-100 transition enabled:hover:bg-rose-600 disabled:opacity-40"
+              className="flex-1 rounded-2xl bg-text-[#D64575] py-3 font-extrabold text-white shadow-lg shadow-bg-[#DFF2EE] text-[#1F7A68] transition enabled:hover:bg-text-[#BE3663] disabled:opacity-40"
             >
               {submitting ? "Registrando…" : "Registrar merma"}
             </button>
@@ -257,7 +257,7 @@ function IngredientFields({ ingredient }: { ingredient?: IngredientDTO }) {
             defaultValue={ingredient?.name}
             required
             placeholder="Ej: Helado Vainilla"
-            className="mt-1 w-full rounded-lg border border-pink-100 bg-white px-3 py-2 text-sm font-normal text-slate-700 outline-none focus:border-pink-300"
+            className="mt-1 w-full rounded-lg border border-bg-[#DFF2EE] text-[#1F7A68] bg-[#FAF7F5] px-3 py-2 text-sm font-normal text-slate-700 outline-none focus:border-[#D5CECA]"
           />
         </label>
         <label className="text-xs font-semibold text-slate-500">
@@ -265,7 +265,7 @@ function IngredientFields({ ingredient }: { ingredient?: IngredientDTO }) {
           <select
             name="unit"
             defaultValue={ingredient?.unit ?? "gramos"}
-            className="mt-1 w-full rounded-lg border border-pink-100 bg-white px-3 py-2 text-sm font-normal text-slate-700 outline-none focus:border-pink-300"
+            className="mt-1 w-full rounded-lg border border-bg-[#DFF2EE] text-[#1F7A68] bg-[#FAF7F5] px-3 py-2 text-sm font-normal text-slate-700 outline-none focus:border-[#D5CECA]"
           >
             {INGREDIENT_UNITS.map((unit) => (
               <option key={unit} value={unit}>
@@ -284,7 +284,7 @@ function IngredientFields({ ingredient }: { ingredient?: IngredientDTO }) {
             min={0}
             defaultValue={ingredient?.currentStock ?? 0}
             required
-            className="mt-1 w-full rounded-lg border border-pink-100 bg-white px-3 py-2 text-sm font-normal text-slate-700 outline-none focus:border-pink-300"
+            className="mt-1 w-full rounded-lg border border-bg-[#DFF2EE] text-[#1F7A68] bg-[#FAF7F5] px-3 py-2 text-sm font-normal text-slate-700 outline-none focus:border-[#D5CECA]"
           />
         </label>
         <label className="text-xs font-semibold text-slate-500">
@@ -297,7 +297,7 @@ function IngredientFields({ ingredient }: { ingredient?: IngredientDTO }) {
             min={0}
             defaultValue={ingredient?.minStock ?? 0}
             required
-            className="mt-1 w-full rounded-lg border border-pink-100 bg-white px-3 py-2 text-sm font-normal text-slate-700 outline-none focus:border-pink-300"
+            className="mt-1 w-full rounded-lg border border-bg-[#DFF2EE] text-[#1F7A68] bg-[#FAF7F5] px-3 py-2 text-sm font-normal text-slate-700 outline-none focus:border-[#D5CECA]"
           />
         </label>
         <label className="text-xs font-semibold text-slate-500 sm:col-span-2">
@@ -310,7 +310,7 @@ function IngredientFields({ ingredient }: { ingredient?: IngredientDTO }) {
             min={0}
             defaultValue={ingredient?.costPerUnit ?? 0}
             required
-            className="mt-1 w-full rounded-lg border border-pink-100 bg-white px-3 py-2 text-sm font-normal text-slate-700 outline-none focus:border-pink-300"
+            className="mt-1 w-full rounded-lg border border-bg-[#DFF2EE] text-[#1F7A68] bg-[#FAF7F5] px-3 py-2 text-sm font-normal text-slate-700 outline-none focus:border-[#D5CECA]"
           />
         </label>
       </div>
@@ -392,8 +392,8 @@ function IngredientRow({
             <span
               className={`rounded-full px-2.5 py-1 text-xs font-bold ${
                 low
-                  ? "bg-rose-50 text-rose-500"
-                  : "bg-emerald-50 text-emerald-600"
+                  ? "bg-bg-[#F3E6EB] text-text-[#D64575]"
+                  : "bg-bg-[#F3E6EB] text-text-[#D64575]"
               }`}
             >
               {low ? "⚠ Stock bajo" : "OK"}
@@ -408,7 +408,7 @@ function IngredientRow({
             <button
               type="button"
               onClick={() => setEditing((prev) => !prev)}
-              className="rounded-full bg-pink-50 px-3 py-1.5 text-xs font-bold text-pink-600 transition hover:bg-pink-100"
+              className="rounded-full bg-bg-[#F3E6EB] px-3 py-1.5 text-xs font-bold text-text-[#D64575] transition hover:bg-bg-[#DFF2EE] text-[#1F7A68]"
             >
               {editing ? "Cerrar" : "Editar"}
             </button>
@@ -416,7 +416,7 @@ function IngredientRow({
               type="button"
               onClick={handleDelete}
               disabled={deletePending}
-              className="rounded-full bg-rose-50 px-3 py-1.5 text-xs font-bold text-rose-500 transition hover:bg-rose-100 disabled:opacity-40"
+              className="rounded-full bg-bg-[#F3E6EB] px-3 py-1.5 text-xs font-bold text-text-[#D64575] transition hover:bg-bg-[#DFF2EE] text-[#1F7A68] disabled:opacity-40"
             >
               Eliminar
             </button>
@@ -430,7 +430,7 @@ function IngredientRow({
             <button
               type="submit"
               disabled={updatePending}
-              className="w-full rounded-xl bg-pink-500 py-2 text-sm font-extrabold text-white transition enabled:hover:bg-pink-600 disabled:opacity-40 sm:w-auto sm:px-6"
+              className="w-full rounded-xl bg-bg-[#D64575] py-2 text-sm font-extrabold text-white transition enabled:hover:bg-text-[#D64575] disabled:opacity-40 sm:w-auto sm:px-6"
             >
               {updatePending ? "Guardando…" : "Guardar cambios"}
             </button>
@@ -498,8 +498,8 @@ export function IngredientsPanel({
   const lowStockCount = ingredients.filter((i) => i.currentStock <= i.minStock).length;
 
   return (
-    <section className="overflow-hidden rounded-3xl border border-pink-100 bg-white shadow-sm">
-      <header className="flex flex-wrap items-center justify-between gap-2 border-b border-pink-50 px-5 py-4">
+    <section className="overflow-hidden rounded-3xl border border-bg-[#DFF2EE] text-[#1F7A68] bg-[#FAF7F5] shadow-sm">
+      <header className="flex flex-wrap items-center justify-between gap-2 border-b border-bg-[#F3E6EB] px-5 py-4">
         <div>
           <h2 className="text-base font-extrabold text-slate-800">
             🧪 Insumos / Materia Prima
@@ -511,7 +511,7 @@ export function IngredientsPanel({
         </div>
         <div className="flex items-center gap-2">
           {lowStockCount > 0 && (
-            <span className="rounded-full bg-rose-50 px-3 py-1.5 text-xs font-bold text-rose-500">
+            <span className="rounded-full bg-bg-[#F3E6EB] px-3 py-1.5 text-xs font-bold text-text-[#D64575]">
               ⚠ {lowStockCount} insumo(s) con stock bajo
             </span>
           )}
@@ -520,8 +520,8 @@ export function IngredientsPanel({
             onClick={() => setCreating((prev) => !prev)}
             className={`rounded-full px-4 py-2 text-sm font-bold transition ${
               creating
-                ? "bg-slate-100 text-slate-500 hover:bg-slate-200"
-                : "bg-pink-500 text-white shadow hover:bg-pink-600"
+                ? "bg-[#FDF8FC] text-slate-500 hover:bg-slate-200"
+                : "bg-bg-[#D64575] text-white shadow hover:bg-text-[#D64575]"
             }`}
           >
             {creating ? "Cancelar" : "+ Nuevo insumo"}
@@ -530,13 +530,13 @@ export function IngredientsPanel({
       </header>
 
       {creating && (
-        <form action={handleCreate} className="space-y-2 border-b border-pink-50 bg-pink-50/30 px-5 py-4">
+        <form action={handleCreate} className="space-y-2 border-b border-bg-[#F3E6EB] bg-bg-[#F3E6EB]/30 px-5 py-4">
           <IngredientFields />
           <Feedback state={createState} />
           <button
             type="submit"
             disabled={createPending}
-            className="w-full rounded-xl bg-pink-500 py-2.5 text-sm font-extrabold text-white transition enabled:hover:bg-pink-600 disabled:opacity-40 sm:w-auto sm:px-6"
+            className="w-full rounded-xl bg-bg-[#D64575] py-2.5 text-sm font-extrabold text-white transition enabled:hover:bg-text-[#D64575] disabled:opacity-40 sm:w-auto sm:px-6"
           >
             {createPending ? "Creando…" : "Crear insumo"}
           </button>
@@ -544,16 +544,16 @@ export function IngredientsPanel({
       )}
 
       {!creating && createState && (
-        <div className="border-b border-pink-50 px-5 pt-3">
+        <div className="border-b border-bg-[#F3E6EB] px-5 pt-3">
           <Feedback state={createState} />
         </div>
       )}
 
-      <form action={handleSetAllStock} className="border-b border-pink-50 px-5 py-3">
+      <form action={handleSetAllStock} className="border-b border-bg-[#F3E6EB] px-5 py-3">
         <button
           type="submit"
           disabled={setAllStockPending}
-          className="w-full rounded-xl bg-violet-500 py-2 text-sm font-extrabold text-white transition enabled:hover:bg-violet-600 disabled:opacity-40 sm:w-auto sm:px-6"
+          className="w-full rounded-xl bg-rose-500 py-2 text-sm font-extrabold text-white transition enabled:hover:bg-rose-600 disabled:opacity-40 sm:w-auto sm:px-6"
         >
           {setAllStockPending ? "Actualizando…" : "🔧 Poner stock de todos los insumos a 999"}
         </button>
@@ -565,7 +565,7 @@ export function IngredientsPanel({
           Aún no hay insumos. Crea el primero para empezar a definir recetas.
         </p>
       ) : (
-        <ul className="divide-y divide-pink-50">
+        <ul className="divide-y divide-bg-[#F3E6EB]">
           {ingredients.map((ingredient) => (
             <IngredientRow key={ingredient.id} ingredient={ingredient} products={products} />
           ))}
