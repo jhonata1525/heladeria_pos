@@ -121,8 +121,8 @@ export function UsuariosClient({ users, auditLogs }: { users: User[]; auditLogs:
 
   function getRoleBadge(role: string) {
     return role === "ADMIN" 
-      ? "bg-bg-[#DFF2EE] text-[#1F7A68] text-text-[#BE3663]" 
-      : "bg-bg-[#DFF2EE] text-[#1F7A68] text-text-[#BE3663]";
+      ? "bg-[#DFF2EE] text-[#1F7A68] text-[#BE3663]" 
+      : "bg-[#DFF2EE] text-[#1F7A68] text-[#BE3663]";
   }
 
   return (
@@ -142,7 +142,7 @@ export function UsuariosClient({ users, auditLogs }: { users: User[]; auditLogs:
           <button
             type="button"
             onClick={openCreateModal}
-            className="rounded-full bg-bg-[#D64575] px-4 py-2 text-sm font-bold text-white shadow transition hover:bg-text-[#D64575]"
+            className="rounded-full bg-[#D64575] px-4 py-2 text-sm font-bold text-white shadow transition hover:bg-text-[#D64575]"
           >
             + Nuevo empleado
           </button>
@@ -153,7 +153,7 @@ export function UsuariosClient({ users, auditLogs }: { users: User[]; auditLogs:
         <button
           onClick={() => setActiveTab("users")}
           className={`rounded-full px-4 py-2 text-sm font-semibold transition ${
-            activeTab === "users" ? "bg-bg-[#D64575] text-white shadow" : "bg-[#FAF7F5] text-slate-600 shadow-sm hover:bg-bg-[#F3E6EB]"
+            activeTab === "users" ? "bg-[#D64575] text-white shadow" : "bg-[#FAF7F5] text-slate-600 shadow-sm hover:bg-[#F3E6EB]"
           }`}
         >
           Usuarios
@@ -161,7 +161,7 @@ export function UsuariosClient({ users, auditLogs }: { users: User[]; auditLogs:
         <button
           onClick={() => setActiveTab("audit")}
           className={`rounded-full px-4 py-2 text-sm font-semibold transition ${
-            activeTab === "audit" ? "bg-bg-[#D64575] text-white shadow" : "bg-[#FAF7F5] text-slate-600 shadow-sm hover:bg-bg-[#F3E6EB]"
+            activeTab === "audit" ? "bg-[#D64575] text-white shadow" : "bg-[#FAF7F5] text-slate-600 shadow-sm hover:bg-[#F3E6EB]"
           }`}
         >
           Auditoría
@@ -175,7 +175,7 @@ export function UsuariosClient({ users, auditLogs }: { users: User[]; auditLogs:
           ) : (
             <table className="w-full text-sm">
               <thead>
-                <tr className="bg-bg-[#F3E6EB]/60 text-left text-xs uppercase tracking-wide text-slate-400">
+                <tr className="bg-[#F3E6EB]/60 text-left text-xs uppercase tracking-wide text-slate-400">
                   <th className="px-5 py-2.5 font-bold">Usuario</th>
                   <th className="px-5 py-2.5 font-bold">Rol</th>
                   <th className="px-5 py-2.5 font-bold">Estado</th>
@@ -199,18 +199,18 @@ export function UsuariosClient({ users, auditLogs }: { users: User[]; auditLogs:
                     </td>
                     <td className="px-5 py-3">
                       <span className={`rounded-full px-2.5 py-0.5 text-xs font-bold ${
-                        user.isActive ? "bg-bg-[#DFF2EE] text-[#1F7A68] text-text-[#BE3663]" : "bg-bg-[#DFF2EE] text-[#1F7A68] text-rose-700"
+                        user.isActive ? "bg-[#DFF2EE] text-[#1F7A68] text-[#BE3663]" : "bg-[#DFF2EE] text-[#1F7A68] text-rose-700"
                       }`}>
                         {user.isActive ? "Activo" : "Inactivo"}
                       </span>
                     </td>
                     <td className="px-5 py-3 text-slate-500">{formatDate(user.lastLoginAt)}</td>
                     <td className="px-5 py-3">
-                      <span className={user.failedLoginAttempts > 0 ? "text-text-[#BE3663] font-bold" : "text-slate-500"}>
+                      <span className={user.failedLoginAttempts > 0 ? "text-[#BE3663] font-bold" : "text-slate-500"}>
                         {user.failedLoginAttempts} / 5
                       </span>
                       {user.lockedUntil && new Date(user.lockedUntil) > new Date() && (
-                        <span className="ml-1 text-xs text-text-[#BE3663] font-bold">🔒 Bloqueado</span>
+                        <span className="ml-1 text-xs text-[#BE3663] font-bold">🔒 Bloqueado</span>
                       )}
                     </td>
                     <td className="px-5 py-3 text-slate-500">{formatDate(user.createdAt)}</td>
@@ -220,8 +220,8 @@ export function UsuariosClient({ users, auditLogs }: { users: User[]; auditLogs:
                           onClick={() => toggleActive(user)}
                           className={`rounded-full px-2.5 py-1 text-xs font-bold transition ${
                             user.isActive 
-                              ? "bg-bg-[#DFF2EE] text-[#1F7A68] text-text-[#BE3663] hover:bg-border-[#E4C7D2]" 
-                              : "bg-bg-[#DFF2EE] text-[#1F7A68] text-text-[#D64575] hover:bg-border-[#E4C7D2]"
+                              ? "bg-[#DFF2EE] text-[#1F7A68] text-[#BE3663] hover:bg-border-[#E4C7D2]" 
+                              : "bg-[#DFF2EE] text-[#1F7A68] text-[#D64575] hover:bg-border-[#E4C7D2]"
                           }`}
                         >
                           {user.isActive ? "Desactivar" : "Activar"}
@@ -249,7 +249,7 @@ export function UsuariosClient({ users, auditLogs }: { users: User[]; auditLogs:
           ) : (
             <table className="w-full text-sm">
               <thead>
-                <tr className="bg-bg-[#F3E6EB]/60 text-left text-xs uppercase tracking-wide text-slate-400">
+                <tr className="bg-[#F3E6EB]/60 text-left text-xs uppercase tracking-wide text-slate-400">
                   <th className="px-5 py-2.5 font-bold">Fecha</th>
                   <th className="px-5 py-2.5 font-bold">Usuario</th>
                   <th className="px-5 py-2.5 font-bold">Acción</th>
@@ -290,7 +290,7 @@ export function UsuariosClient({ users, auditLogs }: { users: User[]; auditLogs:
               {editingUser ? "Editar empleado" : "Nuevo empleado"}
             </h3>
             <form onSubmit={handleSubmit} className="space-y-4">
-              {error && <p className="rounded-xl bg-bg-[#F3E6EB] px-4 py-2.5 text-sm font-semibold text-text-[#BE3663]">{error}</p>}
+              {error && <p className="rounded-xl bg-[#F3E6EB] px-4 py-2.5 text-sm font-semibold text-[#BE3663]">{error}</p>}
               
               <div>
                 <label className="block text-sm font-semibold text-slate-600 mb-1">Nombre</label>
@@ -345,7 +345,7 @@ export function UsuariosClient({ users, auditLogs }: { users: User[]; auditLogs:
                   id="isActive"
                   checked={formData.isActive}
                   onChange={(e) => setFormData({ ...formData, isActive: e.target.checked })}
-                  className="h-4 w-4 rounded border-[#D5CECA] text-text-[#D64575] focus:ring-bg-[#D64575]"
+                  className="h-4 w-4 rounded border-[#D5CECA] text-[#D64575] focus:ring-bg-[#D64575]"
                 />
                 <label htmlFor="isActive" className="text-sm font-semibold text-slate-600">Usuario activo</label>
               </div>
@@ -361,7 +361,7 @@ export function UsuariosClient({ users, auditLogs }: { users: User[]; auditLogs:
                 </button>
                 <button
                   type="submit"
-                  className="flex-[2] rounded-2xl bg-bg-[#D64575] py-3 font-extrabold text-white shadow-lg shadow-border-[#E4C7D2] transition hover:bg-text-[#D64575] disabled:opacity-40"
+                  className="flex-[2] rounded-2xl bg-[#D64575] py-3 font-extrabold text-white shadow-lg shadow-border-[#E4C7D2] transition hover:bg-text-[#D64575] disabled:opacity-40"
                   disabled={submitting}
                 >
                   {submitting ? "Guardando…" : editingUser ? "Actualizar" : "Crear"}

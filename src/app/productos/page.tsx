@@ -105,7 +105,7 @@ export default async function ProductosPage() {
           </p>
         </div>
         {lowStockCount > 0 && (
-          <span className="rounded-full bg-bg-[#F3E6EB] px-3 py-1.5 text-xs font-bold text-text-[#D64575]">
+          <span className="rounded-full bg-[#F3E6EB] px-3 py-1.5 text-xs font-bold text-[#D64575]">
             ⚠ {lowStockCount} insumo(s) con stock bajo
           </span>
         )}
@@ -121,7 +121,7 @@ export default async function ProductosPage() {
       />
 
       {categories.length === 0 ? (
-        <p className="rounded-3xl border border-dashed border-border-[#E4C7D2] bg-[#FAF7F5]/70 p-10 text-center text-slate-500">
+        <p className="rounded-3xl border border-dashed border-[#E4C7D2] bg-[#FAF7F5]/70 p-10 text-center text-slate-500">
           Aún no hay categorías ni productos registrados.
         </p>
       ) : (
@@ -132,7 +132,7 @@ export default async function ProductosPage() {
           >
             <h2 className="border-b border-bg-[#F3E6EB] px-5 py-4 text-base font-extrabold text-slate-800">
               {CATEGORY_EMOJI[category.name] ?? "🍽️"} {category.name}
-              <span className="ml-2 rounded-full bg-bg-[#F3E6EB] px-2 py-0.5 text-xs font-bold text-bg-[#D64575]">
+              <span className="ml-2 rounded-full bg-[#F3E6EB] px-2 py-0.5 text-xs font-bold text-bg-[#D64575]">
                 {category.products.length} productos
               </span>
             </h2>
@@ -186,17 +186,17 @@ export default async function ProductosPage() {
                         <span
                           className={`rounded-full px-2.5 py-1 text-xs font-bold ${
                             soldOut
-                              ? "bg-bg-[#F3E6EB] text-text-[#D64575]"
+                              ? "bg-[#F3E6EB] text-[#D64575]"
                               : low
                               ? "bg-amber-50 text-amber-600"
-                              : "bg-bg-[#F3E6EB] text-text-[#D64575]"
+                              : "bg-[#F3E6EB] text-[#D64575]"
                           }`}
                         >
                           {soldOut
                             ? "Agotado"
                             : `${effectiveStock} ${product.unit}`}
                         </span>
-                        <span className="w-24 text-right font-extrabold text-text-[#D64575]">
+                        <span className="w-24 text-right font-extrabold text-[#D64575]">
                           {formatMoney(product.price)}
                         </span>
                       </div>

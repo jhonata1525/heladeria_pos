@@ -1,7 +1,5 @@
 "use client";
 
-import { useState } from "react";
-
 interface TicketImpresionProps {
   negocioNombre: string;
   negocioDireccion: string;
@@ -13,6 +11,10 @@ interface TicketImpresionProps {
   items: Array<{ nombre: string; cantidad: number; precioUnitario: number; subtotal: number }>;
   total: number;
   metodoPago: string;
+}
+
+function formatoCOP(valor: number) {
+  return `$ ${valor.toLocaleString("es-CO")}`;
 }
 
 export function TicketImpresion({
@@ -27,92 +29,131 @@ export function TicketImpresion({
   total,
   metodoPago,
 }: TicketImpresionProps) {
-  const [impreso, setImpreso] = useState(false);
-
   const handlePrint = () => {
-    setImpreso(true);
     window.print();
-    setImpreso(false);
   };
 
   return (
-    <div
-      className="print-page hidden print:block"
-      style={{
-        visibility: "visible",
-        margin: 0,
-        padding: 0,
-      }}
-    >
-      <div style={{ width: "48mm", fontFamily: "monospace", fontSize: "10px", color: "#1F1B24" }}>
-        <div style={{ textAlign: "center", marginBottom: "2mm", color: "#FF9CEE", fontWeight: "bold", fontSize: "11px" }}>
+    <>
+      <style>{`
+        @page {
+          size: 58mm auto;
+          margin: 0;
+        }
+        @media print {
+          body * {
+            visibility: hidden;
+          }
+          .ticket-termico-58mm,
+          .ticket-termico-58mm * {
+            visibility: visible;
+          }
+          .ticket-termico-58mm {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 48mm !important;
+            margin: 0 !important;
+            padding: 2mm 1mm 18mm 1mm !important;
+            background: #ffffff !important;
+            color: #000000 !important;
+          }
+          .no-print {
+            display: none !important;
+          }
+        }
+      `}</style>
+
+      <div
+        className="ticket-termico-58mm hidden print:block"
+        style={{
+          width: "48mm",
+          fontFamily: "'Courier New', Courier, monospace",
+          fontSize: "10px",
+          lineHeight: 1.25,
+          color: "#000000",
+        }}
+      >
+        <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "12px", marginBottom: "1mm" }}>
           {negocioNombre}
         </div>
-        <div style={{ textAlign: "center", fontSize: "9px", marginBottom: "1mm" }}>
-          {negocioDireccion}
-        </div>
-        <div style={{ textAlign: "center", fontSize: "9px", marginBottom: "2mm" }}>
-          {negocioTelefono}
+        {negocioDireccion && (
+          <div style={{ textAlign: "center", fontSize: "9px" }}>{negocioDireccion}</div>
+        )}
+        {negocioTelefono && (
+          <div style={{ textAlign: "center", fontSize: "9px", marginBottom: "2mm" }}>
+            Tel: {negocioTelefono}
+          </div>
+        )}
+
+        <div style={{ borderTop: "1px dashed #000", borderBottom: "1px dashed #000", padding: "1.5mm 0", marginBottom: "2mm", fontSize: "9px" }}>
+          <div>Fecha: {fechaHora}</div>
+          <div>Ref: {referenciaPedido ?? "N/A"}</div>
+          <div>Cliente: {nombreCliente || "Mostrador"}</div>
+          <div>Cajero: {cajero}</div>
         </div>
 
-        <div style={{ marginBottom: "2mm" }}>
-          <div style={{ fontSize: "9px", marginBottom: "1px" }}>Fecha: {fechaHora}</div>
-          <div style={{ fontSize: "9px", marginBottom: "1px" }}>
-            Referencia: {referenciaPedido ?? "N/A"}
-          </div>
-          <div style={{ fontSize: "9px", marginBottom: "1px" }}>
-            Cliente: {nombreCliente ?? "N/A"}
-          </div>
-          <div style={{ fontSize: "9px" }}>Cajero: {cajero}</div>
-        </div>
-
-        <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: "2mm", fontSize: "8px" }}>
+        <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: "2mm", fontSize: "9px" }}>
           <thead>
-            <tr>
-              <th style={{ textAlign: "left", fontWeight: "bold", paddingBottom: "1px", borderBottom: "1px solid #ddd" }}>Artículo</th>
-              <th style={{ textAlign: "center", fontWeight: "bold", paddingBottom: "1px", borderBottom: "1px solid #ddd" }}>Cantidad</th>
-              <th style={{ textAlign: "right", fontWeight: "bold", paddingBottom: "1px", borderBottom: "1px solid #ddd" }}>Precio</th>
-              <th style={{ textAlign: "right", fontWeight: "bold", paddingBottom: "1px", borderBottom: "1px solid #ddd" }}>Subtotal</th>
+            <tr style={{ borderBottom: "1px dashed #000" }}>
+              <th style={{ textAlign: "left", paddingBottom: "1mm" }}>Cant</th>
+              <th style={{ textAlign: "left", paddingBottom: "1mm" }}>Producto</th>
+              <th style={{ textAlign: "right", paddingBottom: "1mm" }}>Total</th>
             </tr>
           </thead>
           <tbody>
             {items.map((item, index) => (
-              <tr key={index} style={{ borderBottom: "1px solid #eee", padding: "1px 0" }}>
-                <td style={{ textAlign: "left", padding: "0 1px" }}>{item.nombre}</td>
-                <td style={{ textAlign: "center", padding: "0 1px" }}>{item.cantidad}</td>
-                <td style={{ textAlign: "right", padding: "0 1px" }}>{item.precioUnitario}</td>
-                <td style={{ textAlign: "right", padding: "0 1px" }}>{item.subtotal}</td>
+              <tr key={index}>
+                <td style={{ verticalAlign: "top", paddingTop: "1mm", paddingRight: "1mm" }}>
+                  {item.cantidad}x
+                </td>
+                <td style={{ verticalAlign: "top", paddingTop: "1mm", paddingRight: "1mm" }}>
+                  {item.nombre}
+                  <div style={{ fontSize: "8px" }}>({formatoCOP(item.precioUnitario)} c/u)</div>
+                </td>
+                <td style={{ verticalAlign: "top", textAlign: "right", paddingTop: "1mm", whiteSpace: "nowrap" }}>
+                  {formatoCOP(item.subtotal)}
+                </td>
               </tr>
             ))}
           </tbody>
         </table>
 
-        <div style={{ fontSize: "9px", marginTop: "1mm" }}>
-          <div style={{ textAlign: "right" }}>Total: </div>
-          <div style={{ textAlign: "right", fontWeight: "bold", fontSize: "10px" }}>{total}</div>
+        <div style={{ borderTop: "1px dashed #000", paddingTop: "1.5mm", fontSize: "11px", fontWeight: "bold", display: "flex", justifyContent: "space-between" }}>
+          <span>TOTAL:</span>
+          <span>{formatoCOP(total)}</span>
         </div>
         <div style={{ fontSize: "9px", marginTop: "1mm", textAlign: "right" }}>
-          Método de pago: {metodoPago}
+          Pago: {metodoPago}
+        </div>
+
+        <div style={{ textAlign: "center", fontSize: "9px", marginTop: "3mm" }}>
+          ¡Gracias por su compra!
         </div>
       </div>
+
       <button
+        type="button"
         onClick={handlePrint}
+        className="no-print"
         style={{
           width: "48mm",
           margin: "2mm auto 0",
           display: "block",
           fontFamily: "monospace",
           fontSize: "10px",
+          fontWeight: "bold",
           background: "#FF9CEE",
           color: "#2B1424",
           border: "none",
-          padding: "3mm 0",
+          borderRadius: "8px",
+          padding: "2.5mm 0",
           cursor: "pointer",
         }}
         title="Imprimir Ticket"
       >
         🖨️ Imprimir
       </button>
-    </div>
+    </>
   );
 }

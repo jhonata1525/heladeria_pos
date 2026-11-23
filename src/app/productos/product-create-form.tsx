@@ -49,7 +49,7 @@ export function ProductCreateForm({
             className={`rounded-full px-4 py-2 text-sm font-bold transition ${
               open
                 ? "bg-[#FDF8FC] text-slate-500 hover:bg-slate-200"
-                : "bg-bg-[#D64575] text-white shadow hover:bg-text-[#D64575]"
+                : "bg-[#D64575] text-white shadow hover:bg-text-[#D64575]"
             }`}
           >
             {open ? "Cancelar" : "+ Nuevo producto"}
@@ -60,7 +60,7 @@ export function ProductCreateForm({
       {open && (
         <form
           action={handleSubmit}
-          className="grid gap-3 border-b border-bg-[#F3E6EB] bg-bg-[#F3E6EB]/30 px-5 py-4 sm:grid-cols-2"
+          className="grid gap-3 border-b border-bg-[#F3E6EB] bg-[#F3E6EB]/30 px-5 py-4 sm:grid-cols-2"
         >
           <label className="text-xs font-semibold text-slate-500 sm:col-span-2">
             Nombre del producto
@@ -163,12 +163,12 @@ export function ProductCreateForm({
           </div>
 
           {state && !state.ok && state.error && (
-            <p className="rounded-xl bg-bg-[#F3E6EB] px-3 py-2 text-xs font-semibold text-text-[#BE3663] sm:col-span-2">
+            <p className="rounded-xl bg-[#F3E6EB] px-3 py-2 text-xs font-semibold text-[#BE3663] sm:col-span-2">
               {state.error}
             </p>
           )}
           {state?.ok && state.message && (
-            <p className="rounded-xl bg-bg-[#F3E6EB] px-3 py-2 text-xs font-semibold text-text-[#D64575] sm:col-span-2">
+            <p className="rounded-xl bg-[#F3E6EB] px-3 py-2 text-xs font-semibold text-[#D64575] sm:col-span-2">
               ✅ {state.message}
             </p>
           )}
@@ -176,7 +176,7 @@ export function ProductCreateForm({
           <button
             type="submit"
             disabled={pending}
-            className="w-full rounded-xl bg-bg-[#D64575] py-2.5 text-sm font-extrabold text-white transition enabled:hover:bg-text-[#D64575] disabled:opacity-40 sm:col-span-2 sm:w-auto sm:px-8"
+            className="w-full rounded-xl bg-[#D64575] py-2.5 text-sm font-extrabold text-white transition enabled:hover:bg-text-[#D64575] disabled:opacity-40 sm:col-span-2 sm:w-auto sm:px-8"
           >
             {pending ? "Creando…" : `Crear producto`}
           </button>
@@ -186,11 +186,11 @@ export function ProductCreateForm({
       {!open && state && (
         <div className="border-b border-bg-[#F3E6EB] px-5 pt-3">
           {state.ok ? (
-            <p className="rounded-xl bg-bg-[#F3E6EB] px-3 py-2 text-xs font-semibold text-text-[#D64575]">
+            <p className="rounded-xl bg-[#F3E6EB] px-3 py-2 text-xs font-semibold text-[#D64575]">
               ✅ {state.message}
             </p>
           ) : (
-            <p className="rounded-xl bg-bg-[#F3E6EB] px-3 py-2 text-xs font-semibold text-text-[#BE3663]">
+            <p className="rounded-xl bg-[#F3E6EB] px-3 py-2 text-xs font-semibold text-[#BE3663]">
               {state.error}
             </p>
           )}

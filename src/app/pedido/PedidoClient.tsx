@@ -230,8 +230,8 @@ export function PedidoClient({
   function getStatusBadge(status: string) {
     const styles: Record<string, string> = {
       PENDING: "bg-amber-100 text-amber-700",
-      PAID: "bg-bg-[#DFF2EE] text-[#1F7A68] text-text-[#BE3663]",
-      CANCELLED: "bg-bg-[#DFF2EE] text-[#1F7A68] text-rose-700",
+      PAID: "bg-[#DFF2EE] text-[#1F7A68] text-[#BE3663]",
+      CANCELLED: "bg-[#DFF2EE] text-[#1F7A68] text-rose-700",
     };
     return styles[status] || "bg-[#FDF8FC] text-slate-700";
   }
@@ -248,7 +248,7 @@ export function PedidoClient({
             {lines.length > 0 && (
               <button
                 onClick={openCheckout}
-                className="flex items-center gap-1.5 rounded-full bg-bg-[#D64575] px-3 py-2 text-sm font-bold text-white shadow transition hover:bg-text-[#D64575]"
+                className="flex items-center gap-1.5 rounded-full bg-[#D64575] px-3 py-2 text-sm font-bold text-white shadow transition hover:bg-text-[#D64575]"
               >
                 <span>🛒</span>
                 <span>{itemCount}</span>
@@ -275,8 +275,8 @@ export function PedidoClient({
                   onClick={() => setSelectedCategory(null)}
                   className={`whitespace-nowrap rounded-full px-4 py-2 text-sm font-semibold transition ${
                     selectedCategory === null
-                      ? "bg-bg-[#D64575] text-white shadow"
-                      : "bg-[#FAF7F5] text-slate-600 shadow-sm hover:bg-bg-[#F3E6EB]"
+                      ? "bg-[#D64575] text-white shadow"
+                      : "bg-[#FAF7F5] text-slate-600 shadow-sm hover:bg-[#F3E6EB]"
                   }`}
                 >
                   Todos
@@ -287,8 +287,8 @@ export function PedidoClient({
                     onClick={() => setSelectedCategory(category.id)}
                     className={`whitespace-nowrap rounded-full px-4 py-2 text-sm font-semibold transition ${
                       selectedCategory === category.id
-                        ? "bg-bg-[#D64575] text-white shadow"
-                        : "bg-[#FAF7F5] text-slate-600 shadow-sm hover:bg-bg-[#F3E6EB]"
+                        ? "bg-[#D64575] text-white shadow"
+                        : "bg-[#FAF7F5] text-slate-600 shadow-sm hover:bg-[#F3E6EB]"
                     }`}
                   >
                     {category.name}
@@ -298,7 +298,7 @@ export function PedidoClient({
             </div>
 
             {visibleProducts.length === 0 ? (
-              <div className="rounded-3xl border border-dashed border-border-[#E4C7D2] bg-[#FAF7F5]/70 p-12 text-center">
+              <div className="rounded-3xl border border-dashed border-[#E4C7D2] bg-[#FAF7F5]/70 p-12 text-center">
                 <p className="text-4xl">🍦</p>
                 <p className="mt-2 font-semibold text-slate-500">No hay productos disponibles</p>
               </div>
@@ -320,7 +320,7 @@ export function PedidoClient({
                       } ${inCart > 0 ? "ring-2 ring-[#D64575]/40" : ""}`}
                     >
                       {inCart > 0 && (
-                        <span className="absolute right-2 top-2 flex h-6 w-6 items-center justify-center rounded-full bg-bg-[#D64575] text-xs font-bold text-white">
+                        <span className="absolute right-2 top-2 flex h-6 w-6 items-center justify-center rounded-full bg-[#D64575] text-xs font-bold text-white">
                           {inCart}
                         </span>
                       )}
@@ -335,12 +335,12 @@ export function PedidoClient({
                         {product.name}
                       </span>
                       <span className="mt-2 flex items-end justify-between gap-1">
-                        <span className="text-base font-extrabold text-text-[#D64575]">
+                        <span className="text-base font-extrabold text-[#D64575]">
                           {formatMoney(product.price)}
                         </span>
                         <span
                           className={`text-[11px] font-semibold ${
-                            soldOut ? "text-rose-400" : "text-text-[#D64575]"
+                            soldOut ? "text-rose-400" : "text-[#D64575]"
                           }`}
                         >
                           {soldOut ? "Agotado" : `${product.stockQuantity} ${product.unit}`}
@@ -357,7 +357,7 @@ export function PedidoClient({
         {activeTab === "mis-pedidos" && (
           <div className="space-y-3">
             {myPendingOrders.length === 0 ? (
-              <div className="rounded-3xl border border-dashed border-border-[#E4C7D2] bg-[#FAF7F5]/70 p-12 text-center">
+              <div className="rounded-3xl border border-dashed border-[#E4C7D2] bg-[#FAF7F5]/70 p-12 text-center">
                 <p className="text-4xl">📋</p>
                 <p className="mt-2 font-semibold text-slate-500">No tienes pedidos pendientes</p>
                 <p className="text-sm text-slate-400">Los pedidos que tomes aparecerán aquí</p>
@@ -388,7 +388,7 @@ export function PedidoClient({
                   </ul>
                   <div className="mt-2 flex justify-between text-slate-500">
                     <span>Total</span>
-                    <span className="font-extrabold text-text-[#D64575]">{formatMoney(order.total)}</span>
+                    <span className="font-extrabold text-[#D64575]">{formatMoney(order.total)}</span>
                   </div>
                   <div className="mt-2 flex gap-2">
                     <button
@@ -408,7 +408,7 @@ export function PedidoClient({
         {activeTab === "listos" && (
           <div className="space-y-3">
             {readyOrders.length === 0 ? (
-              <div className="rounded-3xl border border-dashed border-border-[#E4C7D2] bg-[#FAF7F5]/70 p-12 text-center">
+              <div className="rounded-3xl border border-dashed border-[#E4C7D2] bg-[#FAF7F5]/70 p-12 text-center">
                 <p className="text-4xl">📋</p>
                 <p className="mt-2 font-semibold text-slate-500">No hay pedidos listos</p>
                 <p className="text-sm text-slate-400">Los pedidos listos para entrega aparecerán aquí</p>
@@ -443,13 +443,13 @@ export function PedidoClient({
         )}
 
         {error && !checkoutOpen && (
-          <div className="fixed bottom-24 left-4 right-4 max-w-md mx-auto z-50 rounded-xl bg-bg-[#F3E6EB] px-4 py-3 text-sm font-semibold text-text-[#BE3663] shadow-lg animate-slide-up">
+          <div className="fixed bottom-24 left-4 right-4 max-w-md mx-auto z-50 rounded-xl bg-[#F3E6EB] px-4 py-3 text-sm font-semibold text-[#BE3663] shadow-lg animate-slide-up">
             {error}
           </div>
         )}
 
         {success && (
-          <div className="fixed bottom-24 left-4 right-4 max-w-md mx-auto z-50 rounded-xl bg-bg-[#F3E6EB] px-4 py-3 text-sm font-semibold text-text-[#D64575] shadow-lg animate-slide-up">
+          <div className="fixed bottom-24 left-4 right-4 max-w-md mx-auto z-50 rounded-xl bg-[#F3E6EB] px-4 py-3 text-sm font-semibold text-[#D64575] shadow-lg animate-slide-up">
             ✅ Pedido #{itemCount} enviado a cocina - Mesa {tableNumber}
             <button
               onClick={() => window.print()}
@@ -481,7 +481,7 @@ export function PedidoClient({
               </div>
 
               <p className="mb-4 text-sm text-slate-500">
-                Total: <span className="font-extrabold text-text-[#D64575]">{formatMoney(subtotal)}</span>
+                Total: <span className="font-extrabold text-[#D64575]">{formatMoney(subtotal)}</span>
               </p>
 
               <div className="mb-4 space-y-3">
@@ -551,11 +551,11 @@ export function PedidoClient({
 
               <div className="flex justify-between text-xl font-extrabold text-slate-800 border-t border-bg-[#F3E6EB] pt-3 mb-4">
                 <span>Total</span>
-                <span className="text-text-[#D64575]">{formatMoney(subtotal)}</span>
+                <span className="text-[#D64575]">{formatMoney(subtotal)}</span>
               </div>
 
               {error && (
-                <p className="mb-3 rounded-xl bg-bg-[#F3E6EB] px-4 py-2.5 text-sm font-semibold text-text-[#BE3663]">
+                <p className="mb-3 rounded-xl bg-[#F3E6EB] px-4 py-2.5 text-sm font-semibold text-[#BE3663]">
                   {error}
                 </p>
               )}
@@ -579,7 +579,7 @@ export function PedidoClient({
                   <button
                     onClick={() => submitOrder("PAID")}
                     disabled={submitting || !customerName.trim() || !tableNumber.trim()}
-                    className="flex-[2] rounded-2xl bg-bg-[#D64575] py-3 font-extrabold text-white shadow-lg shadow-border-[#E4C7D2] transition enabled:hover:bg-text-[#D64575] disabled:opacity-40"
+                    className="flex-[2] rounded-2xl bg-[#D64575] py-3 font-extrabold text-white shadow-lg shadow-border-[#E4C7D2] transition enabled:hover:bg-text-[#D64575] disabled:opacity-40"
                   >
                     💳 Cobrar ya
                   </button>

@@ -48,8 +48,8 @@ export default async function ReportesPage({
             href={`?rango=${range.key}`}
             className={`rounded-full px-4 py-2 text-sm font-semibold transition ${
               range.key === report.range
-                ? "bg-bg-[#D64575] text-white shadow"
-                : "bg-[#FAF7F5] text-slate-600 shadow-sm hover:bg-bg-[#F3E6EB]"
+                ? "bg-[#D64575] text-white shadow"
+                : "bg-[#FAF7F5] text-slate-600 shadow-sm hover:bg-[#F3E6EB]"
             }`}
           >
             {range.label}
@@ -73,7 +73,7 @@ export default async function ReportesPage({
         <StatCard
           label="Utilidad neta real"
           value={formatMoney(report.netProfit)}
-          accent="border-border-[#E4C7D2] bg-bg-[#F3E6EB]"
+          accent="border-[#E4C7D2] bg-[#F3E6EB]"
         />
       </section>
 
@@ -93,7 +93,7 @@ export default async function ReportesPage({
         ) : (
           <table className="w-full text-sm">
             <thead>
-              <tr className="bg-bg-[#F3E6EB]/60 text-left text-xs uppercase tracking-wide text-slate-400">
+              <tr className="bg-[#F3E6EB]/60 text-left text-xs uppercase tracking-wide text-slate-400">
                 <th className="px-5 py-2.5 font-bold">#</th>
                 <th className="px-5 py-2.5 font-bold">Producto</th>
                 <th className="px-5 py-2.5 text-right font-bold">Vendidos</th>
@@ -113,7 +113,7 @@ export default async function ReportesPage({
                   <td className="px-5 py-2.5 text-right font-semibold text-slate-600">
                     {product.quantity}
                   </td>
-                  <td className="px-5 py-2.5 text-right font-extrabold text-text-[#D64575]">
+                  <td className="px-5 py-2.5 text-right font-extrabold text-[#D64575]">
                     {formatMoney(product.revenue)}
                   </td>
                 </tr>
@@ -150,7 +150,7 @@ export default async function ReportesPage({
                   className={`rounded-full px-3 py-1 text-xs font-bold ${
                     register.difference > 0
                       ? "bg-sky-50 text-sky-600"
-                      : "bg-bg-[#F3E6EB] text-text-[#D64575]"
+                      : "bg-[#F3E6EB] text-[#D64575]"
                   }`}
                 >
                   {register.difference > 0 ? "Sobrante" : "Faltante"} de{" "}

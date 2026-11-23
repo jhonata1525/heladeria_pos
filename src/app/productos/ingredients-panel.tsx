@@ -23,14 +23,14 @@ function Feedback({ state }: { state: ProductoActionState | null }) {
   if (!state) return null;
   if (state.error) {
     return (
-      <p className="rounded-xl bg-bg-[#F3E6EB] px-3 py-2 text-xs font-semibold text-text-[#BE3663]">
+      <p className="rounded-xl bg-[#F3E6EB] px-3 py-2 text-xs font-semibold text-[#BE3663]">
         {state.error}
       </p>
     );
   }
   if (state.message && state.ok) {
     return (
-      <p className="rounded-xl bg-bg-[#F3E6EB] px-3 py-2 text-xs font-semibold text-text-[#D64575]">
+      <p className="rounded-xl bg-[#F3E6EB] px-3 py-2 text-xs font-semibold text-[#D64575]">
         {state.message}
       </p>
     );
@@ -143,7 +143,7 @@ function WasteModal({
           {!isIngredientMode && (
             <div>
               <label className="block text-sm font-semibold text-slate-600 mb-1">
-                Producto <span className="text-text-[#D64575]">*</span>
+                Producto <span className="text-[#D64575]">*</span>
               </label>
               <select
                 value={selectedProductId}
@@ -163,7 +163,7 @@ function WasteModal({
 
           <div>
             <label className="block text-sm font-semibold text-slate-600 mb-1">
-              Cantidad <span className="text-text-[#D64575]">*</span>
+              Cantidad <span className="text-[#D64575]">*</span>
             </label>
             <input
               type="number"
@@ -180,7 +180,7 @@ function WasteModal({
 
           <div>
             <label className="block text-sm font-semibold text-slate-600 mb-1">
-              Motivo <span className="text-text-[#D64575]">*</span>
+              Motivo <span className="text-[#D64575]">*</span>
             </label>
             <select
               value={reason}
@@ -213,7 +213,7 @@ function WasteModal({
           </div>
 
           {error && (
-            <p className="rounded-xl bg-bg-[#F3E6EB] px-4 py-2.5 text-sm font-semibold text-text-[#BE3663]">
+            <p className="rounded-xl bg-[#F3E6EB] px-4 py-2.5 text-sm font-semibold text-[#BE3663]">
               {error}
             </p>
           )}
@@ -392,8 +392,8 @@ function IngredientRow({
             <span
               className={`rounded-full px-2.5 py-1 text-xs font-bold ${
                 low
-                  ? "bg-bg-[#F3E6EB] text-text-[#D64575]"
-                  : "bg-bg-[#F3E6EB] text-text-[#D64575]"
+                  ? "bg-[#F3E6EB] text-[#D64575]"
+                  : "bg-[#F3E6EB] text-[#D64575]"
               }`}
             >
               {low ? "⚠ Stock bajo" : "OK"}
@@ -408,7 +408,7 @@ function IngredientRow({
             <button
               type="button"
               onClick={() => setEditing((prev) => !prev)}
-              className="rounded-full bg-bg-[#F3E6EB] px-3 py-1.5 text-xs font-bold text-text-[#D64575] transition hover:bg-bg-[#DFF2EE] text-[#1F7A68]"
+              className="rounded-full bg-[#F3E6EB] px-3 py-1.5 text-xs font-bold text-[#D64575] transition hover:bg-[#DFF2EE] text-[#1F7A68]"
             >
               {editing ? "Cerrar" : "Editar"}
             </button>
@@ -416,7 +416,7 @@ function IngredientRow({
               type="button"
               onClick={handleDelete}
               disabled={deletePending}
-              className="rounded-full bg-bg-[#F3E6EB] px-3 py-1.5 text-xs font-bold text-text-[#D64575] transition hover:bg-bg-[#DFF2EE] text-[#1F7A68] disabled:opacity-40"
+              className="rounded-full bg-[#F3E6EB] px-3 py-1.5 text-xs font-bold text-[#D64575] transition hover:bg-[#DFF2EE] text-[#1F7A68] disabled:opacity-40"
             >
               Eliminar
             </button>
@@ -430,7 +430,7 @@ function IngredientRow({
             <button
               type="submit"
               disabled={updatePending}
-              className="w-full rounded-xl bg-bg-[#D64575] py-2 text-sm font-extrabold text-white transition enabled:hover:bg-text-[#D64575] disabled:opacity-40 sm:w-auto sm:px-6"
+              className="w-full rounded-xl bg-[#D64575] py-2 text-sm font-extrabold text-white transition enabled:hover:bg-text-[#D64575] disabled:opacity-40 sm:w-auto sm:px-6"
             >
               {updatePending ? "Guardando…" : "Guardar cambios"}
             </button>
@@ -511,7 +511,7 @@ export function IngredientsPanel({
         </div>
         <div className="flex items-center gap-2">
           {lowStockCount > 0 && (
-            <span className="rounded-full bg-bg-[#F3E6EB] px-3 py-1.5 text-xs font-bold text-text-[#D64575]">
+            <span className="rounded-full bg-[#F3E6EB] px-3 py-1.5 text-xs font-bold text-[#D64575]">
               ⚠ {lowStockCount} insumo(s) con stock bajo
             </span>
           )}
@@ -521,7 +521,7 @@ export function IngredientsPanel({
             className={`rounded-full px-4 py-2 text-sm font-bold transition ${
               creating
                 ? "bg-[#FDF8FC] text-slate-500 hover:bg-slate-200"
-                : "bg-bg-[#D64575] text-white shadow hover:bg-text-[#D64575]"
+                : "bg-[#D64575] text-white shadow hover:bg-text-[#D64575]"
             }`}
           >
             {creating ? "Cancelar" : "+ Nuevo insumo"}
@@ -530,13 +530,13 @@ export function IngredientsPanel({
       </header>
 
       {creating && (
-        <form action={handleCreate} className="space-y-2 border-b border-bg-[#F3E6EB] bg-bg-[#F3E6EB]/30 px-5 py-4">
+        <form action={handleCreate} className="space-y-2 border-b border-bg-[#F3E6EB] bg-[#F3E6EB]/30 px-5 py-4">
           <IngredientFields />
           <Feedback state={createState} />
           <button
             type="submit"
             disabled={createPending}
-            className="w-full rounded-xl bg-bg-[#D64575] py-2.5 text-sm font-extrabold text-white transition enabled:hover:bg-text-[#D64575] disabled:opacity-40 sm:w-auto sm:px-6"
+            className="w-full rounded-xl bg-[#D64575] py-2.5 text-sm font-extrabold text-white transition enabled:hover:bg-text-[#D64575] disabled:opacity-40 sm:w-auto sm:px-6"
           >
             {createPending ? "Creando…" : "Crear insumo"}
           </button>

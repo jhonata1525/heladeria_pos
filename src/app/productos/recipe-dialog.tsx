@@ -124,8 +124,8 @@ export function RecipeDialog({
         title="Editar receta / escandallo"
         className={`rounded-full px-3 py-1.5 text-xs font-bold transition ${
           recipe.length > 0
-            ? "bg-bg-[#F3E6EB] text-text-[#D64575] hover:bg-bg-[#DFF2EE] text-[#1F7A68]"
-            : "bg-[#FDF8FC] text-slate-500 hover:bg-bg-[#F3E6EB] hover:text-text-[#D64575]"
+            ? "bg-[#F3E6EB] text-[#D64575] hover:bg-[#DFF2EE] text-[#1F7A68]"
+            : "bg-[#FDF8FC] text-slate-500 hover:bg-[#F3E6EB] hover:text-[#D64575]"
         }`}
       >
         🧾 Receta{recipe.length > 0 ? ` (${recipe.length})` : ""}
@@ -157,7 +157,7 @@ export function RecipeDialog({
                 lines.map((line) => (
                   <div
                     key={line.key}
-                    className="flex items-center gap-2 rounded-2xl bg-bg-[#F3E6EB]/60 p-2"
+                    className="flex items-center gap-2 rounded-2xl bg-[#F3E6EB]/60 p-2"
                   >
                     <select
                       value={line.ingredientId}
@@ -190,7 +190,7 @@ export function RecipeDialog({
                       type="button"
                       aria-label="Quitar línea"
                       onClick={() => removeLine(line.key)}
-                      className="px-2 py-1 text-slate-400 transition hover:text-text-[#D64575]"
+                      className="px-2 py-1 text-slate-400 transition hover:text-[#D64575]"
                     >
                       ✕
                     </button>
@@ -203,7 +203,7 @@ export function RecipeDialog({
               type="button"
               onClick={addLine}
               disabled={ingredients.length === 0}
-              className="mt-2 w-full rounded-xl border-2 border-dashed border-border-[#E4C7D2] py-2 text-xs font-bold text-bg-[#D64575] transition enabled:hover:border-[#D5CECA] enabled:hover:bg-bg-[#F3E6EB] disabled:opacity-40"
+              className="mt-2 w-full rounded-xl border-2 border-dashed border-[#E4C7D2] py-2 text-xs font-bold text-bg-[#D64575] transition enabled:hover:border-[#D5CECA] enabled:hover:bg-[#F3E6EB] disabled:opacity-40"
             >
               + Agregar insumo
             </button>
@@ -260,18 +260,18 @@ export function RecipeDialog({
                 {formatMoney(estimatedCost)}
               </span>
             </div>
-            <p className="mt-1 text-right text-xs font-semibold text-text-[#D64575]">
+            <p className="mt-1 text-right text-xs font-semibold text-[#D64575]">
               Utilidad estimada:{" "}
               {formatMoney(product.price - estimatedCost)} / venta
             </p>
 
             {error && (
-              <p className="mt-2 rounded-xl bg-bg-[#F3E6EB] px-4 py-2.5 text-xs font-semibold text-text-[#BE3663]">
+              <p className="mt-2 rounded-xl bg-[#F3E6EB] px-4 py-2.5 text-xs font-semibold text-[#BE3663]">
                 {error}
               </p>
             )}
             {savedMessage && (
-              <p className="mt-2 rounded-xl bg-bg-[#F3E6EB] px-4 py-2.5 text-xs font-semibold text-text-[#D64575]">
+              <p className="mt-2 rounded-xl bg-[#F3E6EB] px-4 py-2.5 text-xs font-semibold text-[#D64575]">
                 ✅ {savedMessage}
               </p>
             )}
@@ -289,7 +289,7 @@ export function RecipeDialog({
                 type="button"
                 disabled={pending || ingredients.length === 0}
                 onClick={handleSave}
-                className="flex-[2] rounded-2xl bg-bg-[#D64575] py-3 font-extrabold text-white shadow-lg shadow-bg-[#DFF2EE] text-[#1F7A68] transition enabled:hover:bg-text-[#D64575] disabled:opacity-40"
+                className="flex-[2] rounded-2xl bg-[#D64575] py-3 font-extrabold text-white shadow-lg shadow-bg-[#DFF2EE] text-[#1F7A68] transition enabled:hover:bg-text-[#D64575] disabled:opacity-40"
               >
                 {pending ? "Guardando…" : "Guardar receta"}
               </button>

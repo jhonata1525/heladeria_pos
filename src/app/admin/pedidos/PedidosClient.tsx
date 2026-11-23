@@ -37,7 +37,7 @@ export function PedidosClient({ orders }: PedidosClientProps) {
         ) : (
           <table className="w-full text-sm">
             <thead>
-              <tr className="bg-bg-[#F3E6EB]/60 text-left text-xs uppercase tracking-wide text-slate-400">
+              <tr className="bg-[#F3E6EB]/60 text-left text-xs uppercase tracking-wide text-slate-400">
                 <th className="px-5 py-2.5 font-bold">#</th>
                 <th className="px-5 py-2.5 font-bold">Fecha</th>
                 <th className="px-5 py-2.5 font-bold">Cliente</th>
@@ -62,7 +62,7 @@ export function PedidosClient({ orders }: PedidosClientProps) {
                   <td className="px-5 py-3 text-slate-600">
                     {order.items.map((i) => i.product.name).join(", ")}
                   </td>
-                  <td className="px-5 py-3 text-right font-extrabold text-text-[#D64575]">
+                  <td className="px-5 py-3 text-right font-extrabold text-[#D64575]">
                     {formatMoney(order.total)}
                   </td>
                   <td className="px-5 py-3">
@@ -88,8 +88,8 @@ export function PedidosClient({ orders }: PedidosClientProps) {
 function OrderStatusBadge({ status }: { status: string }) {
   const config: Record<string, { label: string; class: string }> = {
     PENDING: { label: "⏳ Pendiente", class: "bg-amber-50 text-amber-600" },
-    PAID: { label: "✅ Pagado", class: "bg-bg-[#F3E6EB] text-text-[#D64575]" },
-    CANCELLED: { label: "❌ Cancelado", class: "bg-bg-[#F3E6EB] text-text-[#BE3663]" },
+    PAID: { label: "✅ Pagado", class: "bg-[#F3E6EB] text-[#D64575]" },
+    CANCELLED: { label: "❌ Cancelado", class: "bg-[#F3E6EB] text-[#BE3663]" },
   };
   const c = config[status] ?? { label: status, class: "bg-[#FDF8FC] text-slate-600" };
   return (
@@ -118,7 +118,7 @@ function DeleteOrderButton({
     <form action={`/api/admin/orders/${orderId}/delete`} method="POST">
       <button
         type="submit"
-        className="rounded-full bg-bg-[#F3E6EB] px-3 py-1 text-xs font-bold text-text-[#BE3663] hover:bg-bg-[#DFF2EE] text-[#1F7A68] transition"
+        className="rounded-full bg-[#F3E6EB] px-3 py-1 text-xs font-bold text-[#BE3663] hover:bg-[#DFF2EE] text-[#1F7A68] transition"
         onClick={(e) => {
           if (!confirm(`¿Eliminar pedido #${orderNumber}? Esta acción no se puede deshacer.`)) {
             e.preventDefault();

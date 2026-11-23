@@ -50,11 +50,8 @@ export const orderLineSchema = z.object({
 export const orderParseSchema = z.object({
   items: z.array(orderLineSchema).min(1, "El pedido debe tener al menos un producto"),
   status: z.enum(["PENDING", "PAID"]).default("PENDING"),
-  customerName: z.string().trim().min(1, "El nombre del cliente es obligatorio"),
-  tableNumber: z.number().int().nullable().refine(
-    (val) => val === null || (Number.isInteger(val) && val > 0),
-    { message: "Número de mesa inválido" },
-  ),
+  customerName: z.string().trim().nullable().optional().default(null),
+  tableNumber: z.number().int().nullable(),
   paymentMethod: z.enum(["CASH", "TRANSFER", "CARD"]).optional(),
   cashReceived: z.number().finite().optional(),
   referenceNumber: z.string().trim().nullable().optional(),
