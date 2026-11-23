@@ -214,6 +214,8 @@ export async function createProduct(
   const categoryId = Number(formData.get("categoryId"));
   const price = readNumber(formData, "price");
   const stockQuantity = readNumber(formData, "stockQuantity");
+  const quickCode = String(formData.get("quickCode") ?? "").trim();
+  const categoryQuickCode = String(formData.get("categoryQuickCode") ?? "").trim();
 
   if (name.length === 0) return { ok: false, error: "Ingresa el nombre del producto." };
   if (!PRODUCT_KINDS.includes(kind as (typeof PRODUCT_KINDS)[number])) {
@@ -241,8 +243,17 @@ export async function createProduct(
       kind,
       stockQuantity: round2(stockQuantity),
       inStock: stockQuantity > 0,
+      quickCode,
     },
   });
+
+  // Also update category with categoryQuickCode if provided
+  if (categoryQuickCode) {
+    await prisma.category.update({
+      where: { id: categoryId },
+      data: { quickCode: categoryQuickCode },
+    });
+  }
 
   refreshCatalog();
   return { ok: true, message: `Producto creado: ${product.name}` };

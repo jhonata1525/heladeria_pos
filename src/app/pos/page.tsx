@@ -47,6 +47,7 @@ export default async function PosPage() {
   const categoryData: CategoryDTO[] = categories.map((category) => ({
     id: category.id,
     name: category.name,
+    quickCode: category.quickCode,
     products: category.products.map((product) => {
       const effectiveStock = calculateComboStock(product as { id: number; kind: string; stockQuantity: number; recipeItems: { ingredient: { currentStock: number }; quantity: number }[] });
       const inStock = product.kind === "COMBO" ? effectiveStock > 0 : product.inStock;
@@ -60,6 +61,7 @@ export default async function PosPage() {
         image: product.image,
         unit: product.unit,
         kind: product.kind,
+        quickCode: product.quickCode,
       };
     }),
   }));

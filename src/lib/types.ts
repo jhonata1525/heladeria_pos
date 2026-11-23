@@ -8,12 +8,14 @@ export interface ProductDTO {
   image: string | null;
   unit: string;
   kind: string;
+  quickCode: string | null;
 }
 
 export interface CategoryDTO {
   id: number;
   name: string;
   products: ProductDTO[];
+  quickCode: string | null;
 }
 
 export interface CartLine {

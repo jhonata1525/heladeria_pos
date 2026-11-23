@@ -26,6 +26,7 @@ model Category {
   id          Int       @id @default(autoincrement())
   name        String    @unique
   description String?
+  quickCode   String?   // Código PLU rápido (ej. "3" para Conos)
   products    Product[]
 }
 
@@ -41,6 +42,7 @@ model Product {
   unit          String       @default("unidad")
   kind          String       @default("BASE") // BASE = producto/envase suelto | COMBO = combinación con receta
   barcode       String?
+  quickCode     String?      // Código PLU rápido (ej. "301" para un sabor específico)
   orderItems    OrderItem[]
   recipeItems   RecipeItem[]
   wasteLogs     WasteLog[]

@@ -24,6 +24,7 @@ export default async function PedidoPage() {
   const categoryData: CategoryDTO[] = categories.map((category) => ({
     id: category.id,
     name: category.name,
+    quickCode: category.quickCode,
     products: category.products.map((product) => ({
       id: product.id,
       name: product.name,
@@ -34,6 +35,7 @@ export default async function PedidoPage() {
       image: product.image,
       unit: product.unit,
       kind: product.kind,
+      quickCode: product.quickCode,
     })),
   }));
 

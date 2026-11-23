@@ -32,7 +32,7 @@ export function LoginForm() {
           required
           autoComplete="username"
           placeholder="tu@heladeria.com"
-          className="mt-1 w-full rounded-xl border border-bg-[#DFF2EE] text-[#1F7A68] bg-bg-[#F3E6EB]/40 px-4 py-2.5 text-slate-800 outline-none focus:border-[#D5CECA] focus:ring-2 focus:ring-border-[#E4C7D2]"
+          className="mt-1 w-full rounded-xl border border-[#FF9CEE] bg-[#FDF8FC] px-4 py-2.5 text-slate-800 outline-none focus:border-[#FF9CEE] focus:ring-2 focus:ring-[#E052B5]"
         />
       </label>
       <label className="block text-sm font-semibold text-slate-600">
@@ -43,12 +43,12 @@ export function LoginForm() {
           required
           autoComplete="current-password"
           placeholder="••••••••"
-          className="mt-1 w-full rounded-xl border border-bg-[#DFF2EE] text-[#1F7A68] bg-bg-[#F3E6EB]/40 px-4 py-2.5 text-slate-800 outline-none focus:border-[#D5CECA] focus:ring-2 focus:ring-border-[#E4C7D2]"
+          className="mt-1 w-full rounded-xl border border-[#FF9CEE] bg-[#FDF8FC] px-4 py-2.5 text-slate-800 outline-none focus:border-[#FF9CEE] focus:ring-2 focus:ring-[#E052B5]"
         />
       </label>
 
       {error && (
-        <p className="rounded-xl bg-bg-[#F3E6EB] px-4 py-2.5 text-sm font-semibold text-text-[#BE3663]">
+        <p className="rounded-xl bg-[#F3E6EB] px-4 py-2.5 text-sm font-semibold text-[#BE3663]">
           {error}
         </p>
       )}
@@ -56,7 +56,7 @@ export function LoginForm() {
       <button
         type="submit"
         disabled={pending}
-        className="w-full rounded-2xl bg-bg-[#D64575] py-3 text-base font-extrabold text-white shadow-lg shadow-border-[#E4C7D2] transition enabled:hover:bg-text-[#D64575] disabled:opacity-40"
+        className="w-full rounded-2xl bg-[#FF9CEE] py-3 text-base font-extrabold text-[#2B1424] shadow-md transition enabled:hover:bg-[#F282DF] disabled:opacity-40"
       >
         {pending ? "Ingresando…" : "Ingresar"}
       </button>

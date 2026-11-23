@@ -84,6 +84,7 @@ export default async function ProductosPage() {
     image: product.image,
     unit: product.unit,
     kind: product.kind,
+    quickCode: product.quickCode,
   }));
 
   const lowStockCount = ingredients.filter(

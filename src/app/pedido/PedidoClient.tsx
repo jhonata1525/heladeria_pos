@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { formatMoney, round2 } from "@/lib/format";
+import { TicketImpresion } from "@/components/TicketImpresion";
 import type { CategoryDTO, ProductDTO, PendingOrderDTO } from "@/lib/types";
 
 const STORAGE_KEY = "heladeria_mesero_cart";
@@ -256,30 +257,6 @@ export function PedidoClient({
             )}
           </div>
         </div>
-
-        <div className="flex gap-1 px-4 pb-3 border-b border-bg-[#DFF2EE] text-[#1F7A68]">
-          {[
-            { key: "nuevo", label: "🆕 Nuevo", count: itemCount },
-            { key: "mis-pedidos", label: "📋 Mis pedidos", count: myPendingOrders.length },
-          ].map((tab) => (
-            <button
-              key={tab.key}
-              onClick={() => setActiveTab(tab.key as any)}
-              className={`flex-1 flex items-center justify-center gap-1.5 rounded-t-xl px-3 py-2 text-sm font-semibold transition ${
-                activeTab === tab.key
-                  ? "bg-[#FAF7F5] text-text-[#D64575] shadow"
-                  : "text-slate-500 hover:bg-bg-[#F3E6EB]"
-              }`}
-            >
-              {tab.label}
-              {tab.count > 0 && (
-                <span className="flex h-5 w-5 items-center justify-center rounded-full bg-bg-[#D64575] text-xs font-bold text-white">
-                  {tab.count}
-                </span>
-              )}
-            </button>
-          ))}
-        </div>
       </header>
 
       <main className="mx-auto max-w-md px-4 py-4 pb-24">
@@ -413,37 +390,52 @@ export function PedidoClient({
                     <span>Total</span>
                     <span className="font-extrabold text-text-[#D64575]">{formatMoney(order.total)}</span>
                   </div>
-                  {!hasOpenRegister && order.status === "PENDING" && (
-                    <p className="mt-2 text-xs text-amber-600">⚠️ Caja cerrada: no se puede cobrar aún</p>
-                  )}
-                  {hasOpenRegister && order.status === "PENDING" && (
-                    <div className="mt-2 flex gap-2">
-                      <button
-                        onClick={() => payOrder(order.id, "TRANSFER")}
-                        disabled={submitting}
-                        className="flex-1 rounded-xl bg-blue-500 py-2 text-sm font-bold text-white transition hover:bg-blue-600 disabled:opacity-40"
-                      >
-                        💳 Transferencia
-                      </button>
-                      <button
-                        onClick={() => {
-                          const cash = prompt(`Total: ${formatMoney(order.total)}\nEfectivo recibido:`);
-                          if (cash !== null) {
-                            const amount = Number(cash);
-                            if (!isNaN(amount) && amount >= order.total) {
-                              payOrder(order.id, "CASH", amount);
-                            } else {
-                              setError("El efectivo recibido es menor que el total");
-                            }
-                          }
-                        }}
-                        disabled={submitting}
-                        className="flex-1 rounded-xl bg-bg-[#D64575] py-2 text-sm font-bold text-white transition hover:bg-text-[#D64575] disabled:opacity-40"
-                      >
-                        💵 Efectivo
-                      </button>
+                  <div className="mt-2 flex gap-2">
+                    <button
+                      onClick={() => window.print()}
+                      className="rounded-full bg-[#FF9CEE] px-3 py-1.5 text-xs font-bold text-[#2B1424] transition hover:bg-[#F282DF]"
+                      title="Imprimir ticket"
+                    >
+                      🖨️
+                    </button>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        )}
+
+        {activeTab === "listos" && (
+          <div className="space-y-3">
+            {readyOrders.length === 0 ? (
+              <div className="rounded-3xl border border-dashed border-border-[#E4C7D2] bg-[#FAF7F5]/70 p-12 text-center">
+                <p className="text-4xl">📋</p>
+                <p className="mt-2 font-semibold text-slate-500">No hay pedidos listos</p>
+                <p className="text-sm text-slate-400">Los pedidos listos para entrega aparecerán aquí</p>
+              </div>
+            ) : (
+              readyOrders.map((order) => (
+                <div
+                  key={order.id}
+                  className="rounded-2xl border border-bg-[#DFF2EE] text-[#1F7A68] bg-[#FAF7F5] p-4 shadow-sm"
+                >
+                  <div className="flex items-start justify-between gap-2 mb-2">
+                    <div>
+                      <p className="font-bold text-slate-800">Pedido #{order.orderNumber}</p>
+                      <p className="text-sm text-slate-600">Mesa {order.tableNumber ?? "—"}</p>
                     </div>
-                  )}
+                    <span className="rounded-full bg-amber-100 px-2.5 py-1 text-xs font-bold text-amber-700">
+                      Listo
+                    </span>
+                  </div>
+                  <ul className="space-y-1 text-sm">
+                    {order.items.map((item, i) => (
+                      <li key={i} className="flex justify-between text-slate-600">
+                        <span>{item.quantity}× {item.productName}</span>
+                        <span className="font-semibold">{formatMoney(item.price * item.quantity)}</span>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
               ))
             )}
@@ -459,145 +451,152 @@ export function PedidoClient({
         {success && (
           <div className="fixed bottom-24 left-4 right-4 max-w-md mx-auto z-50 rounded-xl bg-bg-[#F3E6EB] px-4 py-3 text-sm font-semibold text-text-[#D64575] shadow-lg animate-slide-up">
             ✅ Pedido #{itemCount} enviado a cocina - Mesa {tableNumber}
+            <button
+              onClick={() => window.print()}
+              className="rounded-full bg-[#FF9CEE] px-3 py-1.5 text-xs font-bold text-[#2B1424] transition hover:bg-[#F282DF] ml-2"
+              title="Reimprimir ticket"
+            >
+              🖨️
+            </button>
           </div>
         )}
-      </main>
 
-      {checkoutOpen && (
-        <div
-          className="fixed inset-0 z-50 flex items-end justify-center bg-slate-900/40 p-4 backdrop-blur-sm pb-0"
-          onClick={() => !submitting && setCheckoutOpen(false)}
-        >
+        {checkoutOpen && (
           <div
-            className="w-full max-w-md rounded-t-3xl bg-[#FAF7F5] p-6 shadow-2xl animate-slide-up"
-            onClick={(e) => e.stopPropagation()}
+            className="fixed inset-0 z-50 flex items-end justify-center bg-slate-900/40 p-4 backdrop-blur-sm pb-0"
+            onClick={() => !submitting && setCheckoutOpen(false)}
           >
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-xl font-extrabold text-slate-800">Confirmar pedido</h3>
-              <button
-                onClick={() => setCheckoutOpen(false)}
-                className="text-slate-400 hover:text-slate-600 text-2xl leading-none"
-              >
-                ✕
-              </button>
-            </div>
-
-            <p className="mb-4 text-sm text-slate-500">
-              Total: <span className="font-extrabold text-text-[#D64575]">{formatMoney(subtotal)}</span>
-            </p>
-
-            <div className="mb-4 space-y-3">
-              <div>
-                <label className="block text-sm font-semibold text-slate-600 mb-1">Cliente *</label>
-                <input
-                  type="text"
-                  value={customerName}
-                  onChange={(e) => setCustomerName(e.target.value)}
-                  placeholder="Nombre del cliente"
-                  required
-                  className="w-full rounded-xl border border-bg-[#DFF2EE] text-[#1F7A68] bg-[#FAF7F5] px-4 py-3 text-base outline-none focus:border-[#D5CECA] focus:ring-2 focus:ring-border-[#E4C7D2]"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-semibold text-slate-600 mb-1">Mesa *</label>
-                <input
-                  type="number"
-                  value={tableNumber}
-                  onChange={(e) => setTableNumber(e.target.value)}
-                  placeholder="Ej: 5"
-                  min="1"
-                  required
-                  className="w-full rounded-xl border border-bg-[#DFF2EE] text-[#1F7A68] bg-[#FAF7F5] px-4 py-3 text-base outline-none focus:border-[#D5CECA] focus:ring-2 focus:ring-border-[#E4C7D2]"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-semibold text-slate-600 mb-1">Notas / Alergias (opcional)</label>
-                <textarea
-                  value={notes}
-                  onChange={(e) => setNotes(e.target.value)}
-                  placeholder="Ej: Sin azúcar, alergia a nueces..."
-                  rows={2}
-                  className="w-full rounded-xl border border-bg-[#DFF2EE] text-[#1F7A68] bg-[#FAF7F5] px-4 py-3 text-base outline-none focus:border-[#D5CECA] focus:ring-2 focus:ring-border-[#E4C7D2]"
-                />
-              </div>
-            </div>
-
-            <div className="mb-4 space-y-2 max-h-40 overflow-y-auto">
-              {lines.map((line) => (
-                <div key={line.product.id} className="flex items-center justify-between gap-2 py-2 border-b border-bg-[#F3E6EB]">
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-bold text-slate-700 truncate">{line.product.name}</p>
-                    <p className="text-xs text-slate-500">
-                      {line.quantity} × {formatMoney(line.product.price)} = {formatMoney(line.product.price * line.quantity)}
-                    </p>
-                    {line.notes && <p className="text-xs text-amber-700 bg-amber-50 px-2 py-0.5 rounded mt-1 inline-block">{line.notes}</p>}
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <button
-                      onClick={() => setQuantity(line.product.id, round2(line.quantity - 1))}
-                      className="h-8 w-8 rounded-full bg-[#FDF8FC] text-lg font-bold text-bg-[#D64575] transition hover:bg-slate-200"
-                    >
-                      −
-                    </button>
-                    <span className="w-8 text-center text-sm font-extrabold">{line.quantity}</span>
-                    <button
-                      onClick={() => addProduct(line.product)}
-                      className="h-8 w-8 rounded-full bg-[#FDF8FC] text-lg font-bold text-bg-[#D64575] transition hover:bg-slate-200"
-                    >
-                      +
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            <div className="flex justify-between text-xl font-extrabold text-slate-800 border-t border-bg-[#F3E6EB] pt-3 mb-4">
-              <span>Total</span>
-              <span className="text-text-[#D64575]">{formatMoney(subtotal)}</span>
-            </div>
-
-            {error && (
-              <p className="mb-3 rounded-xl bg-bg-[#F3E6EB] px-4 py-2.5 text-sm font-semibold text-text-[#BE3663]">
-                {error}
-              </p>
-            )}
-
-            <div className="flex gap-2">
-              <button
-                onClick={() => setCheckoutOpen(false)}
-                disabled={submitting}
-                className="flex-1 rounded-2xl bg-[#FDF8FC] py-3 font-bold text-slate-500 transition hover:bg-slate-200 disabled:opacity-40"
-              >
-                Seguir agregando
-              </button>
-              <button
-                onClick={() => submitOrder("PENDING")}
-                disabled={submitting || !customerName.trim() || !tableNumber.trim()}
-                className="flex-[2] rounded-2xl bg-amber-500 py-3 font-extrabold text-white shadow-lg shadow-amber-200 transition enabled:hover:bg-amber-600 disabled:opacity-40"
-              >
-                {submitting ? "Enviando…" : "📤 Enviar a cocina"}
-              </button>
-              {hasOpenRegister && (
+            <div
+              className="w-full max-w-md rounded-t-3xl bg-[#FAF7F5] p-6 shadow-2xl animate-slide-up"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-xl font-extrabold text-slate-800">Confirmar pedido</h3>
                 <button
-                  onClick={() => submitOrder("PAID")}
-                  disabled={submitting || !customerName.trim() || !tableNumber.trim()}
-                  className="flex-[2] rounded-2xl bg-bg-[#D64575] py-3 font-extrabold text-white shadow-lg shadow-border-[#E4C7D2] transition enabled:hover:bg-text-[#D64575] disabled:opacity-40"
+                  onClick={() => setCheckoutOpen(false)}
+                  className="text-slate-400 hover:text-slate-600 text-2xl leading-none"
                 >
-                  💳 Cobrar ya
+                  ✕
                 </button>
+              </div>
+
+              <p className="mb-4 text-sm text-slate-500">
+                Total: <span className="font-extrabold text-text-[#D64575]">{formatMoney(subtotal)}</span>
+              </p>
+
+              <div className="mb-4 space-y-3">
+                <div>
+                  <label className="block text-sm font-semibold text-slate-600 mb-1">Cliente *</label>
+                  <input
+                    type="text"
+                    value={customerName}
+                    onChange={(e) => setCustomerName(e.target.value)}
+                    placeholder="Nombre del cliente"
+                    required
+                    className="w-full rounded-xl border border-bg-[#DFF2EE] text-[#1F7A68] bg-[#FAF7F5] px-4 py-3 text-base outline-none focus:border-[#D5CECA] focus:ring-2 focus:ring-border-[#E4C7D2]"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-slate-600 mb-1">Mesa *</label>
+                  <input
+                    type="number"
+                    value={tableNumber}
+                    onChange={(e) => setTableNumber(e.target.value)}
+                    placeholder="Ej: 5"
+                    min="1"
+                    required
+                    className="w-full rounded-xl border border-bg-[#DFF2EE] text-[#1F7A68] bg-[#FAF7F5] px-4 py-3 text-base outline-none focus:border-[#D5CECA] focus:ring-2 focus:ring-border-[#E4C7D2]"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-slate-600 mb-1">Notas / Alergias (opcional)</label>
+                  <textarea
+                    value={notes}
+                    onChange={(e) => setNotes(e.target.value)}
+                    placeholder="Ej: Sin azúcar, alergia a nueces..."
+                    rows={2}
+                    className="w-full rounded-xl border border-bg-[#DFF2EE] text-[#1F7A68] bg-[#FAF7F5] px-4 py-3 text-base outline-none focus:border-[#D5CECA] focus:ring-2 focus:ring-border-[#E4C7D2]"
+                  />
+                </div>
+              </div>
+
+              <div className="mb-4 space-y-2 max-h-40 overflow-y-auto">
+                {lines.map((line) => (
+                  <div key={line.product.id} className="flex items-center justify-between gap-2 py-2 border-b border-bg-[#F3E6EB]">
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-bold text-slate-700 truncate">{line.product.name}</p>
+                      <p className="text-xs text-slate-500">
+                        {line.quantity} × {formatMoney(line.product.price)} = {formatMoney(line.product.price * line.quantity)}
+                      </p>
+                      {line.notes && <p className="text-xs text-amber-700 bg-amber-50 px-2 py-0.5 rounded mt-1 inline-block">{line.notes}</p>}
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => setQuantity(line.product.id, round2(line.quantity - 1))}
+                        className="h-8 w-8 rounded-full bg-[#FDF8FC] text-lg font-bold text-bg-[#D64575] transition hover:bg-slate-200"
+                      >
+                        −
+                      </button>
+                      <span className="w-8 text-center text-sm font-extrabold">{line.quantity}</span>
+                      <button
+                        onClick={() => addProduct(line.product)}
+                        className="h-8 w-8 rounded-full bg-[#FDF8FC] text-lg font-bold text-bg-[#D64575] transition hover:bg-slate-200"
+                      >
+                        +
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <div className="flex justify-between text-xl font-extrabold text-slate-800 border-t border-bg-[#F3E6EB] pt-3 mb-4">
+                <span>Total</span>
+                <span className="text-text-[#D64575]">{formatMoney(subtotal)}</span>
+              </div>
+
+              {error && (
+                <p className="mb-3 rounded-xl bg-bg-[#F3E6EB] px-4 py-2.5 text-sm font-semibold text-text-[#BE3663]">
+                  {error}
+                </p>
               )}
+
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setCheckoutOpen(false)}
+                  disabled={submitting}
+                  className="flex-1 rounded-2xl bg-[#FDF8FC] py-3 font-bold text-slate-500 transition hover:bg-slate-200 disabled:opacity-40"
+                >
+                  Seguir agregando
+                </button>
+                <button
+                  onClick={() => submitOrder("PENDING")}
+                  disabled={submitting || !customerName.trim() || !tableNumber.trim()}
+                  className="flex-[2] rounded-2xl bg-amber-500 py-3 font-extrabold text-white shadow-lg shadow-amber-200 transition enabled:hover:bg-amber-600 disabled:opacity-40"
+                >
+                  {submitting ? "Enviando…" : "📤 Enviar a cocina"}
+                </button>
+                {hasOpenRegister && (
+                  <button
+                    onClick={() => submitOrder("PAID")}
+                    disabled={submitting || !customerName.trim() || !tableNumber.trim()}
+                    className="flex-[2] rounded-2xl bg-bg-[#D64575] py-3 font-extrabold text-white shadow-lg shadow-border-[#E4C7D2] transition enabled:hover:bg-text-[#D64575] disabled:opacity-40"
+                  >
+                    💳 Cobrar ya
+                  </button>
+                )}
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
 
-      <style jsx>{`
-        @keyframes slide-up {
-          from { transform: translateY(100%); opacity: 0; }
-          to { transform: translateY(0); opacity: 1; }
-        }
-        .animate-slide-up { animation: slide-up 0.3s ease-out; }
-      `}</style>
+        <style jsx>{`
+          @keyframes slide-up {
+            from { transform: translateY(100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+          }
+          .animate-slide-up { animation: slide-up 0.3s ease-out; }
+        `}</style>
+      </main>
     </div>
   );
 }

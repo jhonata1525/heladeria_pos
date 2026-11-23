@@ -11,6 +11,7 @@ import type {
   PendingOrderDTO,
   ProductDTO,
 } from "@/lib/types";
+import { TicketImpresion } from "@/components/TicketImpresion";
 
 const QUICK_CASH = [5000, 10000, 20000, 50000];
 
@@ -20,10 +21,20 @@ const PAYMENT_OPTIONS: { value: PaymentMethod; label: string; icon: string }[] =
   { value: "CARD", label: "Tarjeta", icon: "💳" },
 ];
 
+type TicketItemSnapshot = {
+  nombre: string;
+  cantidad: number;
+  precioUnitario: string;
+  subtotal: string;
+};
+
 type CheckoutResult = {
   orderNumber: number;
   total: number;
   changeGiven: number | null;
+  customerName: string;
+  paymentMethod: PaymentMethod;
+  items: TicketItemSnapshot[];
 };
 
 type SSEOrder = {
@@ -78,6 +89,11 @@ export function PosClient({
   const [liveHasOpenRegister, setLiveHasOpenRegister] = useState(hasOpenRegister);
 
   const eventSourceRef = useRef<EventSource | null>(null);
+
+  const allProducts = useMemo(
+    () => categories.flatMap((category) => category.products),
+    [categories],
+  );
 
   useEffect(() => {
     const es = new EventSource("/api/sse");
@@ -155,21 +171,55 @@ export function PosClient({
     };
   }, [router]);
 
-  const allProducts = useMemo(
-    () => categories.flatMap((category) => category.products),
-    [categories],
-  );
+  const quickCodeMap = useMemo(() => {
+    const map: Record<
+      string,
+      | { type: "category"; id: number; name: string }
+      | { type: "product"; id: number; name: string; categoryId: number }
+    > = {};
+    categories.forEach((category) => {
+      if (category.quickCode) {
+        map[category.quickCode.trim()] = {
+          type: "category",
+          id: category.id,
+          name: category.name,
+        };
+      }
+    });
+    allProducts.forEach((product) => {
+      if (product.quickCode) {
+        map[product.quickCode.trim()] = {
+          type: "product",
+          id: product.id,
+          name: product.name,
+          categoryId: product.categoryId,
+        };
+      }
+    });
+    return map;
+  }, [categories, allProducts]);
 
   const visibleProducts = useMemo(() => {
-    const term = search.trim().toLowerCase();
+    const rawTerm = search.trim();
+    const term = rawTerm.toLowerCase();
+
+    if (rawTerm && quickCodeMap[rawTerm]?.type === "category") {
+      const catId = quickCodeMap[rawTerm].id;
+      return allProducts.filter(
+        (product) => product.categoryId === catId && product.inStock && product.stockQuantity > 0,
+      );
+    }
+
     return allProducts.filter((product) => {
       const matchesCategory =
         selectedCategory === null || product.categoryId === selectedCategory;
       const matchesSearch =
-        term.length === 0 || product.name.toLowerCase().includes(term);
+        term.length === 0 ||
+        product.name.toLowerCase().includes(term) ||
+        (product.quickCode && product.quickCode.toLowerCase().includes(term));
       return matchesCategory && matchesSearch;
     });
-  }, [allProducts, search, selectedCategory]);
+  }, [allProducts, search, selectedCategory, quickCodeMap]);
 
   const lines = Object.values(cart);
   const subtotal = round2(
@@ -238,8 +288,7 @@ export function PosClient({
     setResult(null);
     setPayMethod("CASH");
     setCashInput("");
-    setCustomerName("");
-    setTableNumber("");
+    setReferenceNumber("");
     setCheckoutOpen(true);
   }
 
@@ -247,6 +296,17 @@ export function PosClient({
     if (lines.length === 0) return;
     setSubmitting(true);
     setError(null);
+
+    const itemsSnapshot: TicketItemSnapshot[] = lines.map((line) => ({
+      nombre: line.product.name,
+      cantidad: line.quantity,
+      precioUnitario: formatMoney(line.product.price),
+      subtotal: formatMoney(line.product.price * line.quantity),
+    }));
+    const totalSnapshot = subtotal;
+    const customerSnapshot = customerName.trim();
+    const payMethodSnapshot = payMethod;
+    const changeSnapshot = status === "PAID" && payMethod === "CASH" ? change : null;
 
     try {
       let response: Response;
@@ -267,10 +327,14 @@ export function PosClient({
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             status,
-            customerName: customerName.trim() || null,
+            customerName: customerSnapshot || null,
             tableNumber: tableNumber.trim() ? Number(tableNumber) : null,
             ...(status === "PAID"
-              ? { paymentMethod: payMethod, cashReceived: received, referenceNumber: payMethod !== "CASH" ? referenceNumber : undefined }
+              ? {
+                  paymentMethod: payMethod,
+                  cashReceived: received,
+                  referenceNumber: payMethod !== "CASH" ? referenceNumber : undefined,
+                }
               : {}),
             items: lines.map((line) => ({
               productId: line.product.id,
@@ -290,10 +354,15 @@ export function PosClient({
       const orderNumber = data?.order?.orderNumber ?? data?.order?.id ?? 0;
       setResult({
         orderNumber,
-        total: subtotal,
-        changeGiven: status === "PAID" && payMethod === "CASH" ? change : null,
+        total: totalSnapshot,
+        changeGiven: changeSnapshot,
+        customerName: customerSnapshot,
+        paymentMethod: payMethodSnapshot,
+        items: itemsSnapshot,
       });
       clearCart();
+      setCustomerName("");
+      setTableNumber("");
       setCheckoutOpen(false);
       router.refresh();
     } catch {
@@ -357,7 +426,23 @@ export function PosClient({
             type="search"
             value={search}
             onChange={(event) => setSearch(event.target.value)}
-            placeholder="Buscar producto… 🍦"
+            onKeyDown={(event) => {
+              if (event.key === "Enter") {
+                const code = search.trim();
+                const quickCodeEntry = quickCodeMap[code];
+                if (quickCodeEntry?.type === "product") {
+                  const product = allProducts.find((p) => p.id === quickCodeEntry.id);
+                  if (product && product.inStock && product.stockQuantity > 0) {
+                    addProduct(product);
+                    setSearch("");
+                  }
+                } else if (quickCodeEntry?.type === "category") {
+                  setSelectedCategory(quickCodeEntry.id);
+                  setSearch("");
+                }
+              }
+            }}
+            placeholder="Buscar producto… 🍦 o código rápido (ej. 3)"
             className="w-full rounded-full border-[1.5px] border-[#FF9CEE] bg-[#FDF8FC] px-5 py-3 text-base shadow-sm outline-none placeholder:text-slate-400 focus:border-[#FF9CEE] focus:ring-2 focus:ring-[#E052B5]"
           />
           <div className="flex flex-wrap gap-2">
@@ -372,20 +457,28 @@ export function PosClient({
             >
               Todos
             </button>
-            {categories.map((category) => (
-              <button
-                key={category.id}
-                type="button"
-                onClick={() => setSelectedCategory(category.id)}
-                className={`rounded-full px-4 py-2 text-sm font-semibold transition ${
-                  selectedCategory === category.id
-                    ? "bg-[#FF9CEE] text-[#2B1424] shadow font-bold"
-                    : "bg-[#FDF8FC] text-slate-700 shadow-sm border border-[#FF9CEE] hover:bg-[#FF9CEE]/30"
-                }`}
-              >
-                {category.name}
-              </button>
-            ))}
+            {categories.map((category) => {
+              const hasQuickCode = category.quickCode !== undefined && category.quickCode !== null && category.quickCode !== "";
+              return (
+                <button
+                  key={category.id}
+                  type="button"
+                  onClick={() => setSelectedCategory(category.id)}
+                  className={`rounded-full px-4 py-2 text-sm font-semibold transition ${
+                    selectedCategory === category.id
+                      ? "bg-[#FF9CEE] text-[#2B1424] shadow font-bold"
+                      : "bg-[#FDF8FC] text-slate-700 shadow-sm border border-[#FF9CEE] hover:bg-[#FF9CEE]/30"
+                  }`}
+                >
+                  {category.name}
+                  {hasQuickCode && (
+                    <span className="ml-2 rounded-full bg-[#85E3FF] px-2 py-0.5 text-xs font-extrabold text-[#1F1B24]">
+                      #{category.quickCode}
+                    </span>
+                  )}
+                </button>
+              );
+            })}
           </div>
         </div>
 
@@ -418,7 +511,7 @@ export function PosClient({
                     <button
                       type="button"
                       onClick={() => loadPendingOrder(order)}
-                      className="rounded-full bg-bg-[#D64575] px-3 py-1.5 text-xs font-bold text-white transition hover:bg-text-[#D64575]"
+                      className="rounded-full bg-[#D64575] px-3 py-1.5 text-xs font-bold text-white transition hover:bg-[#BE3663]"
                     >
                       Cobrar
                     </button>
@@ -426,7 +519,7 @@ export function PosClient({
                       <button
                         type="button"
                         onClick={() => cancelPendingOrder(order)}
-                        className="rounded-full bg-bg-[#DFF2EE] text-[#1F7A68] px-3 py-1.5 text-xs font-bold text-text-[#BE3663] transition hover:bg-border-[#E4C7D2]"
+                        className="rounded-full bg-[#F3E6EB] px-3 py-1.5 text-xs font-bold text-[#BE3663] transition hover:bg-[#E4C7D2]"
                       >
                         Cancelar
                       </button>
@@ -454,18 +547,18 @@ export function PosClient({
         )}
 
         {error && !checkoutOpen && (
-          <p className="mb-4 rounded-xl bg-bg-[#F3E6EB] px-4 py-3 text-sm font-semibold text-text-[#BE3663]">
+          <p className="mb-4 rounded-xl bg-[#F3E6EB] px-4 py-3 text-sm font-semibold text-[#BE3663]">
             {error}
           </p>
         )}
 
         {visibleProducts.length === 0 ? (
-          <div className="rounded-3xl border border-dashed border-border-[#E4C7D2] bg-[#FAF7F5]/70 p-12 text-center">
+          <div className="rounded-3xl border border-dashed border-[#E4C7D2] bg-[#FAF7F5]/70 p-12 text-center">
             <p className="text-4xl">🍦</p>
             <p className="mt-2 font-semibold text-slate-500">
               No hay productos que coincidan.
             </p>
-            <Link href="/productos" className="mt-1 inline-block text-sm font-semibold text-bg-[#D64575] underline">
+            <Link href="/productos" className="mt-1 inline-block text-sm font-semibold text-[#D64575] underline">
               Revisa el catálogo en Productos
             </Link>
           </div>
@@ -474,18 +567,24 @@ export function PosClient({
             {visibleProducts.map((product) => {
               const soldOut = !product.inStock || product.stockQuantity <= 0;
               const inCart = cart[product.id]?.quantity ?? 0;
+              const quickCode = product.quickCode;
               return (
                 <button
                   key={product.id}
                   type="button"
                   disabled={soldOut}
                   onClick={() => addProduct(product)}
-                  className={`relative flex min-h-[110px] flex-col justify-between rounded-2xl border-[1.5px] border-[#FF9CEE] p-3 text-left shadow-sm transition ${
+                  className={`relative flex min-h-[120px] flex-col justify-between rounded-2xl border-[1.5px] border-[#FF9CEE] p-3 text-left shadow-sm transition ${
                     soldOut
                       ? "cursor-not-allowed bg-[#FDF8FC] opacity-60"
                       : "bg-[#FDF8FC] hover:-translate-y-0.5 hover:shadow-md active:scale-95"
                   } ${inCart > 0 ? "ring-2 ring-[#FF9CEE]" : ""}`}
                 >
+                  {quickCode && (
+                    <span className="mb-1 inline-block w-fit rounded-full bg-[#85E3FF] px-2 py-0.5 text-[11px] font-extrabold text-[#1F1B24]">
+                      #{quickCode}
+                    </span>
+                  )}
                   {inCart > 0 && (
                     <span className="absolute right-2 top-2 flex h-6 w-6 items-center justify-center rounded-full bg-[#FF9CEE] text-xs font-bold text-[#2B1424]">
                       {inCart}
@@ -609,7 +708,7 @@ export function PosClient({
                 onChange={(e) => setCustomerName(e.target.value)}
                 placeholder="Ej: Juan Pérez"
                 required
-                className="rounded-lg border border-[#FF9CEE] bg-[#FDF8FC] px-3 py-2 text-sm outline-none focus:border-[#FF9CEE] focus:ring-2 focus:ring-[#E052B5]"
+                className="flex-1 rounded-lg border border-[#FF9CEE] bg-[#FDF8FC] px-3 py-2 text-sm outline-none focus:border-[#FF9CEE] focus:ring-2 focus:ring-[#E052B5]"
                 minLength={1}
               />
             </div>
@@ -619,7 +718,7 @@ export function PosClient({
             </div>
             <div className="flex justify-between text-xl font-extrabold text-slate-800">
               <span>Total</span>
-              <span className="text-text-[#D64575]">{formatMoney(subtotal)}</span>
+              <span className="text-[#D64575]">{formatMoney(subtotal)}</span>
             </div>
 
             <button
@@ -665,24 +764,25 @@ export function PosClient({
             </h3>
             <p className="mb-4 text-sm text-slate-500">
               Total a cobrar:{" "}
-              <span className="font-extrabold text-text-[#D64575]">
+              <span className="font-extrabold text-[#D64575]">
                 {formatMoney(subtotal)}
               </span>
             </p>
 
             {lines.length > 0 && (
-              <div className="mb-4 rounded-lg bg-amber-50 p-3 mb-4">
+              <div className="mb-4 rounded-lg bg-amber-50 p-3">
                 <h4 className="text-sm font-bold text-amber-800 mb-3">Productos de la comanda</h4>
                 <div className="space-y-2 text-sm">
                   {lines.map((line) => (
                     <div key={line.product.id} className="flex justify-between items-center py-1">
                       <span>
-                        {line.product.name}{" "}{line.quantity > 1 && (
-                          <span className="text-bg-[#D64575]">×{line.quantity}</span>
+                        {line.product.name}{" "}
+                        {line.quantity > 1 && (
+                          <span className="text-[#D64575] font-bold">×{line.quantity}</span>
                         )}
                       </span>
                       {line.notes && (
-                        <span className="text-emerald-400 text-xs italic">({line.notes})</span>
+                        <span className="text-emerald-600 text-xs italic">({line.notes})</span>
                       )}
                       <span className="font-medium">{formatMoney(line.product.price * line.quantity)}</span>
                     </div>
@@ -701,7 +801,7 @@ export function PosClient({
                   value={customerName}
                   onChange={(e) => setCustomerName(e.target.value)}
                   placeholder="Ej: Juan Pérez"
-                  className="w-full rounded-xl border border-bg-[#DFF2EE] text-[#1F7A68] bg-[#FAF7F5] px-4 py-3 text-base outline-none focus:border-[#D5CECA] focus:ring-2 focus:ring-border-[#E4C7D2]"
+                  className="w-full rounded-xl border border-[#E4C7D2] text-slate-800 bg-[#FAF7F5] px-4 py-3 text-base outline-none focus:border-[#FF9CEE] focus:ring-2 focus:ring-[#E052B5]"
                 />
               </div>
               <div>
@@ -714,7 +814,7 @@ export function PosClient({
                   onChange={(e) => setTableNumber(e.target.value)}
                   placeholder="Ej: 5"
                   min="1"
-                  className="w-full rounded-xl border border-bg-[#DFF2EE] text-[#1F7A68] bg-[#FAF7F5] px-4 py-3 text-base outline-none focus:border-[#D5CECA] focus:ring-2 focus:ring-border-[#E4C7D2]"
+                  className="w-full rounded-xl border border-[#E4C7D2] text-slate-800 bg-[#FAF7F5] px-4 py-3 text-base outline-none focus:border-[#FF9CEE] focus:ring-2 focus:ring-[#E052B5]"
                 />
               </div>
             </div>
@@ -727,8 +827,8 @@ export function PosClient({
                   onClick={() => setPayMethod(option.value)}
                   className={`flex flex-col items-center gap-1 rounded-2xl border-2 px-2 py-3 text-xs font-bold transition ${
                     payMethod === option.value
-                      ? "border-emerald-400 bg-bg-[#F3E6EB] text-text-[#D64575]"
-                      : "border-slate-100 text-slate-500 hover:border-border-[#E4C7D2]"
+                      ? "border-[#D64575] bg-[#F3E6EB] text-[#D64575]"
+                      : "border-slate-200 text-slate-500 hover:border-[#E4C7D2]"
                   }`}
                 >
                   <span className="text-xl">{option.icon}</span>
@@ -746,7 +846,7 @@ export function PosClient({
                     value={referenceNumber}
                     onChange={(e) => setReferenceNumber(e.target.value)}
                     placeholder="Ej: TRX123456 o últimos 4 dígitos"
-                    className="w-full rounded-xl border border-bg-[#DFF2EE] text-[#1F7A68] bg-[#FAF7F5] px-4 py-3 text-base outline-none focus:border-[#D5CECA] focus:ring-2 focus:ring-border-[#E4C7D2]"
+                    className="mt-1 w-full rounded-xl border border-[#E4C7D2] text-slate-800 bg-[#FAF7F5] px-4 py-3 text-base outline-none focus:border-[#FF9CEE] focus:ring-2 focus:ring-[#E052B5]"
                   />
                 </label>
               </div>
@@ -764,14 +864,14 @@ export function PosClient({
                     value={cashInput}
                     onChange={(event) => setCashInput(event.target.value)}
                     placeholder="0"
-                    className="mt-1 w-full rounded-xl border border-bg-[#DFF2EE] text-[#1F7A68] bg-bg-[#F3E6EB]/50 px-4 py-3 text-2xl font-extrabold text-slate-800 outline-none focus:border-[#D5CECA] focus:ring-2 focus:ring-border-[#E4C7D2]"
+                    className="mt-1 w-full rounded-xl border border-[#E4C7D2] bg-[#F3E6EB]/50 px-4 py-3 text-2xl font-extrabold text-slate-800 outline-none focus:border-[#FF9CEE] focus:ring-2 focus:ring-[#E052B5]"
                   />
                 </label>
                 <div className="flex flex-wrap gap-2">
                   <button
                     type="button"
                     onClick={() => setCashInput(String(subtotal))}
-                    className="rounded-full bg-bg-[#DFF2EE] text-[#1F7A68] px-3 py-1.5 text-xs font-bold text-text-[#D64575] hover:bg-border-[#E4C7D2]"
+                    className="rounded-full bg-[#DFF2EE] px-3 py-1.5 text-xs font-bold text-[#1F7A68] hover:bg-[#CDE8E2]"
                   >
                     Exacto
                   </button>
@@ -780,7 +880,7 @@ export function PosClient({
                       key={amount}
                       type="button"
                       onClick={() => setCashInput(String(amount))}
-                      className="rounded-full bg-[#FDF8FC] px-3 py-1.5 text-xs font-bold text-slate-600 hover:bg-slate-200"
+                      className="rounded-full bg-[#FDF8FC] border border-[#E4C7D2] px-3 py-1.5 text-xs font-bold text-slate-600 hover:bg-slate-100"
                     >
                       {formatMoney(amount)}
                     </button>
@@ -791,8 +891,8 @@ export function PosClient({
                     change === null
                       ? "bg-[#FDF8FC] text-slate-400"
                       : change < 0
-                        ? "bg-bg-[#F3E6EB] text-text-[#D64575]"
-                        : "bg-bg-[#F3E6EB] text-text-[#D64575]"
+                        ? "bg-[#F3E6EB] text-[#D64575]"
+                        : "bg-[#DFF2EE] text-[#1F7A68]"
                   }`}
                 >
                   {change === null
@@ -805,7 +905,7 @@ export function PosClient({
             )}
 
             {error && (
-              <p className="mb-3 rounded-xl bg-bg-[#F3E6EB] px-4 py-2.5 text-sm font-semibold text-text-[#BE3663]">
+              <p className="mb-3 rounded-xl bg-[#F3E6EB] px-4 py-2.5 text-sm font-semibold text-[#BE3663]">
                 {error}
               </p>
             )}
@@ -815,7 +915,7 @@ export function PosClient({
                 type="button"
                 disabled={submitting}
                 onClick={() => setCheckoutOpen(false)}
-                className="flex-1 rounded-2xl bg-[#FDF8FC] py-3 font-bold text-slate-500 transition hover:bg-slate-200 disabled:opacity-40"
+                className="flex-1 rounded-2xl bg-[#FDF8FC] border border-slate-200 py-3 font-bold text-slate-500 transition hover:bg-slate-100 disabled:opacity-40"
               >
                 Volver
               </button>
@@ -827,7 +927,7 @@ export function PosClient({
                     (!Number.isFinite(received) || received < subtotal))
                 }
                 onClick={() => submitOrder("PAID")}
-                className="flex-[2] rounded-2xl bg-bg-[#D64575] py-3 font-extrabold text-white shadow-lg shadow-bg-[#DFF2EE] text-[#1F7A68] transition enabled:hover:bg-text-[#D64575] disabled:opacity-40"
+                className="flex-[2] rounded-2xl bg-[#D64575] py-3 font-extrabold text-white shadow-lg transition enabled:hover:bg-[#BE3663] disabled:opacity-40"
               >
                 {submitting ? "Procesando…" : "Confirmar pago"}
               </button>
@@ -848,7 +948,7 @@ export function PosClient({
               {formatMoney(result.total)}
             </p>
             {result.changeGiven !== null && result.changeGiven >= 0 && (
-              <div className="mt-4 rounded-2xl bg-bg-[#F3E6EB] px-4 py-4 text-text-[#D64575]">
+              <div className="mt-4 rounded-2xl bg-[#DFF2EE] px-4 py-4 text-[#1F7A68]">
                 <p className="text-xs font-bold uppercase tracking-wide">
                   Cambio a entregar
                 </p>
@@ -857,10 +957,24 @@ export function PosClient({
                 </p>
               </div>
             )}
+            <div className="mt-4">
+              <TicketImpresion
+                negocioNombre="Heladería POS"
+                negocioDirección="Calle Principal #123"
+                negocioTelefono="📱 312 345 6789"
+                fechaHora={new Date().toLocaleString()}
+                referenciaPedido={String(result.orderNumber)}
+                nombreCliente={result.customerName}
+                cajero="Cajero actual"
+                items={result.items}
+                total={result.total}
+                metodoPago={result.paymentMethod}
+              />
+            </div>
             <button
               type="button"
               onClick={() => setResult(null)}
-              className="mt-6 w-full rounded-2xl bg-bg-[#D64575] py-3 font-extrabold text-white transition hover:bg-text-[#D64575]"
+              className="mt-4 w-full rounded-2xl bg-[#D64575] py-3 font-extrabold text-white transition hover:bg-[#BE3663]"
             >
               Nueva venta
             </button>

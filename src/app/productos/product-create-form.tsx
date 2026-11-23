@@ -115,6 +115,14 @@ export function ProductCreateForm({
 
           <div className="grid grid-cols-2 gap-3">
             <label className="text-xs font-semibold text-slate-500">
+              Código rápido (quickCode)
+              <input
+                name="quickCode"
+                placeholder="Ej: 3 o 301"
+                className="mt-1 w-full rounded-lg border border-bg-[#DFF2EE] text-[#1F7A68] bg-[#FAF7F5] px-3 py-2 text-sm font-normal text-slate-700 outline-none focus:border-[#D5CECA]"
+              />
+            </label>
+            <label className="text-xs font-semibold text-slate-500">
               Unidad
               <select
                 name="unit"
@@ -128,6 +136,9 @@ export function ProductCreateForm({
                 ))}
               </select>
             </label>
+          </div>
+
+          <div className="grid grid-cols-2 gap-3">
             <label className="text-xs font-semibold text-slate-500">
               Stock inicial
               <input
@@ -138,6 +149,14 @@ export function ProductCreateForm({
                 min={0}
                 defaultValue={0}
                 required
+                className="mt-1 w-full rounded-lg border border-bg-[#DFF2EE] text-[#1F7A68] bg-[#FAF7F5] px-3 py-2 text-sm font-normal text-slate-700 outline-none focus:border-[#D5CECA]"
+              />
+            </label>
+            <label className="text-xs font-semibold text-slate-500">
+              Código quickCode categoría
+              <input
+                name="categoryQuickCode"
+                placeholder="Ej: 3 para Conos"
                 className="mt-1 w-full rounded-lg border border-bg-[#DFF2EE] text-[#1F7A68] bg-[#FAF7F5] px-3 py-2 text-sm font-normal text-slate-700 outline-none focus:border-[#D5CECA]"
               />
             </label>
