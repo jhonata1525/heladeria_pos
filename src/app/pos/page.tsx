@@ -1,7 +1,8 @@
 import { prisma } from "@/lib/prisma";
-import type { CategoryDTO, PendingOrderDTO } from "@/lib/types";
+import type { CategoryDTO, PendingOrderDTO, TicketConfigDTO } from "@/lib/types";
 import { requireUser } from "@/lib/auth-server";
 import { PosClient } from "./pos-client";
+import { round2 } from "@/lib/format";
 
 export const metadata = { title: "Punto de Venta · Heladería POS" };
 
@@ -26,7 +27,7 @@ function calculateComboStock(product: { id: number; kind: string; stockQuantity:
 export default async function PosPage() {
   const user = await requireUser();
 
-  const [categories, pendingOrders, openRegister] = await Promise.all([
+  const [categories, pendingOrders, openRegister, ticketConfig] = await Promise.all([
     prisma.category.findMany({
       orderBy: { id: "asc" },
       include: {
@@ -42,6 +43,7 @@ export default async function PosPage() {
       include: { items: { include: { product: true } } },
     }),
     prisma.cashRegister.findFirst({ where: { status: "OPEN" } }),
+    prisma.ticketConfig.findUnique({ where: { id: "default" } }),
   ]);
 
   const categoryData: CategoryDTO[] = categories.map((category) => ({
@@ -78,10 +80,22 @@ export default async function PosPage() {
       productId: item.productId,
       productName: item.product.name,
       quantity: item.quantity,
-      price: item.price,
+      unitPrice: item.product.price,
+      subtotal: round2(item.product.price * item.quantity),
       notes: item.notes,
+      createdAt: (item.createdAt ?? order.createdAt).toISOString(),
     })),
   }));
+
+  const ticketConfigData: TicketConfigDTO = ticketConfig ?? {
+    businessName: "Heladería POS",
+    nit: null,
+    address: null,
+    phone: "",
+    footerMessage: "¡Gracias por su compra!",
+    fontSize: 10,
+    paperWidthMm: 58,
+  };
 
   return (
     <PosClient
@@ -89,6 +103,7 @@ export default async function PosPage() {
       pendingOrders={pendingData}
       hasOpenRegister={openRegister !== null}
       userRole={user.role}
+      ticketConfig={ticketConfigData}
     />
   );
 }

@@ -1,3 +1,13 @@
+export interface TicketConfigDTO {
+  businessName: string;
+  nit: string | null;
+  address: string | null;
+  phone: string;
+  footerMessage: string;
+  fontSize: number;
+  paperWidthMm: number;
+}
+
 export interface ProductDTO {
   id: number;
   name: string;
@@ -28,8 +38,10 @@ export interface PendingOrderItemDTO {
   productId: number;
   productName: string;
   quantity: number;
-  price: number;
+  unitPrice: number;
+  subtotal: number;
   notes: string | null;
+  createdAt: string;
 }
 
 export interface PendingOrderDTO {

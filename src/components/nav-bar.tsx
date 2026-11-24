@@ -12,6 +12,7 @@ const links = [
   { href: "/admin/reportes", label: "Reportes", icon: "📊", roles: ["ADMIN"] },
   { href: "/admin/usuarios", label: "Usuarios", icon: "👥", roles: ["ADMIN"] },
   { href: "/pedido", label: "Pedido Cliente", icon: "📱", roles: ["ADMIN"] },
+  { href: "/ticket", label: "🧾 Ticket", icon: "🧾", roles: ["ADMIN"] },
 ];
 
 export function NavBar({

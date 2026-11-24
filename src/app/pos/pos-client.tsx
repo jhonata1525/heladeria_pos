@@ -9,7 +9,9 @@ import type {
   CategoryDTO,
   PaymentMethod,
   PendingOrderDTO,
+  PendingOrderItemDTO,
   ProductDTO,
+  TicketConfigDTO,
 } from "@/lib/types";
 import { TicketImpresion } from "@/components/TicketImpresion";
 
@@ -24,8 +26,8 @@ const PAYMENT_OPTIONS: { value: PaymentMethod; label: string; icon: string }[] =
 type TicketItemSnapshot = {
   nombre: string;
   cantidad: number;
-  precioUnitario: string;
-  subtotal: string;
+  precioUnitario: number;
+  subtotal: number;
 };
 
 type CheckoutResult = {
@@ -65,11 +67,13 @@ export function PosClient({
   pendingOrders,
   hasOpenRegister,
   userRole,
+  ticketConfig,
 }: {
   categories: CategoryDTO[];
   pendingOrders: PendingOrderDTO[];
   hasOpenRegister: boolean;
   userRole: string;
+  ticketConfig: TicketConfigDTO;
 }) {
   const router = useRouter();
   const [search, setSearch] = useState("");
@@ -85,8 +89,21 @@ export function PosClient({
   const [editingOrderId, setEditingOrderId] = useState<number | null>(null);
   const [customerName, setCustomerName] = useState("");
   const [tableNumber, setTableNumber] = useState("");
+  const customerNameRef = useRef<HTMLInputElement>(null);
   const [livePendingOrders, setLivePendingOrders] = useState<PendingOrderDTO[]>(pendingOrders);
+  const [syncedPendingOrders, setSyncedPendingOrders] = useState<PendingOrderDTO[]>(pendingOrders);
   const [liveHasOpenRegister, setLiveHasOpenRegister] = useState(hasOpenRegister);
+  const [detailOrder, setDetailOrder] = useState<PendingOrderDTO | null>(null);
+
+  if (pendingOrders !== syncedPendingOrders) {
+    setSyncedPendingOrders(pendingOrders);
+    setLivePendingOrders(pendingOrders);
+  }
+
+  const openOrderDetail = (order: PendingOrderDTO) => {
+    const found = livePendingOrders.find((o) => o.id === order.id);
+    setDetailOrder(found ?? order);
+  };
 
   const eventSourceRef = useRef<EventSource | null>(null);
 
@@ -118,6 +135,7 @@ export function PosClient({
             },
           ];
         });
+        router.refresh();
       } catch (e) {
         console.error("Failed to parse order:created", e);
       }
@@ -126,9 +144,10 @@ export function PosClient({
     es.addEventListener("order:updated", (event) => {
       try {
         const update = JSON.parse(event.data) as SSEOrderUpdated;
-        setLivePendingOrders((prev) =>
-          prev.filter((o) => o.id !== update.id)
-        );
+        if (update.status !== "PENDING") {
+          setLivePendingOrders((prev) => prev.filter((o) => o.id !== update.id));
+        }
+        router.refresh();
       } catch (e) {
         console.error("Failed to parse order:updated", e);
       }
@@ -199,15 +218,17 @@ export function PosClient({
     return map;
   }, [categories, allProducts]);
 
+  const isFiltering = selectedCategory !== null || search.trim() !== "";
+
   const visibleProducts = useMemo(() => {
     const rawTerm = search.trim();
     const term = rawTerm.toLowerCase();
 
+    if (!isFiltering) return [];
+
     if (rawTerm && quickCodeMap[rawTerm]?.type === "category") {
       const catId = quickCodeMap[rawTerm].id;
-      return allProducts.filter(
-        (product) => product.categoryId === catId && product.inStock && product.stockQuantity > 0,
-      );
+      return allProducts.filter((product) => product.categoryId === catId);
     }
 
     return allProducts.filter((product) => {
@@ -219,7 +240,7 @@ export function PosClient({
         (product.quickCode && product.quickCode.toLowerCase().includes(term));
       return matchesCategory && matchesSearch;
     });
-  }, [allProducts, search, selectedCategory, quickCodeMap]);
+  }, [allProducts, search, selectedCategory, quickCodeMap, isFiltering]);
 
   const lines = Object.values(cart);
   const subtotal = round2(
@@ -284,6 +305,11 @@ export function PosClient({
   }
 
   function openCheckout() {
+    if (!customerName.trim()) {
+      setError("⚠️ Escribe el nombre del cliente antes de cobrar");
+      customerNameRef.current?.focus();
+      return;
+    }
     setError(null);
     setResult(null);
     setPayMethod("CASH");
@@ -294,14 +320,20 @@ export function PosClient({
 
   async function submitOrder(status: "PENDING" | "PAID") {
     if (lines.length === 0) return;
-    setSubmitting(true);
+    if (!customerName.trim()) {
+      setError("⚠️ El nombre del cliente es obligatorio");
+      customerNameRef.current?.focus();
+      setSubmitting(false);
+      return;
+    }
     setError(null);
+    setSubmitting(true);
 
     const itemsSnapshot: TicketItemSnapshot[] = lines.map((line) => ({
       nombre: line.product.name,
       cantidad: line.quantity,
-      precioUnitario: formatMoney(line.product.price),
-      subtotal: formatMoney(line.product.price * line.quantity),
+      precioUnitario: line.product.price,
+      subtotal: round2(line.product.price * line.quantity),
     }));
     const totalSnapshot = subtotal;
     const customerSnapshot = customerName.trim();
@@ -327,7 +359,7 @@ export function PosClient({
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             status,
-            customerName: customerSnapshot || null,
+            customerName: customerSnapshot,
             tableNumber: tableNumber.trim() ? Number(tableNumber) : null,
             ...(status === "PAID"
               ? {
@@ -352,14 +384,16 @@ export function PosClient({
       }
 
       const orderNumber = data?.order?.orderNumber ?? data?.order?.id ?? 0;
-      setResult({
-        orderNumber,
-        total: totalSnapshot,
-        changeGiven: changeSnapshot,
-        customerName: customerSnapshot,
-        paymentMethod: payMethodSnapshot,
-        items: itemsSnapshot,
-      });
+      if (status === "PAID") {
+        setResult({
+          orderNumber,
+          total: totalSnapshot,
+          changeGiven: changeSnapshot,
+          customerName: customerSnapshot,
+          paymentMethod: payMethodSnapshot,
+          items: itemsSnapshot,
+        });
+      }
       clearCart();
       setCustomerName("");
       setTableNumber("");
@@ -392,10 +426,14 @@ export function PosClient({
     setEditingOrderId(order.id);
     setCustomerName(order.customerName ?? "");
     setTableNumber(order.tableNumber?.toString() ?? "");
-    openCheckout();
+    setCheckoutOpen(true);
   }
 
   async function cancelPendingOrder(order: PendingOrderDTO) {
+    if (userRole !== "ADMIN") {
+      setError("Solo los administradores pueden cancelar pedidos");
+      return;
+    }
     if (!window.confirm(`¿Cancelar el pedido #${order.orderNumber}? El stock volverá al inventario.`)) {
       return;
     }
@@ -415,6 +453,71 @@ export function PosClient({
       router.refresh();
     } catch {
       setError("Error de conexión con el servidor");
+    }
+  }
+
+  async function addItemsToPendingOrder(order: PendingOrderDTO) {
+    if (lines.length === 0) {
+      setError("⚠️ Selecciona primero los productos en la comanda para agregarlos");
+      return;
+    }
+    const itemsToAdd = lines.map((line) => ({
+      productId: line.product.id,
+      quantity: line.quantity,
+      notes: line.notes.trim() || null,
+    }));
+    setError(null);
+    setSubmitting(true);
+    try {
+      const res = await fetch(`/api/orders/${order.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "addItems",
+          items: itemsToAdd,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data?.error ?? "No se pudieron agregar los productos");
+        return;
+      }
+      const updated = data?.order as
+        | {
+            id: number;
+            total: number;
+            items: Array<{
+              productId: number;
+              quantity: number;
+              price: number;
+              notes: string | null;
+              createdAt: string;
+              product?: { name: string } | null;
+            }>;
+          }
+        | undefined;
+      if (updated?.items) {
+        const mappedItems: PendingOrderItemDTO[] = updated.items.map((it) => ({
+          productId: it.productId,
+          productName: it.product?.name ?? `Producto ${it.productId}`,
+          quantity: it.quantity,
+          unitPrice: it.price,
+          subtotal: round2(it.price * it.quantity),
+          notes: it.notes ?? null,
+          createdAt: it.createdAt,
+        }));
+        setLivePendingOrders((prev) =>
+          prev.map((o) =>
+            o.id === order.id ? { ...o, total: updated.total, items: mappedItems } : o,
+          ),
+        );
+      }
+      clearCart();
+      router.refresh();
+    } catch {
+      setError("Error de conexión con el servidor");
+    } finally {
+      setSubmitting(false);
     }
   }
 
@@ -448,17 +551,23 @@ export function PosClient({
           <div className="flex flex-wrap gap-2">
             <button
               type="button"
-              onClick={() => setSelectedCategory(null)}
+              onClick={() => {
+                setSelectedCategory(null);
+                setSearch("");
+              }}
               className={`rounded-full px-4 py-2 text-sm font-semibold transition ${
-                selectedCategory === null
+                selectedCategory === null && search.trim() === ""
                   ? "bg-[#FF9CEE] text-[#2B1424] shadow font-bold"
                   : "bg-[#FDF8FC] text-slate-700 shadow-sm border border-[#FF9CEE] hover:bg-[#FF9CEE]/30"
               }`}
             >
-              Todos
+              Categorías
             </button>
             {categories.map((category) => {
-              const hasQuickCode = category.quickCode !== undefined && category.quickCode !== null && category.quickCode !== "";
+              const hasQuickCode =
+                category.quickCode !== undefined &&
+                category.quickCode !== null &&
+                category.quickCode !== "";
               return (
                 <button
                   key={category.id}
@@ -488,45 +597,65 @@ export function PosClient({
               ⏳ Pedidos en cola ({livePendingOrders.length})
             </h2>
             <ul className="space-y-2">
-              {livePendingOrders.map((order) => (
-                <li
-                  key={order.id}
-                  className="flex flex-wrap items-center justify-between gap-2 rounded-xl bg-[#FAF7F5] px-3 py-2 shadow-sm"
-                >
-                  <div className="text-sm">
-                    <span className="font-bold text-slate-700">
-                      #{order.orderNumber}
-                    </span>{" "}
-                    {order.customerName && (
-                      <span className="text-slate-500"> · {order.customerName}</span>
-                    )}
-                    {order.tableNumber && (
-                      <span className="text-slate-500"> · Mesa {order.tableNumber}</span>
-                    )}
-                    <span className="text-slate-500">
-                      · {order.items.length} productos · {formatMoney(order.total)}
-                    </span>
-                  </div>
-                  <div className="flex gap-2">
-                    <button
-                      type="button"
-                      onClick={() => loadPendingOrder(order)}
-                      className="rounded-full bg-[#D64575] px-3 py-1.5 text-xs font-bold text-white transition hover:bg-[#BE3663]"
-                    >
-                      Cobrar
-                    </button>
-                    {userRole === "ADMIN" && (
+              {livePendingOrders.map((order) => {
+                const totalUnits = order.items.reduce((sum, it) => sum + it.quantity, 0);
+                return (
+                  <li
+                    key={order.id}
+                    className="flex flex-wrap items-center justify-between gap-2 rounded-xl bg-[#FAF7F5] px-3 py-2.5 shadow-sm"
+                  >
+                    <div className="text-sm">
+                      <span className="font-bold text-slate-800">
+                        #{order.orderNumber}
+                      </span>
+                      {order.customerName && (
+                        <span className="font-semibold text-slate-700"> · {order.customerName}</span>
+                      )}
+                      {order.tableNumber && (
+                        <span className="text-slate-500"> · Mesa {order.tableNumber}</span>
+                      )}
+                      <span className="text-slate-500">
+                        {" "}· {totalUnits} prod. · <strong className="text-[#D64575]">{formatMoney(order.total)}</strong>
+                      </span>
+                    </div>
+                    <div className="flex flex-wrap items-center gap-1.5">
                       <button
                         type="button"
-                        onClick={() => cancelPendingOrder(order)}
-                        className="rounded-full bg-[#F3E6EB] px-3 py-1.5 text-xs font-bold text-[#BE3663] transition hover:bg-[#E4C7D2]"
+                        onClick={() => openOrderDetail(order)}
+                        className="rounded-full bg-[#FF9CEE]/50 px-3 py-1.5 text-xs font-bold text-[#2B1424] transition hover:bg-[#FF9CEE]"
+                        title="Ver productos del pedido"
                       >
-                        Cancelar
+                        👁️ Ver
                       </button>
-                    )}
-                  </div>
-                </li>
-              ))}
+                      <button
+                        type="button"
+                        disabled={submitting}
+                        onClick={() => addItemsToPendingOrder(order)}
+                        className="rounded-full bg-[#85E3FF] px-3 py-1.5 text-xs font-bold text-[#1F1B24] transition hover:bg-[#67D5F7] disabled:opacity-40"
+                        title="Sumar los productos de la comanda activa a este pedido"
+                      >
+                        + Agregar
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => loadPendingOrder(order)}
+                        className="rounded-full bg-[#D64575] px-3 py-1.5 text-xs font-bold text-white transition hover:bg-[#BE3663]"
+                      >
+                        Cobrar
+                      </button>
+                      {userRole === "ADMIN" && (
+                        <button
+                          type="button"
+                          onClick={() => cancelPendingOrder(order)}
+                          className="rounded-full bg-[#F3E6EB] px-3 py-1.5 text-xs font-bold text-[#BE3663] transition hover:bg-[#E4C7D2]"
+                        >
+                          Cancelar
+                        </button>
+                      )}
+                    </div>
+                  </li>
+                );
+              })}
             </ul>
           </div>
         )}
@@ -552,71 +681,139 @@ export function PosClient({
           </p>
         )}
 
-        {visibleProducts.length === 0 ? (
-          <div className="rounded-3xl border border-dashed border-[#E4C7D2] bg-[#FAF7F5]/70 p-12 text-center">
-            <p className="text-4xl">🍦</p>
-            <p className="mt-2 font-semibold text-slate-500">
-              No hay productos que coincidan.
-            </p>
-            <Link href="/productos" className="mt-1 inline-block text-sm font-semibold text-[#D64575] underline">
-              Revisa el catálogo en Productos
-            </Link>
-          </div>
-        ) : (
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-4">
-            {visibleProducts.map((product) => {
-              const soldOut = !product.inStock || product.stockQuantity <= 0;
-              const inCart = cart[product.id]?.quantity ?? 0;
-              const quickCode = product.quickCode;
+        {!isFiltering ? (
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
+            {categories.map((category) => {
+              const availableCount = category.products.filter(
+                (p) => p.inStock && p.stockQuantity > 0,
+              ).length;
               return (
                 <button
-                  key={product.id}
+                  key={category.id}
                   type="button"
-                  disabled={soldOut}
-                  onClick={() => addProduct(product)}
-                  className={`relative flex min-h-[120px] flex-col justify-between rounded-2xl border-[1.5px] border-[#FF9CEE] p-3 text-left shadow-sm transition ${
-                    soldOut
-                      ? "cursor-not-allowed bg-[#FDF8FC] opacity-60"
-                      : "bg-[#FDF8FC] hover:-translate-y-0.5 hover:shadow-md active:scale-95"
-                  } ${inCart > 0 ? "ring-2 ring-[#FF9CEE]" : ""}`}
+                  onClick={() => setSelectedCategory(category.id)}
+                  className="group flex flex-col justify-between rounded-3xl border-[1.5px] border-[#FF9CEE] bg-[#FDF8FC] p-5 text-left shadow-sm transition hover:-translate-y-0.5 hover:bg-[#FFF0FA] hover:shadow-md"
                 >
-                  {quickCode && (
-                    <span className="mb-1 inline-block w-fit rounded-full bg-[#85E3FF] px-2 py-0.5 text-[11px] font-extrabold text-[#1F1B24]">
-                      #{quickCode}
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[#FF9CEE]/30 text-xl">
+                      🍨
                     </span>
-                  )}
-                  {inCart > 0 && (
-                    <span className="absolute right-2 top-2 flex h-6 w-6 items-center justify-center rounded-full bg-[#FF9CEE] text-xs font-bold text-[#2B1424]">
-                      {inCart}
+                    <span className="rounded-full bg-[#85E3FF] px-2.5 py-1 text-xs font-extrabold text-[#1F1B24]">
+                      PLU #{category.quickCode ?? category.id}
                     </span>
-                  )}
-                  <span className="pr-6 text-sm font-bold leading-snug text-[#1F1B24]">
-                    {product.image ? (
-                      <img
-                        src={product.image}
-                        alt=""
-                        className="mb-1.5 h-10 w-10 rounded-lg object-cover"
-                      />
-                    ) : null}
-                    {product.name}
-                  </span>
-                  <span className="mt-2 flex items-end justify-between gap-1">
-                    <span className="text-base font-extrabold text-[#C43E96]">
-                      {formatMoney(product.price)}
-                    </span>
-                    <span
-                      className={`text-[12px] font-bold text-[#C43E96] ${
-                        soldOut ? "text-rose-400" : ""
-                      }`}
-                    >
-                      {soldOut
-                        ? "Agotado"
-                        : `${product.stockQuantity} ${product.unit}`}
-                    </span>
-                  </span>
+                  </div>
+                  <div className="mt-4">
+                    <h3 className="text-base font-extrabold text-slate-800 group-hover:text-[#C43E96]">
+                      {category.name}
+                    </h3>
+                    <p className="mt-0.5 text-xs font-semibold text-slate-500">
+                      {availableCount} productos disponibles
+                    </p>
+                  </div>
                 </button>
               );
             })}
+          </div>
+        ) : (
+          <div>
+            <div className="mb-3 flex items-center justify-between border-b border-[#FF9CEE]/60 pb-2.5">
+              <button
+                type="button"
+                onClick={() => {
+                  setSelectedCategory(null);
+                  setSearch("");
+                }}
+                className="inline-flex items-center gap-1.5 rounded-full bg-[#FDF8FC] border border-[#FF9CEE] px-3.5 py-1.5 text-xs font-bold text-[#C43E96] shadow-sm transition hover:bg-[#FF9CEE]/25"
+              >
+                ← Ver todas las categorías
+              </button>
+              <span className="text-xs font-semibold text-slate-600">
+                {visibleProducts.length} resultado(s)
+              </span>
+            </div>
+
+            {visibleProducts.length === 0 ? (
+              <div className="rounded-3xl border border-dashed border-[#E4C7D2] bg-[#FAF7F5]/70 p-12 text-center">
+                <p className="text-4xl">🍦</p>
+                <p className="mt-2 font-semibold text-slate-500">
+                  No hay productos que coincidan.
+                </p>
+                <Link
+                  href="/productos"
+                  className="mt-1 inline-block text-sm font-semibold text-[#D64575] underline"
+                >
+                  Revisa el catálogo en Productos
+                </Link>
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 gap-3.5 sm:grid-cols-3 xl:grid-cols-4">
+                {visibleProducts.map((product) => {
+                  const soldOut = !product.inStock || product.stockQuantity <= 0;
+                  const lowStock = !soldOut && product.stockQuantity <= 5;
+                  const inCart = cart[product.id]?.quantity ?? 0;
+                  const categoryName =
+                    categories.find((cat) => cat.id === product.categoryId)?.name ?? "";
+
+                  return (
+                    <button
+                      key={product.id}
+                      type="button"
+                      disabled={soldOut}
+                      onClick={() => addProduct(product)}
+                      className={`group relative flex flex-col justify-between rounded-2xl border-[1.5px] p-3.5 text-left transition ${
+                        soldOut
+                          ? "cursor-not-allowed border-slate-200 bg-slate-100/80 opacity-60"
+                          : inCart > 0
+                            ? "border-[#D64575] bg-[#FFF0FA] shadow-md"
+                            : "border-[#FF9CEE] bg-[#FDF8FC] shadow-sm hover:-translate-y-0.5 hover:shadow-md"
+                      }`}
+                    >
+                      <div>
+                        <div className="mb-2 flex items-center justify-between gap-1">
+                          <span className="truncate rounded-md bg-[#F3E6EB] px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-[#9E2B57]">
+                            {categoryName}
+                          </span>
+                          {product.quickCode && (
+                            <span className="shrink-0 rounded-full bg-[#85E3FF] px-2 py-0.5 text-[10px] font-extrabold text-[#1F1B24]">
+                              #{product.quickCode}
+                            </span>
+                          )}
+                        </div>
+
+                        <p className="line-clamp-2 text-sm font-extrabold leading-snug text-slate-800 group-hover:text-[#C43E96]">
+                          {product.name}
+                        </p>
+                      </div>
+
+                      {inCart > 0 && (
+                        <span className="absolute -right-2 -top-2 flex h-6 w-6 items-center justify-center rounded-full bg-[#D64575] text-xs font-extrabold text-white shadow">
+                          {inCart}
+                        </span>
+                      )}
+
+                      <div className="mt-3 flex items-center justify-between gap-1 border-t border-[#FF9CEE]/30 pt-2.5">
+                        <span className="text-base font-extrabold text-[#C43E96]">
+                          {formatMoney(product.price)}
+                        </span>
+                        <span
+                          className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${
+                            soldOut
+                              ? "bg-rose-100 text-rose-700"
+                              : lowStock
+                                ? "bg-amber-100 text-amber-700"
+                                : "bg-emerald-100 text-emerald-700"
+                          }`}
+                        >
+                          {soldOut
+                            ? "Agotado"
+                            : `${product.stockQuantity} ${product.unit}`}
+                        </span>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
           </div>
         )}
       </section>
@@ -705,7 +902,11 @@ export function PosClient({
               <input
                 type="text"
                 value={customerName}
-                onChange={(e) => setCustomerName(e.target.value)}
+                onChange={(e) => {
+                  setCustomerName(e.target.value);
+                  setError(null);
+                }}
+                ref={customerNameRef}
                 placeholder="Ej: Juan Pérez"
                 required
                 className="flex-1 rounded-lg border border-[#FF9CEE] bg-[#FDF8FC] px-3 py-2 text-sm outline-none focus:border-[#FF9CEE] focus:ring-2 focus:ring-[#E052B5]"
@@ -724,7 +925,14 @@ export function PosClient({
             <button
               type="button"
               disabled={lines.length === 0 || submitting}
-              onClick={() => submitOrder("PENDING")}
+              onClick={() => {
+                if (!customerName.trim()) {
+                  setError("⚠️ Escribe el nombre del cliente para dejar el pedido en cola");
+                  customerNameRef.current?.focus();
+                  return;
+                }
+                submitOrder("PENDING");
+              }}
               className="w-full rounded-2xl border-2 border-amber-300 bg-amber-50 py-3 text-sm font-bold text-amber-700 transition enabled:hover:bg-amber-100 disabled:opacity-40"
             >
               ⏳ Dejar pendiente / Enviar a cola
@@ -749,6 +957,78 @@ export function PosClient({
           </div>
         </div>
       </aside>
+
+      {detailOrder && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 p-4 backdrop-blur-sm"
+          onClick={() => setDetailOrder(null)}
+        >
+          <div
+            className="w-full max-w-md rounded-3xl border-[1.5px] border-[#FF9CEE] bg-[#FAF7F5] p-6 shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between border-b border-[#FF9CEE]/40 pb-3">
+              <div>
+                <h3 className="text-lg font-extrabold text-slate-800">
+                  Pedido #{detailOrder.orderNumber}
+                </h3>
+                <p className="text-xs font-semibold text-slate-500">
+                  Cliente: {detailOrder.customerName || "Mostrador"}
+                  {detailOrder.tableNumber ? ` · Mesa ${detailOrder.tableNumber}` : ""}
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setDetailOrder(null)}
+                className="rounded-full bg-[#F3E6EB] px-2.5 py-1 text-xs font-bold text-[#BE3663]"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="my-4 max-h-64 space-y-2 overflow-y-auto">
+              {detailOrder.items.length === 0 ? (
+                <p className="py-4 text-center text-sm text-slate-400">
+                  Sin detalle de productos disponible.
+                </p>
+              ) : (
+                detailOrder.items.map((item, idx) => (
+                  <div
+                    key={idx}
+                    className="flex items-center justify-between rounded-xl bg-white px-3 py-2 text-sm shadow-sm"
+                  >
+                    <div>
+                      <span className="font-bold text-[#D64575]">{item.quantity}x </span>
+                      <span className="font-semibold text-slate-800">
+                        {item.productName ?? `Producto #${item.productId}`}
+                      </span>
+                      {item.notes && (
+                        <p className="text-xs italic text-slate-500">Nota: {item.notes}</p>
+                      )}
+                    </div>
+                    <span className="font-bold text-slate-700">
+                      {formatMoney(item.subtotal)}
+                    </span>
+                  </div>
+                ))
+              )}
+            </div>
+
+            <div className="flex items-center justify-between border-t border-[#FF9CEE]/40 pt-3 text-base font-extrabold text-slate-800">
+              <span>Total pendiente:</span>
+              <span className="text-[#D64575]">{formatMoney(detailOrder.total)}</span>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => setDetailOrder(null)}
+              className="mt-4 w-full rounded-2xl bg-[#FF9CEE] py-2.5 text-sm font-extrabold text-[#2B1424] transition hover:bg-[#F282DF]"
+            >
+              Cerrar
+            </button>
+          </div>
+        </div>
+      )}
 
       {checkoutOpen && (
         <div
@@ -794,7 +1074,7 @@ export function PosClient({
             <div className="mb-4 space-y-3">
               <div>
                 <label className="block text-sm font-semibold text-slate-600 mb-1">
-                  Nombre del cliente (opcional)
+                  Nombre del cliente *
                 </label>
                 <input
                   type="text"
@@ -959,10 +1239,8 @@ export function PosClient({
             )}
             <div className="mt-4">
               <TicketImpresion
-                negocioNombre="Heladería POS"
-                negocioDirección="Calle Principal #123"
-                negocioTelefono="📱 312 345 6789"
-                fechaHora={new Date().toLocaleString()}
+                config={ticketConfig}
+                fechaHora={new Date().toLocaleString("es-CO")}
                 referenciaPedido={String(result.orderNumber)}
                 nombreCliente={result.customerName}
                 cajero="Cajero actual"

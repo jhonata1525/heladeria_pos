@@ -50,7 +50,7 @@ export const orderLineSchema = z.object({
 export const orderParseSchema = z.object({
   items: z.array(orderLineSchema).min(1, "El pedido debe tener al menos un producto"),
   status: z.enum(["PENDING", "PAID"]).default("PENDING"),
-  customerName: z.string().trim().nullable().optional().default(null),
+  customerName: z.string().trim().min(1, "El nombre del cliente es obligatorio"),
   tableNumber: z.number().int().nullable(),
   paymentMethod: z.enum(["CASH", "TRANSFER", "CARD"]).optional(),
   cashReceived: z.number().finite().optional(),
@@ -58,10 +58,16 @@ export const orderParseSchema = z.object({
 });
 
 export const updateOrderSchema = z.object({
-  action: z.enum(["pay", "cancel"]),
+  action: z.enum(["pay", "cancel", "addItems"]),
   paymentMethod: z.enum(["CASH", "TRANSFER", "CARD"]).optional(),
   cashReceived: z.number().finite().optional(),
   referenceNumber: z.string().trim().nullable().optional(),
+  addItems: z.object({
+    items: z.array(z.object({
+      productId: z.number().int().positive("Producto inválido"),
+      quantity: z.number().finite().positive("Cantidad inválida"),
+    })).min(1, "Debe incluir al menos un producto"),
+  }).optional(),
 });
 
 export const wasteSchema = z.object({

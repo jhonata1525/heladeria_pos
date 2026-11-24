@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import type { CategoryDTO, PendingOrderDTO } from "@/lib/types";
 import { requireUser } from "@/lib/auth-server";
+import { formatMoney, round2 } from "@/lib/format";
 import { PedidoClient } from "./PedidoClient";
 
 export const metadata = { title: "Tomar Pedidos · Heladería POS" };
@@ -51,8 +52,10 @@ export default async function PedidoPage() {
       productId: item.productId,
       productName: item.product.name,
       quantity: item.quantity,
-      price: item.price,
+      unitPrice: item.product.price,
+      subtotal: round2(item.product.price * item.quantity),
       notes: item.notes,
+      createdAt: item.createdAt.toISOString(),
     })),
   }));
 

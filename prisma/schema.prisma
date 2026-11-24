@@ -95,10 +95,11 @@ model OrderItem {
   orderId   Int
   order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
   productId Int
-  product   Product @relation(fields: [productId], references: [id])
+   product   Product @relation(fields: [productId], references: [id])
   quantity  Float
   price     Float
   notes     String?
+  createdAt DateTime  @default(now())
 
   @@index([orderId])
   @@index([productId])
@@ -153,6 +154,19 @@ model WasteLog {
   @@index([productId])
   @@index([registeredById])
   @@index([createdAt])
+}
+
+model TicketConfig {
+  id          String    @id @default("default")
+  businessName String    @default("Heladería POS")
+  nit         String?
+  address     String?
+  phone       String    @default("312 345 6789")
+  footerMessage String    @default("¡Gracias por su compra!")
+  fontSize    Int       @default(10)
+  paperWidthMm Int      @default(58)
+
+  @@unique(id)
 }
 
 model AuditLog {

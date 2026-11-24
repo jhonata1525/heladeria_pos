@@ -1,20 +1,12 @@
 import { prisma } from "@/lib/prisma";
-import { formatMoney, round2 } from "@/lib/format";
+import { round2 } from "@/lib/format";
 import { requireAdmin } from "@/lib/auth-server";
 import type { IngredientDTO, RecipeEntryDTO, ProductDTO } from "@/lib/types";
 import { IngredientsPanel } from "./ingredients-panel";
-import { RecipeDialog } from "./recipe-dialog";
 import { ProductCreateForm } from "./product-create-form";
+import { CatalogManager, type CatalogCategoryDTO } from "./catalog-manager";
 
 export const metadata = { title: "Productos · Heladería POS" };
-
-const CATEGORY_EMOJI: Record<string, string> = {
-  Helados: "🍨",
-  "Vasos/Conos": "🍧",
-  Especialidades: "🍌",
-  Toppings: "🍒",
-  Bebidas: "🥤",
-};
 
 function calculateComboStock(product: { kind: string; stockQuantity: number; recipeItems: { ingredient: { currentStock: number }; quantity: number }[] }) {
   if (product.kind !== "COMBO") {
@@ -91,6 +83,31 @@ export default async function ProductosPage() {
     (ingredient) => ingredient.currentStock <= ingredient.minStock,
   ).length;
 
+  const catalogCategories: CatalogCategoryDTO[] = categories.map((category) => ({
+    id: category.id,
+    name: category.name,
+    products: category.products.map((product) => {
+      const effectiveStock = calculateComboStock(
+        product as {
+          kind: string;
+          stockQuantity: number;
+          recipeItems: { ingredient: { currentStock: number }; quantity: number }[];
+        },
+      );
+      return {
+        id: product.id,
+        name: product.name,
+        price: product.price,
+        kind: product.kind,
+        unit: product.unit,
+        effectiveStock,
+        soldOut: !product.inStock || effectiveStock <= 0,
+        recipe: recipesByProduct.get(product.id) ?? [],
+        cost: costByProduct.get(product.id) ?? null,
+      };
+    }),
+  }));
+
   return (
     <div className="mx-auto max-w-5xl space-y-6">
       <header className="flex flex-wrap items-end justify-between gap-3">
@@ -104,12 +121,13 @@ export default async function ProductosPage() {
             producción.
           </p>
         </div>
-        {lowStockCount > 0 && (
-          <span className="rounded-full bg-[#F3E6EB] px-3 py-1.5 text-xs font-bold text-[#D64575]">
-            ⚠ {lowStockCount} insumo(s) con stock bajo
-          </span>
-        )}
       </header>
+
+{lowStockCount > 0 && (
+        <span className="rounded-full bg-[#F3E6EB] px-3 py-1.5 text-xs font-bold text-[#D64575]">
+          ⚠ {lowStockCount} insumo(s) con stock bajo
+        </span>
+      )}
 
       <IngredientsPanel ingredients={ingredients} products={products} />
 
@@ -125,88 +143,7 @@ export default async function ProductosPage() {
           Aún no hay categorías ni productos registrados.
         </p>
       ) : (
-        categories.map((category) => (
-          <section
-            key={category.id}
-            className="overflow-hidden rounded-3xl border border-bg-[#DFF2EE] text-[#1F7A68] bg-[#FAF7F5] shadow-sm"
-          >
-            <h2 className="border-b border-bg-[#F3E6EB] px-5 py-4 text-base font-extrabold text-slate-800">
-              {CATEGORY_EMOJI[category.name] ?? "🍽️"} {category.name}
-              <span className="ml-2 rounded-full bg-[#F3E6EB] px-2 py-0.5 text-xs font-bold text-bg-[#D64575]">
-                {category.products.length} productos
-              </span>
-            </h2>
-            {category.products.length === 0 ? (
-              <p className="px-5 py-4 text-sm text-slate-400">
-                Sin productos en esta categoría.
-              </p>
-            ) : (
-              <ul className="divide-y divide-bg-[#F3E6EB]">
-                {category.products.map((product) => {
-                  const effectiveStock = calculateComboStock(product as { kind: string; stockQuantity: number; recipeItems: { ingredient: { currentStock: number }; quantity: number }[] });
-                  const soldOut = !product.inStock || effectiveStock <= 0;
-                  const low = !soldOut && effectiveStock <= 5;
-                  const recipe = recipesByProduct.get(product.id) ?? [];
-                  const cost = costByProduct.get(product.id);
-                  return (
-                    <li
-                      key={product.id}
-                      className="flex flex-wrap items-center justify-between gap-3 px-5 py-3"
-                    >
-                      <div className="min-w-0">
-                        <p className="flex flex-wrap items-center gap-1.5 font-bold text-slate-700">
-                          {product.name}
-                          <span
-                            className={`rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide ${
-                              product.kind === "COMBO"
-                                ? "bg-rose-50 text-rose-600"
-                                : "bg-sky-50 text-sky-600"
-                            }`}
-                          >
-                            {product.kind === "COMBO" ? "Combinación" : "Base"}
-                          </span>
-                        </p>
-                        <p className="text-xs text-slate-400">
-                          Se vende por {product.unit}
-                          {recipe.length > 0 && cost !== undefined
-                            ? ` · Costo ${formatMoney(cost)} · Utilidad ${formatMoney(round2(product.price - cost))}`
-                            : ' · sin receta definida'}
-                        </p>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <RecipeDialog
-                          product={{
-                            id: product.id,
-                            name: product.name,
-                            price: product.price,
-                          }}
-                          ingredients={ingredients}
-                          recipe={recipe}
-                        />
-                        <span
-                          className={`rounded-full px-2.5 py-1 text-xs font-bold ${
-                            soldOut
-                              ? "bg-[#F3E6EB] text-[#D64575]"
-                              : low
-                              ? "bg-amber-50 text-amber-600"
-                              : "bg-[#F3E6EB] text-[#D64575]"
-                          }`}
-                        >
-                          {soldOut
-                            ? "Agotado"
-                            : `${effectiveStock} ${product.unit}`}
-                        </span>
-                        <span className="w-24 text-right font-extrabold text-[#D64575]">
-                          {formatMoney(product.price)}
-                        </span>
-                      </div>
-                    </li>
-                  );
-                })}
-              </ul>
-            )}
-          </section>
-        ))
+        <CatalogManager categories={catalogCategories} ingredients={ingredients} />
       )}
     </div>
   );

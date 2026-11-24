@@ -3,7 +3,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { formatMoney, round2 } from "@/lib/format";
-import { TicketImpresion } from "@/components/TicketImpresion";
 import type { CategoryDTO, ProductDTO, PendingOrderDTO } from "@/lib/types";
 
 const STORAGE_KEY = "heladeria_mesero_cart";
@@ -382,7 +381,7 @@ export function PedidoClient({
                     {order.items.map((item, i) => (
                       <li key={i} className="flex justify-between text-slate-600">
                         <span>{item.quantity}× {item.productName}</span>
-                        <span className="font-semibold">{formatMoney(item.price * item.quantity)}</span>
+                        <span className="font-semibold">{formatMoney(item.subtotal)}</span>
                       </li>
                     ))}
                   </ul>
@@ -432,7 +431,7 @@ export function PedidoClient({
                     {order.items.map((item, i) => (
                       <li key={i} className="flex justify-between text-slate-600">
                         <span>{item.quantity}× {item.productName}</span>
-                        <span className="font-semibold">{formatMoney(item.price * item.quantity)}</span>
+                        <span className="font-semibold">{formatMoney(item.subtotal)}</span>
                       </li>
                     ))}
                   </ul>

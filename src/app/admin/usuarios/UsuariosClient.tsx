@@ -272,7 +272,11 @@ export function UsuariosClient({ users, auditLogs }: { users: User[]; auditLogs:
                     </td>
                     <td className="px-5 py-2.5 text-slate-600">{log.entity}</td>
                     <td className="px-5 py-2.5 text-slate-500 max-w-xs truncate">
-                      {log.details ? JSON.parse(log.details) : "—"}
+                      {log.details && log.details !== "{}"
+                        ? typeof log.details === "string"
+                          ? log.details
+                          : JSON.stringify(log.details, null, 2).substring(0, 100)
+                        : "—"}
                     </td>
                     <td className="px-5 py-2.5 text-slate-400 text-xs">{log.ipAddress}</td>
                   </tr>

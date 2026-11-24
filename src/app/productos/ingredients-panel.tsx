@@ -8,7 +8,6 @@ import {
   createIngredient,
   deleteIngredient,
   updateIngredient,
-  setAllIngredientsStock,
   type ProductoActionState,
 } from "./actions";
 import { registerWaste } from "@/lib/actions/waste";
@@ -464,23 +463,6 @@ export function IngredientsPanel({
     null,
   );
   const [createPending, setCreatePending] = useState(false);
-  const [setAllStockState, setSetAllStockState] = useState<ProductoActionState | null>(
-    null,
-  );
-  const [setAllStockPending, setSetAllStockPending] = useState(false);
-
-  async function handleSetAllStock(formData: FormData) {
-    setSetAllStockPending(true);
-    try {
-      formData.set("targetStock", "999");
-      const result = await setAllIngredientsStock(null, formData);
-      setSetAllStockState(result);
-    } catch {
-      setSetAllStockState({ ok: false, error: "Error de conexión con el servidor." });
-    } finally {
-      setSetAllStockPending(false);
-    }
-  }
 
   async function handleCreate(formData: FormData) {
     setCreatePending(true);
@@ -548,17 +530,6 @@ export function IngredientsPanel({
           <Feedback state={createState} />
         </div>
       )}
-
-      <form action={handleSetAllStock} className="border-b border-bg-[#F3E6EB] px-5 py-3">
-        <button
-          type="submit"
-          disabled={setAllStockPending}
-          className="w-full rounded-xl bg-rose-500 py-2 text-sm font-extrabold text-white transition enabled:hover:bg-rose-600 disabled:opacity-40 sm:w-auto sm:px-6"
-        >
-          {setAllStockPending ? "Actualizando…" : "🔧 Poner stock de todos los insumos a 999"}
-        </button>
-        <Feedback state={setAllStockState} />
-      </form>
 
       {ingredients.length === 0 ? (
         <p className="px-5 py-6 text-sm text-slate-400">

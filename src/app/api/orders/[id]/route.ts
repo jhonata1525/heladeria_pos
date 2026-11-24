@@ -5,10 +5,21 @@ import { prisma } from "@/lib/prisma";
 import { round2 } from "@/lib/format";
 import { restoreIngredientsForOrder } from "@/lib/actions/orders";
 import { eventEmitter, SSE_EVENTS } from "@/lib/events";
+import { z } from "zod";
 import { updateOrderSchema } from "@/lib/validations/zod";
 
 const PAYMENT_METHODS = ["CASH", "TRANSFER", "CARD"] as const;
 type PaymentMethod = (typeof PAYMENT_METHODS)[number];
+
+// Esquema minimal para acción "addItems" (no requiere paymentMethod)
+const addItemsSchema = z.object({
+  action: z.literal("addItems"),
+  items: z.array(z.object({
+    productId: z.number().int().positive(),
+    quantity: z.number().positive(),
+    notes: z.string().nullable().optional(),
+  })).min(1),
+});
 
 async function getUserRole(): Promise<{ role: string; userId: number } | null> {
   const store = await cookies();
@@ -41,6 +52,12 @@ export async function PATCH(
     }
 
     const body = await request.json();
+
+    // PRIMERO: Evaluar si la acción es "addItems" ANTES de validar paymentMethod
+    const addItemsResult = addItemsSchema.safeParse(body);
+    if (addItemsResult.success && addItemsResult.data.action === "addItems") {
+      return handleAddItems(orderId, addItemsResult.data.items.map((item) => ({ productId: item.productId, quantity: item.quantity, notes: item.notes ?? "" })));
+    }
 
     const schemaResult = updateOrderSchema.safeParse(body);
     if (!schemaResult.success) {
@@ -124,6 +141,7 @@ export async function PATCH(
         return { status: 200 as const, body: { ok: true, cancelled: true } };
       }
 
+      // DESPUÉS: Validar paymentMethod solo para acciones de pago
       const paymentMethod: PaymentMethod | null = PAYMENT_METHODS.includes(
         body?.paymentMethod,
       )
@@ -222,6 +240,97 @@ export async function PATCH(
     console.error("PATCH /api/orders/[id] failed:", error);
     return Response.json(
       { error: "No se pudo actualizar el pedido" },
+      { status: 500 },
+    );
+  }
+}
+
+class AddItemsError extends Error {
+  constructor(
+    public status: number,
+    message: string,
+  ) {
+    super(message);
+  }
+}
+
+async function handleAddItems(
+  orderId: number,
+  items: Array<{ productId: number; quantity: number; notes?: string }>,
+) {
+  try {
+    const updatedOrder = await prisma.$transaction(async (tx) => {
+      const order = await tx.order.findUnique({
+        where: { id: orderId },
+      });
+
+      if (!order) {
+        throw new AddItemsError(404, "Pedido no encontrado");
+      }
+      if (order.status !== "PENDING") {
+        throw new AddItemsError(409, "El pedido ya no está pendiente");
+      }
+
+      let total = order.total;
+
+      for (const item of items) {
+        const product = await tx.product.findUnique({
+          where: { id: item.productId },
+        });
+        if (!product) {
+          throw new AddItemsError(400, `Producto ${item.productId} no existe`);
+        }
+        if (!product.inStock || product.stockQuantity < item.quantity) {
+          throw new AddItemsError(409, `Stock insuficiente de "${product.name}"`);
+        }
+
+        total = round2(total + product.price * item.quantity);
+
+        await tx.orderItem.create({
+          data: {
+            orderId: order.id,
+            productId: product.id,
+            quantity: item.quantity,
+            price: product.price,
+            notes: item.notes ?? null,
+          },
+        });
+
+        await tx.product.update({
+          where: { id: product.id },
+          data: {
+            stockQuantity: { decrement: item.quantity },
+            ...(product.stockQuantity - item.quantity <= 0 ? { inStock: false } : {}),
+          },
+        });
+      }
+
+      await tx.order.update({
+        where: { id: order.id },
+        data: { total },
+      });
+
+      return tx.order.findUnique({
+        where: { id: order.id },
+        include: { items: { include: { product: true } } },
+      });
+    });
+
+    eventEmitter.emit(SSE_EVENTS.ORDER_UPDATED, {
+      id: orderId,
+      orderNumber: updatedOrder?.orderNumber,
+      status: "PENDING",
+    });
+    eventEmitter.emit(SSE_EVENTS.STOCK_UPDATED, {});
+
+    return Response.json({ ok: true, order: updatedOrder });
+  } catch (error) {
+    if (error instanceof AddItemsError) {
+      return Response.json({ error: error.message }, { status: error.status });
+    }
+    console.error("PATCH /api/orders/[id] addItems failed:", error);
+    return Response.json(
+      { error: "No se pudieron agregar los productos" },
       { status: 500 },
     );
   }
