@@ -32,6 +32,7 @@ export default async function PosPage() {
       orderBy: { id: "asc" },
       include: {
         products: {
+          where: { isActive: true },
           orderBy: { name: "asc" },
           include: { recipeItems: { include: { ingredient: true } } },
         },
@@ -49,7 +50,6 @@ export default async function PosPage() {
   const categoryData: CategoryDTO[] = categories.map((category) => ({
     id: category.id,
     name: category.name,
-    quickCode: category.quickCode,
     products: category.products.map((product) => {
       const effectiveStock = calculateComboStock(product as { id: number; kind: string; stockQuantity: number; recipeItems: { ingredient: { currentStock: number }; quantity: number }[] });
       const inStock = product.kind === "COMBO" ? effectiveStock > 0 : product.inStock;
@@ -60,6 +60,8 @@ export default async function PosPage() {
         categoryId: product.categoryId,
         inStock,
         stockQuantity: effectiveStock,
+        minStock: product.minStock,
+        isActive: product.isActive,
         image: product.image,
         unit: product.unit,
         kind: product.kind,

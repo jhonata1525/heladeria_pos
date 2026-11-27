@@ -12,7 +12,12 @@ export default async function PedidoPage() {
   const [categories, pendingOrders, openRegister] = await Promise.all([
     prisma.category.findMany({
       orderBy: { id: "asc" },
-      include: { products: { orderBy: { name: "asc" } } },
+      include: {
+        products: {
+          where: { isActive: true },
+          orderBy: { name: "asc" },
+        },
+      },
     }),
     prisma.order.findMany({
       where: { status: "PENDING" },
@@ -25,7 +30,6 @@ export default async function PedidoPage() {
   const categoryData: CategoryDTO[] = categories.map((category) => ({
     id: category.id,
     name: category.name,
-    quickCode: category.quickCode,
     products: category.products.map((product) => ({
       id: product.id,
       name: product.name,
@@ -33,6 +37,8 @@ export default async function PedidoPage() {
       categoryId: product.categoryId,
       inStock: product.inStock,
       stockQuantity: product.stockQuantity,
+      minStock: product.minStock,
+      isActive: product.isActive,
       image: product.image,
       unit: product.unit,
       kind: product.kind,

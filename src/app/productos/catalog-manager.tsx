@@ -1,18 +1,26 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 import { formatMoney } from "@/lib/format";
 import type { IngredientDTO, RecipeEntryDTO } from "@/lib/types";
 import { RecipeDialog } from "./recipe-dialog";
+import { ProductEditDialog } from "./product-edit-dialog";
+import { ProductStockDialog } from "./product-stock-dialog";
+import { ProductDeleteDialog } from "./product-delete-dialog";
 
 export interface CatalogProductDTO {
   id: number;
   name: string;
   price: number;
+  categoryId: number;
   kind: string;
   unit: string;
   effectiveStock: number;
+  stockQuantity: number;
+  minStock: number;
   soldOut: boolean;
+  quickCode: string | null;
   recipe: RecipeEntryDTO[];
   cost: number | null;
 }
@@ -47,6 +55,14 @@ function categoryUnits(products: CatalogProductDTO[]): number {
   return products.reduce((sum, product) => sum + Math.max(0, product.effectiveStock), 0);
 }
 
+function normalizeText(value: string): string {
+  return value
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .trim();
+}
+
 export function CatalogManager({
   categories,
   ingredients,
@@ -56,24 +72,40 @@ export function CatalogManager({
 }) {
   const [search, setSearch] = useState("");
   const [openIds, setOpenIds] = useState<Set<number>>(() => new Set());
+  const [editingProduct, setEditingProduct] = useState<CatalogProductDTO | null>(null);
+  const [stockProduct, setStockProduct] = useState<CatalogProductDTO | null>(null);
+  const [deletingProduct, setDeletingProduct] = useState<CatalogProductDTO | null>(null);
+  const [feedback, setFeedback] = useState<string | null>(null);
+  const router = useRouter();
 
-  const query = search.trim().toLowerCase();
+  function handleSaved(message: string) {
+    setEditingProduct(null);
+    setStockProduct(null);
+    setDeletingProduct(null);
+    setFeedback(message);
+    router.refresh();
+  }
+
+  const query = normalizeText(search);
 
   const filteredCategories = useMemo(() => {
     if (!query) return categories;
     return categories
       .map((category) => {
-        const categoryMatches = category.name.toLowerCase().includes(query);
-        const products = categoryMatches
-          ? category.products
-          : category.products.filter((product) =>
-              product.name.toLowerCase().includes(query),
-            );
+        const categoryMatches = normalizeText(category.name).includes(query);
+        const matchingProducts = category.products.filter((product) => {
+          const matchesName = normalizeText(product.name).includes(query);
+          const matchesCode = product.quickCode
+            ? normalizeText(product.quickCode).includes(query)
+            : false;
+          return matchesName || matchesCode;
+        });
+        const products = categoryMatches ? category.products : matchingProducts;
         return { ...category, products };
       })
       .filter(
         (category) =>
-          category.name.toLowerCase().includes(query) || category.products.length > 0,
+          normalizeText(category.name).includes(query) || category.products.length > 0,
       );
   }, [categories, query]);
 
@@ -96,7 +128,7 @@ export function CatalogManager({
           type="search"
           value={search}
           onChange={(event) => setSearch(event.target.value)}
-          placeholder="🔍 Buscar producto por nombre o categoría..."
+          placeholder="🔍 Buscar producto por nombre, categoría o código rápido..."
           className="min-w-0 flex-1 rounded-xl border border-[#E4C7D2] bg-white px-4 py-2.5 text-sm text-slate-700 outline-none placeholder:text-slate-400 focus:border-[#FF9CEE] focus:ring-2 focus:ring-[#85E3FF]"
         />
         <div className="flex gap-2">
@@ -116,6 +148,19 @@ export function CatalogManager({
           </button>
         </div>
       </div>
+
+      {feedback && (
+        <div className="flex items-start justify-between gap-3 rounded-2xl bg-[#DFF2EE] px-4 py-3 text-sm font-semibold text-[#1F7A68]">
+          <span>{feedback}</span>
+          <button
+            type="button"
+            onClick={() => setFeedback(null)}
+            className="rounded-full bg-white/60 px-2 py-0.5 text-xs font-bold"
+          >
+            ✕
+          </button>
+        </div>
+      )}
 
       {filteredCategories.length === 0 ? (
         <p className="rounded-3xl border border-dashed border-[#E4C7D2] bg-[#FAF7F5]/70 p-10 text-center text-slate-500">
@@ -163,21 +208,23 @@ export function CatalogManager({
                       Sin productos en esta categoría.
                     </p>
                   ) : (
-                    <table className="w-full min-w-[560px] border-collapse text-sm">
+                    <table className="w-full min-w-[760px] border-collapse text-sm">
                       <thead>
                         <tr className="border-y border-[#FF9CEE]/30 bg-[#FDF8FC] text-[11px] font-bold uppercase tracking-wide text-slate-500">
                           <th className="px-4 py-2 text-left">Producto y tipo</th>
                           <th className="px-3 py-2 text-center">Receta</th>
                           <th className="px-3 py-2 text-center">Stock</th>
                           <th className="px-4 py-2 text-right">Precio</th>
+                          <th className="px-4 py-2 text-right">Acciones</th>
                         </tr>
                       </thead>
                       <tbody>
                         {category.products.map((product) => {
+                          const lowThreshold = product.minStock > 0 ? product.minStock : 5;
                           const low =
                             !product.soldOut &&
                             product.effectiveStock > 0 &&
-                            product.effectiveStock <= 5;
+                            product.effectiveStock <= lowThreshold;
 
                           return (
                             <tr
@@ -235,6 +282,31 @@ export function CatalogManager({
                               <td className="px-4 py-3 text-right font-extrabold text-[#D64575]">
                                 {formatMoney(product.price)}
                               </td>
+                              <td className="px-4 py-3">
+                                <div className="flex flex-wrap justify-end gap-1.5">
+                                  <button
+                                    type="button"
+                                    onClick={() => setEditingProduct(product)}
+                                    className="rounded-full bg-[#85E3FF] px-2.5 py-1 text-[11px] font-bold text-[#1F1B24] transition hover:bg-[#6FD3F2]"
+                                  >
+                                    Editar
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={() => setStockProduct(product)}
+                                    className="rounded-full bg-[#DFF2EE] px-2.5 py-1 text-[11px] font-bold text-[#1F7A68] transition hover:bg-[#CDE8E2]"
+                                  >
+                                    + Surtir
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={() => setDeletingProduct(product)}
+                                    className="rounded-full bg-[#F3E6EB] px-2.5 py-1 text-[11px] font-bold text-[#BE3663] transition hover:bg-[#E4C7D2]"
+                                  >
+                                    Eliminar
+                                  </button>
+                                </div>
+                              </td>
                             </tr>
                           );
                         })}
@@ -246,6 +318,35 @@ export function CatalogManager({
             </section>
           );
         })
+      )}
+
+      {editingProduct && (
+        <ProductEditDialog
+          key={`edit-${editingProduct.id}`}
+          product={editingProduct}
+          categories={categories}
+          ingredients={ingredients}
+          onClose={() => setEditingProduct(null)}
+          onSaved={handleSaved}
+        />
+      )}
+
+      {stockProduct && (
+        <ProductStockDialog
+          key={`stock-${stockProduct.id}`}
+          product={stockProduct}
+          onClose={() => setStockProduct(null)}
+          onSaved={handleSaved}
+        />
+      )}
+
+      {deletingProduct && (
+        <ProductDeleteDialog
+          key={`delete-${deletingProduct.id}`}
+          product={deletingProduct}
+          onClose={() => setDeletingProduct(null)}
+          onDeleted={handleSaved}
+        />
       )}
     </div>
   );

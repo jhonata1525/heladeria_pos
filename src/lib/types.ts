@@ -15,6 +15,8 @@ export interface ProductDTO {
   categoryId: number;
   inStock: boolean;
   stockQuantity: number;
+  minStock: number;
+  isActive: boolean;
   image: string | null;
   unit: string;
   kind: string;
@@ -25,7 +27,6 @@ export interface CategoryDTO {
   id: number;
   name: string;
   products: ProductDTO[];
-  quickCode: string | null;
 }
 
 export interface CartLine {

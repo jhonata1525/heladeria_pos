@@ -26,7 +26,6 @@ model Category {
   id          Int       @id @default(autoincrement())
   name        String    @unique
   description String?
-  quickCode   String?   // Código PLU rápido (ej. "3" para Conos)
   products    Product[]
 }
 
@@ -38,11 +37,13 @@ model Product {
   category      Category     @relation(fields: [categoryId], references: [id])
   inStock       Boolean      @default(true)
   stockQuantity Float        @default(0)
+  minStock      Float        @default(0)
+  isActive      Boolean      @default(true)
   image         String?
   unit          String       @default("unidad")
   kind          String       @default("BASE") // BASE = producto/envase suelto | COMBO = combinación con receta
   barcode       String?
-  quickCode     String?      // Código PLU rápido (ej. "301" para un sabor específico)
+  quickCode     String?      // Código rápido por producto (ej. "301")
   orderItems    OrderItem[]
   recipeItems   RecipeItem[]
   wasteLogs     WasteLog[]

@@ -32,7 +32,13 @@ export default async function ProductosPage() {
   const [categories, ingredientsRaw, recipeItems, productsRaw] = await Promise.all([
     prisma.category.findMany({
       orderBy: { id: "asc" },
-      include: { products: { orderBy: { name: "asc" }, include: { recipeItems: { include: { ingredient: true } } } } },
+      include: {
+        products: {
+          where: { isActive: true },
+          orderBy: { name: "asc" },
+          include: { recipeItems: { include: { ingredient: true } } },
+        },
+      },
     }),
     prisma.ingredient.findMany({ orderBy: { name: "asc" } }),
     prisma.recipeItem.findMany({
@@ -41,7 +47,7 @@ export default async function ProductosPage() {
     }),
     prisma.product.findMany({
       orderBy: { name: "asc" },
-      where: { kind: "COMBO" },
+      where: { kind: "COMBO", isActive: true },
     }),
   ]);
 
@@ -73,6 +79,8 @@ export default async function ProductosPage() {
     categoryId: product.categoryId,
     inStock: product.inStock,
     stockQuantity: product.stockQuantity,
+    minStock: product.minStock,
+    isActive: product.isActive,
     image: product.image,
     unit: product.unit,
     kind: product.kind,
@@ -98,10 +106,17 @@ export default async function ProductosPage() {
         id: product.id,
         name: product.name,
         price: product.price,
+        categoryId: product.categoryId,
         kind: product.kind,
         unit: product.unit,
         effectiveStock,
-        soldOut: !product.inStock || effectiveStock <= 0,
+        stockQuantity: product.stockQuantity,
+        minStock: product.minStock,
+        soldOut:
+          product.kind === "COMBO"
+            ? effectiveStock <= 0
+            : !product.inStock || effectiveStock <= 0,
+        quickCode: product.quickCode,
         recipe: recipesByProduct.get(product.id) ?? [],
         cost: costByProduct.get(product.id) ?? null,
       };

@@ -153,10 +153,14 @@ export function ProductCreateForm({
               />
             </label>
             <label className="text-xs font-semibold text-slate-500">
-              Código quickCode categoría
+              Stock mínimo
               <input
-                name="categoryQuickCode"
-                placeholder="Ej: 3 para Conos"
+                name="minStock"
+                type="number"
+                inputMode="decimal"
+                step="any"
+                min={0}
+                defaultValue={0}
                 className="mt-1 w-full rounded-lg border border-bg-[#DFF2EE] text-[#1F7A68] bg-[#FAF7F5] px-3 py-2 text-sm font-normal text-slate-700 outline-none focus:border-[#D5CECA]"
               />
             </label>

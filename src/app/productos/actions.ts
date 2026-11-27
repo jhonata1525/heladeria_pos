@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
+import { getCurrentUser } from "@/lib/auth-server";
 import { round2 } from "@/lib/format";
 import { INGREDIENT_UNITS, PRODUCT_KINDS } from "@/lib/constants";
 
@@ -31,6 +32,18 @@ function readNumber(formData: FormData, field: string): number | null {
 function refreshCatalog(): void {
   revalidatePath("/productos");
   revalidatePath("/pos");
+}
+
+async function denyNonAdmin(): Promise<ProductoActionState | null> {
+  const user = await getCurrentUser();
+  if (!user) return { ok: false, error: "No autorizado." };
+  if (user.role !== "ADMIN") {
+    return {
+      ok: false,
+      error: "Solo un administrador puede modificar productos e inventario.",
+    };
+  }
+  return null;
 }
 
 function validateIngredientFields(formData: FormData): {
@@ -75,6 +88,9 @@ export async function createIngredient(
   _prev: ProductoActionState | null,
   formData: FormData,
 ): Promise<ProductoActionState> {
+  const denied = await denyNonAdmin();
+  if (denied) return denied;
+
   const fields = validateIngredientFields(formData);
   if ("error" in fields) return { ok: false, error: fields.error };
 
@@ -95,6 +111,9 @@ export async function updateIngredient(
   _prev: ProductoActionState | null,
   formData: FormData,
 ): Promise<ProductoActionState> {
+  const denied = await denyNonAdmin();
+  if (denied) return denied;
+
   const id = Number(formData.get("id"));
   if (!Number.isInteger(id) || id <= 0) {
     return { ok: false, error: "Insumo inválido." };
@@ -123,6 +142,9 @@ export async function deleteIngredient(
   _prev: ProductoActionState | null,
   formData: FormData,
 ): Promise<ProductoActionState> {
+  const denied = await denyNonAdmin();
+  if (denied) return denied;
+
   const id = Number(formData.get("id"));
   if (!Number.isInteger(id) || id <= 0) {
     return { ok: false, error: "Insumo inválido." };
@@ -148,6 +170,9 @@ export async function deleteIngredient(
 export async function saveRecipe(
   payload: SaveRecipePayload,
 ): Promise<ProductoActionState> {
+  const denied = await denyNonAdmin();
+  if (denied) return denied;
+
   const productId = Number(payload?.productId);
   if (!Number.isInteger(productId) || productId <= 0) {
     return { ok: false, error: "Producto inválido." };
@@ -208,14 +233,17 @@ export async function createProduct(
   _prev: ProductoActionState | null,
   formData: FormData,
 ): Promise<ProductoActionState> {
+  const denied = await denyNonAdmin();
+  if (denied) return denied;
+
   const name = String(formData.get("name") ?? "").trim();
   const kind = String(formData.get("kind") ?? "BASE").trim();
   const unit = String(formData.get("unit") ?? "").trim() || "unidad";
   const categoryId = Number(formData.get("categoryId"));
   const price = readNumber(formData, "price");
   const stockQuantity = readNumber(formData, "stockQuantity");
+  const minStock = readNumber(formData, "minStock") ?? 0;
   const quickCode = String(formData.get("quickCode") ?? "").trim();
-  const categoryQuickCode = String(formData.get("categoryQuickCode") ?? "").trim();
 
   if (name.length === 0) return { ok: false, error: "Ingresa el nombre del producto." };
   if (!PRODUCT_KINDS.includes(kind as (typeof PRODUCT_KINDS)[number])) {
@@ -230,6 +258,9 @@ export async function createProduct(
   if (stockQuantity === null || stockQuantity < 0) {
     return { ok: false, error: "Ingresa un stock inicial válido (≥ 0)." };
   }
+  if (minStock < 0) {
+    return { ok: false, error: "Ingresa un stock mínimo válido (≥ 0)." };
+  }
 
   const category = await prisma.category.findUnique({ where: { id: categoryId } });
   if (!category) return { ok: false, error: "La categoría no existe." };
@@ -242,18 +273,11 @@ export async function createProduct(
       unit,
       kind,
       stockQuantity: round2(stockQuantity),
+      minStock: round2(minStock),
       inStock: stockQuantity > 0,
       quickCode,
     },
   });
-
-  // Also update category with categoryQuickCode if provided
-  if (categoryQuickCode) {
-    await prisma.category.update({
-      where: { id: categoryId },
-      data: { quickCode: categoryQuickCode },
-    });
-  }
 
   refreshCatalog();
   return { ok: true, message: `Producto creado: ${product.name}` };

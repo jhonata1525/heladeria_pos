@@ -17,6 +17,14 @@ import { TicketImpresion } from "@/components/TicketImpresion";
 
 const QUICK_CASH = [5000, 10000, 20000, 50000];
 
+function normalizeText(value: string): string {
+  return value
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .trim();
+}
+
 const PAYMENT_OPTIONS: { value: PaymentMethod; label: string; icon: string }[] = [
   { value: "CASH", label: "Efectivo", icon: "💵" },
   { value: "TRANSFER", label: "Nequi / Transferencia", icon: "📱" },
@@ -90,6 +98,7 @@ export function PosClient({
   const [customerName, setCustomerName] = useState("");
   const [tableNumber, setTableNumber] = useState("");
   const customerNameRef = useRef<HTMLInputElement>(null);
+  const searchInputRef = useRef<HTMLInputElement>(null);
   const [livePendingOrders, setLivePendingOrders] = useState<PendingOrderDTO[]>(pendingOrders);
   const [syncedPendingOrders, setSyncedPendingOrders] = useState<PendingOrderDTO[]>(pendingOrders);
   const [liveHasOpenRegister, setLiveHasOpenRegister] = useState(hasOpenRegister);
@@ -190,57 +199,72 @@ export function PosClient({
     };
   }, [router]);
 
+  const activeProducts = useMemo(
+    () => allProducts.filter((product) => product.inStock && product.stockQuantity > 0),
+    [allProducts],
+  );
+
   const quickCodeMap = useMemo(() => {
-    const map: Record<
-      string,
-      | { type: "category"; id: number; name: string }
-      | { type: "product"; id: number; name: string; categoryId: number }
-    > = {};
-    categories.forEach((category) => {
-      if (category.quickCode) {
-        map[category.quickCode.trim()] = {
-          type: "category",
-          id: category.id,
-          name: category.name,
-        };
-      }
-    });
-    allProducts.forEach((product) => {
-      if (product.quickCode) {
-        map[product.quickCode.trim()] = {
-          type: "product",
-          id: product.id,
-          name: product.name,
-          categoryId: product.categoryId,
-        };
+    const map = new Map<string, ProductDTO>();
+    activeProducts.forEach((product) => {
+      if (product.quickCode?.trim()) {
+        map.set(normalizeText(product.quickCode), product);
       }
     });
     return map;
-  }, [categories, allProducts]);
+  }, [activeProducts]);
+
+  const categoryNameById = useMemo(() => {
+    const map = new Map<number, string>();
+    categories.forEach((category) => {
+      map.set(category.id, normalizeText(category.name));
+    });
+    return map;
+  }, [categories]);
 
   const isFiltering = selectedCategory !== null || search.trim() !== "";
 
   const visibleProducts = useMemo(() => {
-    const rawTerm = search.trim();
-    const term = rawTerm.toLowerCase();
+    const term = normalizeText(search);
 
     if (!isFiltering) return [];
 
-    if (rawTerm && quickCodeMap[rawTerm]?.type === "category") {
-      const catId = quickCodeMap[rawTerm].id;
-      return allProducts.filter((product) => product.categoryId === catId);
+    if (term.length > 0) {
+      const matches = (product: ProductDTO, value: string) => {
+        const matchesName = normalizeText(product.name).includes(value);
+        const matchesCode = product.quickCode
+          ? normalizeText(product.quickCode).includes(value)
+          : false;
+        const matchesCategory = (
+          categoryNameById.get(product.categoryId) ?? ""
+        ).includes(value);
+        return matchesName || matchesCode || matchesCategory;
+      };
+
+      const directMatches = activeProducts.filter((product) =>
+        matches(product, term),
+      );
+
+      if (directMatches.length === 0 && term.endsWith("s") && term.length > 1) {
+        const singularTerm = term.slice(0, -1);
+        return activeProducts.filter((product) => matches(product, singularTerm));
+      }
+
+      return directMatches;
     }
 
-    return allProducts.filter((product) => {
-      const matchesCategory =
-        selectedCategory === null || product.categoryId === selectedCategory;
-      const matchesSearch =
-        term.length === 0 ||
-        product.name.toLowerCase().includes(term) ||
-        (product.quickCode && product.quickCode.toLowerCase().includes(term));
-      return matchesCategory && matchesSearch;
-    });
-  }, [allProducts, search, selectedCategory, quickCodeMap, isFiltering]);
+    return allProducts.filter(
+      (product) =>
+        selectedCategory === null || product.categoryId === selectedCategory,
+    );
+  }, [
+    activeProducts,
+    allProducts,
+    search,
+    selectedCategory,
+    isFiltering,
+    categoryNameById,
+  ]);
 
   const lines = Object.values(cart);
   const subtotal = round2(
@@ -526,26 +550,26 @@ export function PosClient({
       <section>
         <div className="mb-4 space-y-3">
           <input
+            ref={searchInputRef}
             type="search"
             value={search}
             onChange={(event) => setSearch(event.target.value)}
             onKeyDown={(event) => {
               if (event.key === "Enter") {
-                const code = search.trim();
-                const quickCodeEntry = quickCodeMap[code];
-                if (quickCodeEntry?.type === "product") {
-                  const product = allProducts.find((p) => p.id === quickCodeEntry.id);
-                  if (product && product.inStock && product.stockQuantity > 0) {
-                    addProduct(product);
-                    setSearch("");
-                  }
-                } else if (quickCodeEntry?.type === "category") {
-                  setSelectedCategory(quickCodeEntry.id);
+                event.preventDefault();
+                const term = normalizeText(search);
+                if (!term) return;
+                const product =
+                  quickCodeMap.get(term) ??
+                  (visibleProducts.length === 1 ? visibleProducts[0] : null);
+                if (product) {
+                  addProduct(product);
                   setSearch("");
+                  requestAnimationFrame(() => searchInputRef.current?.focus());
                 }
               }
             }}
-            placeholder="Buscar producto… 🍦 o código rápido (ej. 3)"
+            placeholder="Buscar producto por nombre o código rápido..."
             className="w-full rounded-full border-[1.5px] border-[#FF9CEE] bg-[#FDF8FC] px-5 py-3 text-base shadow-sm outline-none placeholder:text-slate-400 focus:border-[#FF9CEE] focus:ring-2 focus:ring-[#E052B5]"
           />
           <div className="flex flex-wrap gap-2">
@@ -564,10 +588,6 @@ export function PosClient({
               Categorías
             </button>
             {categories.map((category) => {
-              const hasQuickCode =
-                category.quickCode !== undefined &&
-                category.quickCode !== null &&
-                category.quickCode !== "";
               return (
                 <button
                   key={category.id}
@@ -580,11 +600,6 @@ export function PosClient({
                   }`}
                 >
                   {category.name}
-                  {hasQuickCode && (
-                    <span className="ml-2 rounded-full bg-[#85E3FF] px-2 py-0.5 text-xs font-extrabold text-[#1F1B24]">
-                      #{category.quickCode}
-                    </span>
-                  )}
                 </button>
               );
             })}
@@ -698,9 +713,6 @@ export function PosClient({
                     <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[#FF9CEE]/30 text-xl">
                       🍨
                     </span>
-                    <span className="rounded-full bg-[#85E3FF] px-2.5 py-1 text-xs font-extrabold text-[#1F1B24]">
-                      PLU #{category.quickCode ?? category.id}
-                    </span>
                   </div>
                   <div className="mt-4">
                     <h3 className="text-base font-extrabold text-slate-800 group-hover:text-[#C43E96]">
@@ -775,7 +787,7 @@ export function PosClient({
                           </span>
                           {product.quickCode && (
                             <span className="shrink-0 rounded-full bg-[#85E3FF] px-2 py-0.5 text-[10px] font-extrabold text-[#1F1B24]">
-                              #{product.quickCode}
+                              Cód. {product.quickCode}
                             </span>
                           )}
                         </div>
