@@ -8,7 +8,7 @@ async function init() {
     update: {},
     create: {
       id: 'default',
-      businessName: 'Heladería POS',
+      businessName: 'Heladitos Dani',
       nit: '',
       address: '',
       phone: '312 345 6789',

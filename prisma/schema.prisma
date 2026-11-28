@@ -159,7 +159,7 @@ model WasteLog {
 
 model TicketConfig {
   id          String    @id @default("default")
-  businessName String    @default("Heladería POS")
+  businessName String    @default("Heladitos Dani")
   nit         String?
   address     String?
   phone       String    @default("312 345 6789")

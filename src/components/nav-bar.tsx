@@ -34,7 +34,7 @@ export function NavBar({
         >
           <span className="text-2xl">🍨</span>
           <span>
-            Heladería <span className="text-[#C43E96]">POS</span>
+            Heladitos <span className="text-[#C43E96]">Dani</span>
           </span>
         </Link>
 

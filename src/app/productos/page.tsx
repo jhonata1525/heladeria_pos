@@ -6,7 +6,7 @@ import { IngredientsPanel } from "./ingredients-panel";
 import { ProductCreateForm } from "./product-create-form";
 import { CatalogManager, type CatalogCategoryDTO } from "./catalog-manager";
 
-export const metadata = { title: "Productos · Heladería POS" };
+export const metadata = { title: "Productos · Heladitos Dani" };
 
 function calculateComboStock(product: { kind: string; stockQuantity: number; recipeItems: { ingredient: { currentStock: number }; quantity: number }[] }) {
   if (product.kind !== "COMBO") {

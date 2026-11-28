@@ -1,4 +1,4 @@
-# Heladería POS - Sistema de Punto de Venta
+# Heladitos Dani - Sistema de Punto de Venta
 
 Sistema completo de punto de venta para heladería con gestión de inventario, recetas, pedidos y control de caja.
 
@@ -166,4 +166,4 @@ JWT_SECRET="tu-secreto-super-seguro-aqui"
 
 ## 📝 Licencia
 
-Proyecto privado - Heladería POS
+Proyecto privado - Heladitos Dani

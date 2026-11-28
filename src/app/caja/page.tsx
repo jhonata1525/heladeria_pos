@@ -5,7 +5,7 @@ import {
 import { requireUser } from "@/lib/auth-server";
 import { CajaClient } from "./caja-client";
 
-export const metadata = { title: "Caja · Heladería POS" };
+export const metadata = { title: "Caja · Heladitos Dani" };
 
 export default async function CajaPage() {
   await requireUser();

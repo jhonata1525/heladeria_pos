@@ -24,7 +24,7 @@ npm run build
 C:\heladeria_pos\deploy\iniciar_pos.vbs
 ```
 
-4. Nombrarlo `Heladería POS` y terminar.
+4. Nombrarlo `Heladitos Dani` y terminar.
 5. Reiniciar Windows o ejecutar el VBS manualmente para probar. El servidor se inicia sin ventana de consola.
 6. Comprobar en el navegador: `http://localhost:3000`.
 
@@ -32,7 +32,7 @@ C:\heladeria_pos\deploy\iniciar_pos.vbs
 
 1. Presionar `Win + R`, escribir `taskschd.msc` y pulsar Enter.
 2. En el panel derecho elegir **Crear tarea básica...**.
-3. Nombre: `Respaldo Heladería POS` → Siguiente.
+3. Nombre: `Respaldo Heladitos Dani` → Siguiente.
 4. Desencadenador: **Diaria**, hora sugerida `02:00` → Siguiente.
 5. Acción: **Iniciar un programa** → Siguiente.
 6. Programa o script:
@@ -46,7 +46,7 @@ C:\heladeria_pos\deploy\backup_db.bat
 Alternativa por línea de comandos (desde una consola como Administrador):
 
 ```bat
-schtasks /create /tn "Respaldo Heladeria POS" /tr "C:\heladeria_pos\deploy\backup_db.bat" /sc daily /st 02:00 /f
+schtasks /create /tn "Respaldo Heladitos Dani" /tr "C:\heladeria_pos\deploy\backup_db.bat" /sc daily /st 02:00 /f
 ```
 
 ## 3. Acceso directo de Chrome al POS
@@ -58,7 +58,7 @@ schtasks /create /tn "Respaldo Heladeria POS" /tr "C:\heladeria_pos\deploy\backu
 http://localhost:3000
 ```
 
-3. Nombre: `Heladería POS` → Terminar.
+3. Nombre: `Heladitos Dani` → Terminar.
 4. Opcional: clic derecho al acceso directo → **Propiedades → Cambiar icono** y elegir `C:\Program Files\Google\Chrome\Application\chrome.exe`.
 
 Para abrirlo directamente como ventana de aplicación, usar como ubicación:

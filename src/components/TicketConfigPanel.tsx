@@ -85,7 +85,7 @@ export function TicketConfigPanel({
             type="text"
             value={config.businessName}
             onChange={handleInputChange}
-            placeholder="Heladería POS"
+            placeholder="Heladitos Dani"
             className={inputClass}
             required
           />

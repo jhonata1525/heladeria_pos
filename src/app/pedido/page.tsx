@@ -4,7 +4,7 @@ import { requireUser } from "@/lib/auth-server";
 import { round2 } from "@/lib/format";
 import { PedidoClient } from "./PedidoClient";
 
-export const metadata = { title: "Tomar Pedidos · Heladería POS" };
+export const metadata = { title: "Tomar Pedidos · Heladitos Dani" };
 
 export default async function PedidoPage() {
   const user = await requireUser();

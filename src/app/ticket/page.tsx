@@ -5,7 +5,7 @@ import type { TicketConfigDTO } from "@/lib/types";
 import Link from "next/link";
 
 const defaultConfig: TicketConfigDTO = {
-  businessName: "Heladería POS",
+  businessName: "Heladitos Dani",
   nit: null,
   address: null,
   phone: "",

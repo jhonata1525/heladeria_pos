@@ -5,7 +5,7 @@ import {
   parseRange,
 } from "./report-data";
 
-export const metadata = { title: "Reportes · Heladería POS" };
+export const metadata = { title: "Reportes · Heladitos Dani" };
 
 function formatDate(date: Date): string {
   return new Intl.DateTimeFormat("es-CO", {

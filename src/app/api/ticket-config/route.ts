@@ -5,7 +5,7 @@ import { getCurrentUser } from "@/lib/auth-server";
 const DEFAULT_ID = "default";
 
 const DEFAULTS = {
-  businessName: "Heladería POS",
+  businessName: "Heladitos Dani",
   nit: null as string | null,
   address: null as string | null,
   phone: "",

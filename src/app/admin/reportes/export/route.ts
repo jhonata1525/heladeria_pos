@@ -46,7 +46,7 @@ export async function GET(request: Request): Promise<Response> {
 
   const lines: string[] = [];
   lines.push("sep=;");
-  lines.push(`Heladeria POS - Reporte (${rangeLabel})`);
+  lines.push(`Heladitos Dani - Reporte (${rangeLabel})`);
   lines.push(row(["Periodo", dateTime.format(report.from), "al", dateTime.format(report.to)]));
   lines.push("");
   lines.push("VENTAS");

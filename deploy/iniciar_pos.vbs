@@ -11,7 +11,7 @@ detectedRoot = fso.GetParentFolderName(scriptDir)
 If fso.FileExists(detectedRoot & "\package.json") Then PROJECT_ROOT = detectedRoot
 
 If Not fso.FolderExists(PROJECT_ROOT) Then
-    MsgBox "No se encontro la carpeta del proyecto: " & PROJECT_ROOT, 16, "Heladeria POS"
+    MsgBox "No se encontro la carpeta del proyecto: " & PROJECT_ROOT, 16, "Heladitos Dani"
     WScript.Quit 1
 End If
 

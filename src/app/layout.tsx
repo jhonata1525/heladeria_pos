@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Heladería POS",
+  title: "Heladitos Dani",
   description: "Sistema de punto de venta, caja e inventario para heladerías",
 };
 

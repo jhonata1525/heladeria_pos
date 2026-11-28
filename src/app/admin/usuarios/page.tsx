@@ -2,7 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/auth-server";
 import { UsuariosClient } from "./UsuariosClient";
 
-export const metadata = { title: "Usuarios · Heladería POS" };
+export const metadata = { title: "Usuarios · Heladitos Dani" };
 
 export default async function UsuariosPage() {
   await requireAdmin();

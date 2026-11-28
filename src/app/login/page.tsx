@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth-server";
 import { LoginForm } from "./login-form";
 
-export const metadata = { title: "Iniciar sesión · Heladería POS" };
+export const metadata = { title: "Iniciar sesión · Heladitos Dani" };
 
 export default async function LoginPage() {
   const user = await getCurrentUser();
@@ -15,7 +15,7 @@ export default async function LoginPage() {
           🍨
         </p>
         <h1 className="mt-3 text-center text-4xl font-extrabold tracking-tight text-slate-800">
-          Heladería <span className="text-[#D64575]">POS</span>
+          Heladitos <span className="text-[#D64575]">Dani</span>
         </h1>
         <p className="mb-7 mt-2 text-center text-sm text-slate-500">
           Ingresa con tu cuenta para continuar

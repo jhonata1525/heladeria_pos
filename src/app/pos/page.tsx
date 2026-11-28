@@ -4,7 +4,7 @@ import { requireUser } from "@/lib/auth-server";
 import { PosClient } from "./pos-client";
 import { round2 } from "@/lib/format";
 
-export const metadata = { title: "Punto de Venta · Heladería POS" };
+export const metadata = { title: "Punto de Venta · Heladitos Dani" };
 
 function calculateComboStock(product: { id: number; kind: string; stockQuantity: number; recipeItems: { ingredient: { currentStock: number }; quantity: number }[] }) {
   if (product.kind !== "COMBO") {
@@ -90,7 +90,7 @@ export default async function PosPage() {
   }));
 
   const ticketConfigData: TicketConfigDTO = ticketConfig ?? {
-    businessName: "Heladería POS",
+    businessName: "Heladitos Dani",
     nit: null,
     address: null,
     phone: "",
