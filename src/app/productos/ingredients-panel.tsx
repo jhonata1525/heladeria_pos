@@ -11,7 +11,6 @@ import {
   type ProductoActionState,
 } from "./actions";
 import { registerWaste } from "@/lib/actions/waste";
-import type { WasteActionState } from "@/lib/actions/waste";
 
 function formatQty(quantity: number, unit: string): string {
   const short = unit === "gramos" ? "g" : unit === "unidades" ? "und" : "ml";
@@ -48,8 +47,6 @@ function WasteModal({
   ingredient: IngredientDTO | null;
   products: ProductDTO[];
 }) {
-  if (!isOpen) return null;
-
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [type, setType] = useState<"ingredient" | "product">("ingredient");
@@ -59,6 +56,7 @@ function WasteModal({
   const [note, setNote] = useState("");
 
   const isIngredientMode = type === "ingredient";
+  if (!isOpen) return null;
 
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();

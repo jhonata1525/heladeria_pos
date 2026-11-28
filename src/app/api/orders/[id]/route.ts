@@ -65,7 +65,7 @@ export async function PATCH(
       return Response.json({ error: firstError ? firstError.message : "Datos inválidos" }, { status: 400 });
     }
 
-    const { action, paymentMethod, cashReceived } = schemaResult.data;
+    const { action } = schemaResult.data;
 
     const auth = await getUserRole();
     if (!auth) {

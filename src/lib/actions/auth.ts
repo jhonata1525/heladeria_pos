@@ -2,7 +2,7 @@
 
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
-import { ensureDefaultUsers, loginUser, createSession, destroySession, getClientIp, checkRateLimit, resetRateLimit } from "@/lib/auth-server";
+import { loginUser, createSession, destroySession, getClientIp, checkRateLimit, resetRateLimit } from "@/lib/auth-server";
 
 export interface LoginActionState {
   ok: boolean;
@@ -21,8 +21,6 @@ export async function login(
   if (email.length === 0 || password.length === 0) {
     return { ok: false, error: "Ingresa tu correo y contraseña." };
   }
-
-  await ensureDefaultUsers();
 
   const headersList = await headers();
   const ipAddress = getClientIp(headersList);

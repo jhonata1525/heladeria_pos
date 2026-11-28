@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import { NavBar } from "@/components/nav-bar";
+import { AppShell } from "@/components/app-shell";
 import { getCurrentUser } from "@/lib/auth-server";
 import "./globals.css";
 
@@ -28,10 +28,9 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="flex min-h-screen flex-col bg-[#85E3FF] text-[#1F1B24]">
-        <NavBar user={user ? { name: user.name, role: user.role } : null} />
-        <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-6 sm:px-6">
+        <AppShell user={user ? { name: user.name, role: user.role } : null}>
           {children}
-        </main>
+        </AppShell>
       </body>
     </html>
   );

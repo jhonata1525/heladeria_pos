@@ -31,8 +31,16 @@ export default async function UsuariosPage() {
 
   return (
     <UsuariosClient
-      users={users as any}
-      auditLogs={auditLogs as any}
+      users={users.map((user) => ({
+        ...user,
+        lockedUntil: user.lockedUntil?.toISOString() ?? null,
+        lastLoginAt: user.lastLoginAt?.toISOString() ?? null,
+        createdAt: user.createdAt.toISOString(),
+      }))}
+      auditLogs={auditLogs.map((log) => ({
+        ...log,
+        createdAt: log.createdAt.toISOString(),
+      }))}
     />
   );
 }

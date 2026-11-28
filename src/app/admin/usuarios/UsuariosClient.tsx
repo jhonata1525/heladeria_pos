@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { formatMoney } from "@/lib/format";
 
 interface User {
   id: number;
@@ -62,15 +61,14 @@ export function UsuariosClient({ users, auditLogs }: { users: User[]; auditLogs:
       const url = editingUser ? `/api/admin/users/${editingUser.id}` : "/api/admin/users";
       const method = editingUser ? "PATCH" : "POST";
       
-      const body = { ...formData };
+      const body: Record<string, unknown> = { ...formData };
       if (!editingUser && !body.password) {
         setError("La contraseña es obligatoria para nuevos usuarios");
         setSubmitting(false);
         return;
       }
       if (editingUser && !body.password) {
-        const { password, ...rest } = body;
-        Object.assign(body, rest);
+        delete body.password;
       }
 
       const response = await fetch(url, {

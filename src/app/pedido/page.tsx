@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import type { CategoryDTO, PendingOrderDTO } from "@/lib/types";
 import { requireUser } from "@/lib/auth-server";
-import { formatMoney, round2 } from "@/lib/format";
+import { round2 } from "@/lib/format";
 import { PedidoClient } from "./PedidoClient";
 
 export const metadata = { title: "Tomar Pedidos · Heladería POS" };
@@ -70,7 +70,6 @@ export default async function PedidoPage() {
       categories={categoryData}
       pendingOrders={pendingData}
       hasOpenRegister={openRegister !== null}
-      userRole={user.role}
       userName={user.name}
     />
   );

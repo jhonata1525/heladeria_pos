@@ -17,13 +17,11 @@ export function PedidoClient({
   categories,
   pendingOrders,
   hasOpenRegister,
-  userRole,
   userName,
 }: {
   categories: CategoryDTO[];
   pendingOrders: PendingOrderDTO[];
   hasOpenRegister: boolean;
-  userRole: string;
   userName: string;
 }) {
   const router = useRouter();
@@ -45,15 +43,17 @@ export function PedidoClient({
   const readyOrders = useMemo(() => pendingOrders, [pendingOrders]);
 
   useEffect(() => {
-    try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      if (stored) {
-        const parsed = JSON.parse(stored);
-        setCart(parsed);
+    const timer = window.setTimeout(() => {
+      try {
+        const stored = window.localStorage.getItem(STORAGE_KEY);
+        if (stored) {
+          setCart(JSON.parse(stored) as Record<number, CartLine>);
+        }
+      } catch {
+        window.localStorage.removeItem(STORAGE_KEY);
       }
-    } catch {
-      localStorage.removeItem(STORAGE_KEY);
-    }
+    }, 0);
+    return () => window.clearTimeout(timer);
   }, []);
 
   useEffect(() => {
@@ -183,42 +183,6 @@ export function PedidoClient({
     }
   }
 
-  async function payOrder(orderId: number, paymentMethod: "CASH" | "TRANSFER" | "CARD", cashReceived?: number) {
-    setSubmitting(true);
-    setError(null);
-
-    try {
-      const body: { action: "pay"; paymentMethod: string; cashReceived?: number } = {
-        action: "pay",
-        paymentMethod,
-      };
-      if (paymentMethod === "CASH" && cashReceived !== undefined) {
-        body.cashReceived = round2(cashReceived);
-      }
-
-      const response = await fetch(`/api/orders/${orderId}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify(body),
-      });
-
-      const data = await response.json();
-      if (!response.ok) {
-        setError(data?.error ?? "No se pudo cobrar el pedido");
-        return;
-      }
-
-      setSuccess(true);
-      setTimeout(() => setSuccess(false), 3000);
-      router.refresh();
-    } catch {
-      setError("Error de conexión. Intenta de nuevo.");
-    } finally {
-      setSubmitting(false);
-    }
-  }
-
   function formatDate(dateStr: string): string {
     return new Intl.DateTimeFormat("es-CO", {
       hour: "2-digit",
@@ -325,10 +289,10 @@ export function PedidoClient({
                       )}
                       <span className="pr-6 text-sm font-bold leading-snug text-slate-700">
                         {product.image ? (
-                          <img
-                            src={product.image}
-                            alt=""
-                            className="mb-1.5 h-12 w-12 rounded-lg object-cover"
+                          <span
+                            aria-hidden
+                            className="mb-1.5 block h-12 w-12 rounded-lg bg-contain bg-center bg-no-repeat"
+                            style={{ backgroundImage: `url(${JSON.stringify(product.image)})` }}
                           />
                         ) : null}
                         {product.name}

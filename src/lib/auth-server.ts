@@ -2,7 +2,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { hashPassword, verifyPassword, createSessionToken, type SessionUser } from "@/lib/auth";
-import { SignJWT, jwtVerify } from "jose";
+import { jwtVerify } from "jose";
 
 export const SESSION_COOKIE = "heladeria_session";
 const SESSION_MAX_AGE = 60 * 60 * 24 * 7;
